@@ -15,6 +15,9 @@
 /.vscode/
 .gradle/
 *.csproj
+!/Tests/AntiStick/*.csproj
+/Tests/**/bin/
+/Tests/**/obj/
 *.unityproj
 *.sln
 *.slnx

@@ -365,7 +365,7 @@ MonoBehaviour:
   numeroPersonalizado: 99
   nomePersonalizado: 
   removerBolasPresas: 1
-  tempoMaximoDeVida: 0.5
+  tempoMaximoDeVida: 8
   raioConsideradoPreso: 0.25
   dadosJogador:
     nomeJogador: Player Name
@@ -507,5 +507,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DesprenderBolaDaHelice
   tempoMaximoDeContato: 1.2
+  tempoMaximoDeRetencao: 3
+  raioMovimentoRelativo: 0.25
+  toleranciaSemContato: 0.2
+  margemProximidade: 0.08
   velocidadeDeSaida: 4
   intervaloEntreTentativas: 1
+  tempoSemColisao: 0.25

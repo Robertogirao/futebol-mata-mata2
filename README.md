@@ -79,6 +79,18 @@ GetComponent<KickerAppearance>().SetColors(Color.cyan, Color.red);
 
 O primeiro argumento controla a hélice e o segundo controla as chuteiras. A personalização é visual: posição, rotação, velocidade e colisores do conjunto são preservados.
 
+## Bolas presas na chuteira
+
+A proteção acompanha o movimento da bola em relação à hélice, inclusive quando existem pequenas interrupções nos contatos. Uma bola carregada pela rotação deixa de parecer livre apenas por estar se movendo no cenário.
+
+Uma retenção estável aciona a tentativa de soltura após cerca de 1,2 segundo. Há também um teto de 3 segundos de proximidade contínua à mesma hélice, para cobrir bolas que tremem ou escorregam dentro da chuteira. A tentativa exige proximidade geométrica no momento do resgate.
+
+A mesma bola recebe um impulso de saída e uma janela de 0,25 segundo de exclusão apenas dos contatos com aquela hélice. Paredes, chão, goleiro e outras bolas continuam ativos. As colisões temporárias são restauradas automaticamente, inclusive durante a pausa, ao desativar ou ao destruir a bola.
+
+Os ajustes ficam no componente `DesprenderBolaDaHelice` do prefab `Assets/Prefabs/Bola_Jogador.prefab`. O prefab também usa 8 segundos para a proteção contra imobilidade no cenário, dando tempo à tentativa de soltura antes dessa remoção de segurança.
+
+As regressões de estado e de chamadas à física ficam em `Tests/AntiStick`, fora de `Assets`. Elas usam tipos de apoio, não o motor Unity. Um modelo adicional em Box2D verificou a saída nas duas pontas e a manutenção das colisões com paredes; esse modelo é uma aproximação e não reproduziu naturalmente o travamento específico relatado no Unity.
+
 ## Estrutura
 
 - `Assets`: cenas, scripts, imagens, áudios e fichas das equipes.
