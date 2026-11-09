@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Aston Villa
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Aston Villa
+  sigla: AST
+  escudoOuBandeira: {fileID: 1530157113215889360, guid: 47ad24388cbd42f4aa0eeb24a133897d, type: 3}
+  overall: 83
+  corPrincipal: {r: 0.34509805, g: 0.019607844, b: 0.15686275, a: 1}
+  corSecundaria: {r: 0.5058824, g: 0.75294125, b: 0.9058824, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: "Emiliano Buend\xEDa"
+    numeroCamisa: 16
+    foto512x512: {fileID: 8938358854394931377, guid: e432f3b6d59a89542a297734efafe495, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: John McGinn
+    numeroCamisa: 17
+    foto512x512: {fileID: 8265394940730625692, guid: 5f07594972f2a50408e9d8e6b6f08499, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Nicolas Jackson
+    numeroCamisa: 19
+    foto512x512: {fileID: -7527992067970666273, guid: c30bcc33b50e13e43ab1c56496962cf6, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

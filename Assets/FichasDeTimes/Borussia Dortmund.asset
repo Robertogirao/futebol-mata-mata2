@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Borussia Dortmund
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Borussia Dortmund
+  sigla: BVB
+  escudoOuBandeira: {fileID: -4405410183350563183, guid: b1e40058caec3ff4e8351ed3aa993498, type: 3}
+  overall: 86
+  corPrincipal: {r: 0.9921569, g: 0.882353, b: 0, a: 1}
+  corSecundaria: {r: 0.06666667, g: 0.058823533, b: 0, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Felix Nmecha
+    numeroCamisa: 16
+    foto512x512: {fileID: 7575932227175655115, guid: d227f09fcf1a83e43a5e5e6e77796bad, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Jobe Bellingham
+    numeroCamisa: 17
+    foto512x512: {fileID: 6652339659143939869, guid: 1f7c71982b9dd3e4b996881e3d95bf2d, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Maximilian Beier
+    numeroCamisa: 19
+    foto512x512: {fileID: -8917332420621097261, guid: 721ab408734915040ac3fcdf2da5dc39, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

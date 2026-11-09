@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Club Brugge
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Club Brugge
+  sigla: BRU
+  escudoOuBandeira: {fileID: 7984106993560803230, guid: 00afa22a3d429414cb2a858c4b324462, type: 3}
+  overall: 79
+  corPrincipal: {r: 0, g: 0.47058827, b: 0.7490196, a: 1}
+  corSecundaria: {r: 0, g: 0, b: 0, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Carlos Forbs
+    numeroCamisa: 16
+    foto512x512: {fileID: -9054246541144825828, guid: f69f18bdedda0e34bbf98ecf645a6628, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Hugo Vetlesen
+    numeroCamisa: 17
+    foto512x512: {fileID: -111636769628039591, guid: 1bafd3208b5775e41bd3492eef5fe5aa, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Nicol\xF2 Tresoldi"
+    numeroCamisa: 19
+    foto512x512: {fileID: -4656576885991954541, guid: 33727314ed503bb45a15167666cf481a, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

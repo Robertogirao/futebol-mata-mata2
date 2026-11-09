@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Como 1907
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Como 1907
+  sigla: COM
+  escudoOuBandeira: {fileID: -3599926400717442257, guid: da1596318d0cbbf41b0719e6dbb6cc3b, type: 3}
+  overall: 81
+  corPrincipal: {r: 0.06666667, g: 0.25490198, b: 0.41176474, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Martin Baturina
+    numeroCamisa: 16
+    foto512x512: {fileID: -6037828338775785822, guid: a5d730b0613bfc140a97bd4c22da86e4, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Nico Paz
+    numeroCamisa: 17
+    foto512x512: {fileID: 7793315596378033021, guid: fdfeeda92ba58f341a717f5c02670a71, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Tasos Douvikas
+    numeroCamisa: 19
+    foto512x512: {fileID: 659459386218239839, guid: b038957308b45024596bca5b02ae1e25, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

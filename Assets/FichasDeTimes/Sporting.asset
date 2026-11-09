@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Sporting
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Sporting
+  sigla: SPO
+  escudoOuBandeira: {fileID: 21300000, guid: 93b2fec6889e700438d593f13a4be70d, type: 3}
+  overall: 81
+  corPrincipal: {r: 0.007843138, g: 0.49803925, b: 0.3372549, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: "Fl\xE1vio Gon\xE7alves"
+    numeroCamisa: 16
+    foto512x512: {fileID: 8590983400803435859, guid: 3348e24672cfd0e4983b97c08ee3d90b, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Luis Su\xE1rez"
+    numeroCamisa: 17
+    foto512x512: {fileID: -1500093417446104051, guid: 6fc67cf404ac3c2469b12a1b9cd7e8dd, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Sergi Altimira
+    numeroCamisa: 19
+    foto512x512: {fileID: -6097209920501332699, guid: 19990d9446cca1b418d4417bed8c61d4, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

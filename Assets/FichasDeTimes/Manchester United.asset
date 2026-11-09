@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Manchester United
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Manchester United
+  sigla: UNI
+  escudoOuBandeira: {fileID: 5872649014136303894, guid: 28c39dc8af97d9043b40a0b59ae1790e, type: 3}
+  overall: 87
+  corPrincipal: {r: 1, g: 0.062801935, b: 0, a: 1}
+  corSecundaria: {r: 0, g: 0, b: 0, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Bruno Fernandes
+    numeroCamisa: 16
+    foto512x512: {fileID: 9161516748411341627, guid: f274bc873d869b24795d1ee59b14c3d8, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Bryan Mbeumo
+    numeroCamisa: 17
+    foto512x512: {fileID: -3434174016012546751, guid: 876fcce3f25ef014284f442ad067172d, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Matheus Cunha
+    numeroCamisa: 19
+    foto512x512: {fileID: -6523318787681435440, guid: 65f2ca3c5a8099f49992bc9725e20ae0, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

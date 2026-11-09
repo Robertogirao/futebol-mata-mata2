@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: UDINESE
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: UDINESE
+  sigla: UDI
+  escudoOuBandeira: {fileID: -761491462413497936, guid: bec72b1aba358214cb744ade2b038e4d, type: 3}
+  overall: 75
+  corPrincipal: {r: 0, g: 0, b: 0, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Hassane Kamara
+    numeroCamisa: 7
+    foto512x512: {fileID: -6539378888759647322, guid: c8fe4b957b093b849be5092500c5e0a2, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: Idrissa Gueye
+    numeroCamisa: 11
+    foto512x512: {fileID: -4886376461574180089, guid: 6bdd61acb4d72b84eacb11e44e5cbc8b, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: Jurgen Ekkelenkamp
+    numeroCamisa: 57
+    foto512x512: {fileID: -6861195311409161129, guid: acfa43c3ac5df9c4da2a4b8209641dd6, type: 3}
+    estrelasSkill: 4
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

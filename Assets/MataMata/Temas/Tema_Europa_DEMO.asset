@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb732d7cfa3c4b5ca7e77c3f17805f22, type: 3}
+  m_Name: Tema_Europa_DEMO
+  m_EditorClassIdentifier: Assembly-CSharp::TemaCompeticao
+  competicaoId: europa_demo
+  nomeCompeticao: EUROPA LEAGUE - DEMO
+  corPrimaria: {r: 0.025, g: 0.028, b: 0.035, a: 1}
+  corSecundaria: {r: 0.16, g: 0.075, b: 0.025, a: 1}
+  corDestaque: {r: 1, g: 0.45, b: 0.04, a: 1}
+  corTexto: {r: 1, g: 1, b: 1, a: 1}
+  corPainel: {r: 0.025, g: 0.028, b: 0.035, a: 0.97}
+  fundoAbertura: {fileID: 21300000, guid: 8555d3fc7356446f86d03dfd08d9ba13, type: 3}
+  fundoChaveamento: {fileID: 21300000, guid: 8555d3fc7356446f86d03dfd08d9ba13, type: 3}
+  logoCompeticao: {fileID: 21300000, guid: f0f9497f13a84a34b96098e94ea921bc, type: 3}
+  logoCanal: {fileID: 4855796935591688104, guid: ad156cc26f25ca747a789d97728ab529, type: 3}
+  fonteTitulo: {fileID: 11400000, guid: 4d4833c87e04f3a4b980330701066f9d, type: 2}
+  fonteTexto: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  somAbertura: {fileID: 0}
+  fundoArena: {fileID: 0}
+  campo: {fileID: -4329228532589240902, guid: 2de5abc548f242c288f75e8357ac3e02, type: 3}
+  gol: {fileID: 0}
+  helice2: {fileID: 0}
+  goleiro: {fileID: 0}
+  tintFundoArena: {r: 0.025, g: 0.028, b: 0.035, a: 1}
+  tintCampo: {r: 1, g: 1, b: 1, a: 1}
+  tintGol: {r: 1, g: 1, b: 1, a: 1}
+  tintHelice: {r: 1, g: 1, b: 1, a: 1}
+  tintGoleiro: {r: 1, g: 1, b: 1, a: 1}
+  materialGol: {fileID: 2100000, guid: 718a9a9657dd49f9844d641b9f774df0, type: 2}
+  materialHelice: {fileID: 2100000, guid: 718a9a9657dd49f9844d641b9f774df0, type: 2}
+  materialGoleiro: {fileID: 2100000, guid: 718a9a9657dd49f9844d641b9f774df0, type: 2}

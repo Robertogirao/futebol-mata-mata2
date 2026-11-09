@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: VENEZIA
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: VENEZIA
+  sigla: VEN
+  escudoOuBandeira: {fileID: 1201571833329755330, guid: cfc0cc56e2db78245a655926c178b8a8, type: 3}
+  overall: 73
+  corPrincipal: {r: 0, g: 0, b: 0, a: 1}
+  corSecundaria: {r: 1, g: 0.41176474, b: 0, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Akor Adams
+    numeroCamisa: 16
+    foto512x512: {fileID: 813498591241845568, guid: 5b849d61cab27894fbd735d2c736ada4, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Antoine Hainaut
+    numeroCamisa: 17
+    foto512x512: {fileID: 8549052823542365039, guid: 957b3ee166ea6064da404d5e234276b7, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: John Yeboah
+    numeroCamisa: 19
+    foto512x512: {fileID: 1341008943796607491, guid: 701b0cc717a731245bf75af8a50f556d, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

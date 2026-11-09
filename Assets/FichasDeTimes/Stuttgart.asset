@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Stuttgart
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Stuttgart
+  sigla: STU
+  escudoOuBandeira: {fileID: 6844379429509803772, guid: b5aeb5df3214f0340a54aed8a2abda1b, type: 3}
+  overall: 79
+  corPrincipal: {r: 0.8313726, g: 0.027450982, b: 0.13725491, a: 1}
+  corSecundaria: {r: 0.9960785, g: 0.9960785, b: 0.9960785, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Angelo Stiller
+    numeroCamisa: 16
+    foto512x512: {fileID: -5095791129681360042, guid: 5e0fae1f3c9cf60428521b54534cfbf3, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Bilal El Khannouss
+    numeroCamisa: 17
+    foto512x512: {fileID: -6723828598758937677, guid: f43f9a829279d83488c41a06bb676189, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Ermedin Demirovic
+    numeroCamisa: 19
+    foto512x512: {fileID: 7622439041073842993, guid: b65b86b25205e33468ba782ba3132313, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

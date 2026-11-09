@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Arsenal
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Arsenal
+  sigla: ARS
+  escudoOuBandeira: {fileID: 1366366153325310568, guid: cd2db046ca24f2d459afadb04ec422c9, type: 3}
+  overall: 90
+  corPrincipal: {r: 0.93725497, g: 0, b: 0.027450982, a: 1}
+  corSecundaria: {r: 0.003921569, g: 0.18431373, b: 0.45098042, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Bukayo Saka
+    numeroCamisa: 16
+    foto512x512: {fileID: 5542434988858685103, guid: b32aa2d99ad41f0428c48182bd370621, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Declan Rice
+    numeroCamisa: 17
+    foto512x512: {fileID: -83318345043734317, guid: 57f31386ad2f6ad418147809eb3f7e36, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Eberechi Eze
+    numeroCamisa: 19
+    foto512x512: {fileID: -5281483453031979379, guid: b02abf2ce7348d14b8238f28c1a4caa8, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

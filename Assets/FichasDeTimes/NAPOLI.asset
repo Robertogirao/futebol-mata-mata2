@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: NAPOLI
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: NAPOLI
+  sigla: NAP
+  escudoOuBandeira: {fileID: 4734249101061007550, guid: f1975b83c6cdf6340bebdc16a2481968, type: 3}
+  overall: 88
+  corPrincipal: {r: 0, g: 0.654902, b: 0.87843144, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Kevin De Bruyne
+    numeroCamisa: 7
+    foto512x512: {fileID: -3591855085754807316, guid: 3ba0eccb19035534b82263e6f11646c1, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Rasmus H\xF8jlund"
+    numeroCamisa: 18
+    foto512x512: {fileID: -6399955886658743760, guid: fb1aa2ae2031053439534a9103eafcb4, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Scott McTominay
+    numeroCamisa: 29
+    foto512x512: {fileID: -797702918276871998, guid: e8972121023611d499c76a00bbe97a72, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

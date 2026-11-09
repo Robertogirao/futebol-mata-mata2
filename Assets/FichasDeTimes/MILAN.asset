@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: MILAN
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: MILAN
+  sigla: MIL
+  escudoOuBandeira: {fileID: 7428791585439561247, guid: c6110bf96aaffda4bbd6bc5ba12e08dd, type: 3}
+  overall: 87
+  corPrincipal: {r: 0.90196085, g: 0, b: 0.1764706, a: 1}
+  corSecundaria: {r: 0.043137256, g: 0.09411766, b: 0.1254902, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Adrien Rabiot
+    numeroCamisa: 10
+    foto512x512: {fileID: -7834553348443151220, guid: c1de4b4ee5858ad4e8f32f7cf5ab8afb, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: Christian Pulisic
+    numeroCamisa: 12
+    foto512x512: {fileID: 7680961494173519604, guid: 89e8dd4338206b34086a1c2460cb47e6, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: "Gon\xE7alo Ramos"
+    numeroCamisa: 19
+    foto512x512: {fileID: -6087837533848907137, guid: 2ef352fe8ffec9e4383097ddc1fd8c5c, type: 3}
+    estrelasSkill: 3
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

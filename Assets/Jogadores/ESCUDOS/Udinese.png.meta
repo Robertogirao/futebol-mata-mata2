@@ -1,0 +1,1612 @@
+fileFormatVersion: 2
+guid: bec72b1aba358214cb744ade2b038e4d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -2660929332895959196
+    second: Udinese_0
+  - first:
+      213: 3342730810682848463
+    second: Udinese_1
+  - first:
+      213: -1392036089375370388
+    second: Udinese_2
+  - first:
+      213: -584077033547799145
+    second: Udinese_3
+  - first:
+      213: -6314397768518695652
+    second: Udinese_4
+  - first:
+      213: 4968265138974469721
+    second: Udinese_5
+  - first:
+      213: 6767763517104814216
+    second: Udinese_6
+  - first:
+      213: -1665252378276144871
+    second: Udinese_7
+  - first:
+      213: -9117175718261298738
+    second: Udinese_8
+  - first:
+      213: 2626883367092855227
+    second: Udinese_9
+  - first:
+      213: 2322072664263325490
+    second: Udinese_10
+  - first:
+      213: -6367941026284047181
+    second: Udinese_11
+  - first:
+      213: 7239654318934763267
+    second: Udinese_12
+  - first:
+      213: -761491462413497936
+    second: Udinese_13
+  - first:
+      213: 2963000117136356523
+    second: Udinese_14
+  - first:
+      213: -2830699032076884685
+    second: Udinese_15
+  - first:
+      213: 7220314197316177446
+    second: Udinese_16
+  - first:
+      213: -890098610388307014
+    second: Udinese_17
+  - first:
+      213: 4633541915126595772
+    second: Udinese_18
+  - first:
+      213: -2214641296900024959
+    second: Udinese_19
+  - first:
+      213: -6957730171056889619
+    second: Udinese_20
+  - first:
+      213: -3023015005277962859
+    second: Udinese_21
+  - first:
+      213: 726377074689269951
+    second: Udinese_22
+  - first:
+      213: -1729967741470768668
+    second: Udinese_23
+  - first:
+      213: 7823613796399069835
+    second: Udinese_24
+  - first:
+      213: 2632195222293099356
+    second: Udinese_25
+  - first:
+      213: 6758659706375074711
+    second: Udinese_26
+  - first:
+      213: -4869348333261985095
+    second: Udinese_27
+  - first:
+      213: 1247124724258333950
+    second: Udinese_28
+  - first:
+      213: 659296960342282801
+    second: Udinese_29
+  - first:
+      213: 1172538554374178339
+    second: Udinese_30
+  - first:
+      213: 380068749724135264
+    second: Udinese_31
+  - first:
+      213: -6508435925441703121
+    second: Udinese_32
+  - first:
+      213: 1375908890707796882
+    second: Udinese_33
+  - first:
+      213: 8948805789621082435
+    second: Udinese_34
+  - first:
+      213: -6103264040571507098
+    second: Udinese_35
+  - first:
+      213: 205626613008026333
+    second: Udinese_36
+  - first:
+      213: 2393344240311878298
+    second: Udinese_37
+  - first:
+      213: -5872617588415808906
+    second: Udinese_38
+  - first:
+      213: -3188563660429717295
+    second: Udinese_39
+  - first:
+      213: -8787161419473890413
+    second: Udinese_40
+  - first:
+      213: -781844782269380058
+    second: Udinese_41
+  - first:
+      213: -9161291488157550447
+    second: Udinese_42
+  - first:
+      213: 6162363803412977518
+    second: Udinese_43
+  - first:
+      213: -8797146792908812896
+    second: Udinese_44
+  - first:
+      213: 5315847994417232925
+    second: Udinese_45
+  - first:
+      213: -3686409201197258774
+    second: Udinese_46
+  - first:
+      213: 2254061886127408858
+    second: Udinese_47
+  - first:
+      213: 6181424982128228410
+    second: Udinese_48
+  - first:
+      213: -8652560778566293411
+    second: Udinese_49
+  - first:
+      213: 7710634427995084013
+    second: Udinese_50
+  - first:
+      213: -8941760887136859555
+    second: Udinese_51
+  - first:
+      213: 536319703778781760
+    second: Udinese_52
+  - first:
+      213: 551046991013751120
+    second: Udinese_53
+  - first:
+      213: 5017234343309304441
+    second: Udinese_54
+  - first:
+      213: 9724663666443400
+    second: Udinese_55
+  - first:
+      213: -223847509849814470
+    second: Udinese_56
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Udinese_0
+      rect:
+        serializedVersion: 2
+        x: 109
+        y: 405
+        width: 18
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 467b154beda721bd0800000000000000
+      internalID: -2660929332895959196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_1
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 390
+        width: 61
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc4318636f3c36e20800000000000000
+      internalID: 3342730810682848463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 429
+        width: 42
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c63d1425d8e7eace0800000000000000
+      internalID: -1392036089375370388
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_3
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 425
+        width: 36
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7956be55801f4e7f0800000000000000
+      internalID: -584077033547799145
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_4
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 433
+        width: 34
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c158ce44fa0ce58a0800000000000000
+      internalID: -6314397768518695652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_5
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 434
+        width: 36
+        height: 61
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95ea78622d2d2f440800000000000000
+      internalID: 4968265138974469721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_6
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 426
+        width: 43
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88871e8cf0debed50800000000000000
+      internalID: 6767763517104814216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_7
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 390
+        width: 61
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 919d97be8c5d3e8e0800000000000000
+      internalID: -1665252378276144871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_8
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 429
+        width: 41
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec9e7363df8497180800000000000000
+      internalID: -9117175718261298738
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_9
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 405
+        width: 18
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bb1a3f92180947420800000000000000
+      internalID: 2626883367092855227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_10
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 349
+        width: 16
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2377f0809c8a93020800000000000000
+      internalID: 2322072664263325490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_11
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 331
+        width: 36
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b4f3b9106780a7a0800000000000000
+      internalID: -6367941026284047181
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_12
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 377
+        width: 22
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 307aab8ee3b687460800000000000000
+      internalID: 7239654318934763267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_13
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 88
+        width: 334
+        height: 334
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b9c95bac83ae65f0800000000000000
+      internalID: -761491462413497936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_14
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 331
+        width: 36
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba47a5b68e0be1920800000000000000
+      internalID: 2963000117136356523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_15
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 377
+        width: 23
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 335e30f5a3657b8d0800000000000000
+      internalID: -2830699032076884685
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_16
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 349
+        width: 16
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62e8db1f185b33460800000000000000
+      internalID: 7220314197316177446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_17
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 281
+        width: 24
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab37cb0a70cb5a3f0800000000000000
+      internalID: -890098610388307014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_18
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 313
+        width: 16
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb0010f72d5ad4040800000000000000
+      internalID: 4633541915126595772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_19
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 267
+        width: 19
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1851d5169730441e0800000000000000
+      internalID: -2214641296900024959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_20
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 318
+        width: 39
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de0e227e54d217f90800000000000000
+      internalID: -6957730171056889619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_21
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 318
+        width: 38
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59d3bbb8ed71c06d0800000000000000
+      internalID: -3023015005277962859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_22
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 267
+        width: 19
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb067d5d91c941a00800000000000000
+      internalID: 726377074689269951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_23
+      rect:
+        serializedVersion: 2
+        x: 463
+        y: 313
+        width: 16
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e100c0418bedf7e0800000000000000
+      internalID: -1729967741470768668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_24
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 281
+        width: 24
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8a363aeb4f039c60800000000000000
+      internalID: 7823613796399069835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_25
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 225
+        width: 34
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c53b244db9f678420800000000000000
+      internalID: 2632195222293099356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_26
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 196
+        width: 38
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7937b3ca1359bcd50800000000000000
+      internalID: 6758659706375074711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_27
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 258
+        width: 19
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ba67446d799c6cb0800000000000000
+      internalID: -4869348333261985095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_28
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 257
+        width: 20
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef46604445dae4110800000000000000
+      internalID: 1247124724258333950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_29
+      rect:
+        serializedVersion: 2
+        x: 440
+        y: 196
+        width: 38
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13252b2a71b462900800000000000000
+      internalID: 659296960342282801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_30
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 226
+        width: 33
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3264ce25a91b54010800000000000000
+      internalID: 1172538554374178339
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_31
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 206
+        width: 47
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06fa881a386464500800000000000000
+      internalID: 380068749724135264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_32
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 190
+        width: 16
+        height: 56
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2318ac42046da5a0800000000000000
+      internalID: -6508435925441703121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_33
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 189
+        width: 16
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 293a0f1a8d5381310800000000000000
+      internalID: 1375908890707796882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_34
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 206
+        width: 47
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 349d25ee37b803c70800000000000000
+      internalID: 8948805789621082435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_35
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 155
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ee15b01b9dc4ba0800000000000000
+      internalID: -6103264040571507098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_36
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 134
+        width: 55
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddac5b8a0588ad200800000000000000
+      internalID: 205626613008026333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_37
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 135
+        width: 65
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a924405f7edd63120800000000000000
+      internalID: 2393344240311878298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_38
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 135
+        width: 66
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67ab3c4fa65408ea0800000000000000
+      internalID: -5872617588415808906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_39
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 134
+        width: 54
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d01e5c9e32ffb3d0800000000000000
+      internalID: -3188563660429717295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_40
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 155
+        width: 44
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 393dd30de3bbd0680800000000000000
+      internalID: -8787161419473890413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_41
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 94
+        width: 59
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 62a475b10545625f0800000000000000
+      internalID: -781844782269380058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_42
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 88
+        width: 87
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1983f8c1eed8cd080800000000000000
+      internalID: -9161291488157550447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_43
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 88
+        width: 87
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e67d727ca3d158550800000000000000
+      internalID: 6162363803412977518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_44
+      rect:
+        serializedVersion: 2
+        x: 398
+        y: 94
+        width: 59
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0ad04b3e9914ae580800000000000000
+      internalID: -8797146792908812896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_45
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 78
+        width: 59
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1c363b169fa5c940800000000000000
+      internalID: 5315847994417232925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_46
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 59
+        width: 93
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae7e7e9ec5e37dcc0800000000000000
+      internalID: -3686409201197258774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_47
+      rect:
+        serializedVersion: 2
+        x: 186
+        y: 68
+        width: 58
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad60f58c759084f10800000000000000
+      internalID: 2254061886127408858
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_48
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 68
+        width: 58
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a387a794545d8c550800000000000000
+      internalID: 6181424982128228410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_49
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 59
+        width: 93
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d58241ca0ddebe780800000000000000
+      internalID: -8652560778566293411
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_50
+      rect:
+        serializedVersion: 2
+        x: 369
+        y: 78
+        width: 59
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de45b89d82da10b60800000000000000
+      internalID: 7710634427995084013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_51
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 53
+        width: 66
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5ac9bf39db78e380800000000000000
+      internalID: -8941760887136859555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_52
+      rect:
+        serializedVersion: 2
+        x: 154
+        y: 38
+        width: 56
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04ae6c5dde3617700800000000000000
+      internalID: 536319703778781760
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_53
+      rect:
+        serializedVersion: 2
+        x: 172
+        y: 22
+        width: 168
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0592ce99156b5a700800000000000000
+      internalID: 551046991013751120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_54
+      rect:
+        serializedVersion: 2
+        x: 223
+        y: 16
+        width: 66
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97267d38d0cc0a540800000000000000
+      internalID: 5017234343309304441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_55
+      rect:
+        serializedVersion: 2
+        x: 302
+        y: 38
+        width: 56
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8840663b78c822000800000000000000
+      internalID: 9724663666443400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Udinese_56
+      rect:
+        serializedVersion: 2
+        x: 335
+        y: 53
+        width: 65
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3acb8330ebb4ecf0800000000000000
+      internalID: -223847509849814470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Udinese_0: -2660929332895959196
+      Udinese_1: 3342730810682848463
+      Udinese_10: 2322072664263325490
+      Udinese_11: -6367941026284047181
+      Udinese_12: 7239654318934763267
+      Udinese_13: -761491462413497936
+      Udinese_14: 2963000117136356523
+      Udinese_15: -2830699032076884685
+      Udinese_16: 7220314197316177446
+      Udinese_17: -890098610388307014
+      Udinese_18: 4633541915126595772
+      Udinese_19: -2214641296900024959
+      Udinese_2: -1392036089375370388
+      Udinese_20: -6957730171056889619
+      Udinese_21: -3023015005277962859
+      Udinese_22: 726377074689269951
+      Udinese_23: -1729967741470768668
+      Udinese_24: 7823613796399069835
+      Udinese_25: 2632195222293099356
+      Udinese_26: 6758659706375074711
+      Udinese_27: -4869348333261985095
+      Udinese_28: 1247124724258333950
+      Udinese_29: 659296960342282801
+      Udinese_3: -584077033547799145
+      Udinese_30: 1172538554374178339
+      Udinese_31: 380068749724135264
+      Udinese_32: -6508435925441703121
+      Udinese_33: 1375908890707796882
+      Udinese_34: 8948805789621082435
+      Udinese_35: -6103264040571507098
+      Udinese_36: 205626613008026333
+      Udinese_37: 2393344240311878298
+      Udinese_38: -5872617588415808906
+      Udinese_39: -3188563660429717295
+      Udinese_4: -6314397768518695652
+      Udinese_40: -8787161419473890413
+      Udinese_41: -781844782269380058
+      Udinese_42: -9161291488157550447
+      Udinese_43: 6162363803412977518
+      Udinese_44: -8797146792908812896
+      Udinese_45: 5315847994417232925
+      Udinese_46: -3686409201197258774
+      Udinese_47: 2254061886127408858
+      Udinese_48: 6181424982128228410
+      Udinese_49: -8652560778566293411
+      Udinese_5: 4968265138974469721
+      Udinese_50: 7710634427995084013
+      Udinese_51: -8941760887136859555
+      Udinese_52: 536319703778781760
+      Udinese_53: 551046991013751120
+      Udinese_54: 5017234343309304441
+      Udinese_55: 9724663666443400
+      Udinese_56: -223847509849814470
+      Udinese_6: 6767763517104814216
+      Udinese_7: -1665252378276144871
+      Udinese_8: -9117175718261298738
+      Udinese_9: 2626883367092855227
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
