@@ -8,7 +8,7 @@ A imagem ilustra a disposição das fichas; não é uma captura do jogo em execu
 
 ## O que mudou
 
-- Cada equipe apresenta uma ficha lateral com foto ampliada, nome do atleta, escudo, nome e cor do time.
+- Cada equipe apresenta uma ficha compacta no seu canto superior, com foto, nome do atleta, escudo, nome e cor do time, deixando mais espaço para os elementos da arena.
 - Um único atleta é escolhido por equipe para cada partida. O mesmo atleta representa todos os lançamentos daquele time.
 - O elenco completo permanece cadastrado para permitir outras escolhas nas partidas seguintes.
 - Os antigos espaços dos outros dois jogadores ficam ocultos automaticamente.

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>One representative per team, with the match arena left unobstructed.</summary>
+/// <summary>Compact representative cards anchored to the upper corners.</summary>
 [DisallowMultipleComponent]
 public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 {
@@ -34,9 +34,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
             raiz.gameObject.AddComponent<LayoutJogadorUnicoUI>();
         layout.fonte = fonte != null ? fonte : TMP_Settings.defaultFontAsset;
         layout.fichaA = layout.CriarFicha(
-            "Time_A", new Vector2(0.035f, 0.28f), new Vector2(0.205f, 0.73f));
+            "Time_A", new Vector2(0.015f, 0.62f), new Vector2(0.151f, 0.98f));
         layout.fichaB = layout.CriarFicha(
-            "Time_B", new Vector2(0.795f, 0.28f), new Vector2(0.965f, 0.73f));
+            "Time_B", new Vector2(0.849f, 0.62f), new Vector2(0.985f, 0.98f));
         raiz.gameObject.SetActive(false);
         return layout;
     }
@@ -67,27 +67,27 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.escudo = CriarImagem("Escudo", bloco,
             new Vector2(0.07f, 0.855f), new Vector2(0.25f, 0.965f));
         ficha.equipe = CriarTexto("Equipe", bloco,
-            new Vector2(0.30f, 0.85f), new Vector2(0.93f, 0.97f), 26f);
+            new Vector2(0.30f, 0.85f), new Vector2(0.93f, 0.97f), 20.8f);
         ficha.equipe.alignment = TextAlignmentOptions.MidlineLeft;
 
         Image moldura = CriarImagem("Fundo_Foto", bloco,
             new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
         moldura.color = new Color(0.07f, 0.105f, 0.17f, 1f);
         ficha.semFoto = CriarTexto("Sem_Foto", bloco,
-            new Vector2(0.09f, 0.28f), new Vector2(0.91f, 0.77f), 58f);
+            new Vector2(0.09f, 0.28f), new Vector2(0.91f, 0.77f), 46.4f);
         ficha.semFoto.richText = true;
         ficha.semFoto.color = new Color(0.58f, 0.66f, 0.80f, 1f);
         ficha.foto = CriarImagem("Foto_Jogador", bloco,
             new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
-            new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 16f);
+            new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);
         legenda.text = "EM CAMPO";
-        legenda.characterSpacing = 3f;
+        legenda.characterSpacing = 2.4f;
         legenda.fontStyle = FontStyles.Normal;
         legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);
         ficha.jogador = CriarTexto("Nome_Jogador", bloco,
-            new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 34f);
+            new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 27.2f);
         return ficha;
     }
 
