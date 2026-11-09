@@ -47,6 +47,7 @@ public sealed class ArenaTema : MonoBehaviour
         AplicarAparencia(gol, tema.gol, tema.tintGol, tema.materialGol);
         AplicarAparencia(helice2, tema.helice2, tema.tintHelice, tema.materialHelice);
         AplicarAparencia(goleiro, tema.goleiro, tema.tintGoleiro, tema.materialGoleiro);
+        AtualizarCoresDoKicker();
     }
 
     /// <summary>
@@ -64,6 +65,16 @@ public sealed class ArenaTema : MonoBehaviour
             item.Key.color = item.Value.cor;
             item.Key.sharedMaterial = item.Value.material;
         }
+
+        AtualizarCoresDoKicker();
+    }
+
+    private void AtualizarCoresDoKicker()
+    {
+        if (helice2 == null) return;
+        KickerAppearance appearance = helice2.GetComponent<KickerAppearance>();
+        if (appearance != null)
+            appearance.ApplyTheme(helice2.sharedMaterial, helice2.color);
     }
 
     private void AplicarAparencia(

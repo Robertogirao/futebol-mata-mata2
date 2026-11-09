@@ -57,6 +57,28 @@ Para aplicar um tema ao seu torneio, selecione o objeto que contém `MataMataCam
 
 Cada tema inclui arena, fundo de apresentação, emblema, cores da interface e material para o gol, a hélice e o goleiro. As fichas continuam nos cantos superiores, com um atleta por equipe.
 
+## Personalizar a hélice e as chuteiras
+
+A hélice tem um corpo metálico com detalhes de acabamento e duas chuteiras novas em camadas visuais separadas. Você pode escolher as cores da hélice e das chuteiras de forma independente.
+
+![Illustrative kicker appearance and independent color controls](docs/KickerAppearance.png)
+
+1. Saia do **Play Mode** e selecione `HELICE2_00000_0` na **Hierarchy**.
+2. No componente **Kicker Appearance**, escolha **Helix Color** e **Boot Color**.
+3. Clique em **Apply Custom Colors** para usar suas cores. Elas continuam ativas quando um tema é aplicado.
+4. Clique em **Use Theme Colors** para voltar à paleta da competição.
+5. Salve a cena para manter as alterações.
+
+As cores também podem ser testadas durante o Play Mode; alterações feitas durante a execução são temporárias. Os dois comandos estão disponíveis no menu de contexto do componente.
+
+Em outro script no mesmo objeto, você pode aplicar as cores por código:
+
+```csharp
+GetComponent<KickerAppearance>().SetColors(Color.cyan, Color.red);
+```
+
+O primeiro argumento controla a hélice e o segundo controla as chuteiras. A personalização é visual: posição, rotação, velocidade e colisores do conjunto são preservados.
+
 ## Estrutura
 
 - `Assets`: cenas, scripts, imagens, áudios e fichas das equipes.
@@ -68,5 +90,7 @@ Cada tema inclui arena, fundo de apresentação, emblema, cores da interface e m
 ## Validação
 
 A seleção e o lançador passaram em 231 verificações, incluindo elenco vazio, seleção manual, sorteio e compatibilidade com fichas antigas. Os scripts alterados de seleção e interface também foram compilados com tipos de apoio que representam APIs do Unity.
+
+Os controles da hélice e das chuteiras passaram em 45 verificações de comportamento e foram compilados com e sem `UNITY_EDITOR`, usando tipos de apoio. A integração das nove cenas também foi conferida para preservar os componentes originais de geometria, física e rotação.
 
 Essas verificações não substituem a execução no editor. O projeto ainda precisa de conferência visual e de funcionamento no Unity, que não estava instalado no ambiente de análise.
