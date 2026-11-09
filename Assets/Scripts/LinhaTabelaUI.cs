@@ -15,10 +15,10 @@ public class LinhaTabelaUI : MonoBehaviour
     {
         if (status == null || status.time == null) return;
 
-        if (textoPosicao != null) textoPosicao.text = $"{posicao}º";
+        if (textoPosicao != null) textoPosicao.text = posicao.ToString();
         if (textoNome != null) textoNome.text = status.time.sigla; // Ou status.time.nomeEquipe
         if (textoPontos != null) textoPontos.text = $"{status.pontos} PTS";
-        if (textoSaldo != null) textoSaldo.text = $"SG: {status.saldoGols}";
+        if (textoSaldo != null) textoSaldo.text = $"GD: {status.saldoGols}";
 
         if (fotoEscudo != null)
         {

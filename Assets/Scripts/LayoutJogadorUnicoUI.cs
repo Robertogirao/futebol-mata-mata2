@@ -45,8 +45,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         TeamData timeA, TeamData timeB,
         List<JogadorDados> titularesA, List<JogadorDados> titularesB)
     {
-        Preencher(fichaA, timeA, PrimeiroValido(titularesA), "TIME A");
-        Preencher(fichaB, timeB, PrimeiroValido(titularesB), "TIME B");
+        Preencher(fichaA, timeA, PrimeiroValido(titularesA), "TEAM A");
+        Preencher(fichaB, timeB, PrimeiroValido(titularesB), "TEAM B");
         gameObject.SetActive(true);
     }
 
@@ -82,7 +82,7 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
             new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);
-        legenda.text = "EM CAMPO";
+        legenda.text = "PLAYER";
         legenda.characterSpacing = 2.4f;
         legenda.fontStyle = FontStyles.Normal;
         legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);
@@ -106,10 +106,10 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.foto.sprite = jogador != null ? jogador.foto512x512 : null;
         ficha.foto.enabled = ficha.foto.sprite != null;
         ficha.semFoto.text = sigla.Replace("<", "‹").Replace(">", "›")
-            + "\n<size=28%>SEM FOTO</size>";
+            + "\n<size=28%>NO PHOTO</size>";
         ficha.semFoto.enabled = ficha.foto.sprite == null;
         ficha.jogador.text = jogador != null && !string.IsNullOrWhiteSpace(jogador.nomeJogador)
-            ? jogador.nomeJogador.Trim() : "JOGADOR NÃO DEFINIDO";
+            ? jogador.nomeJogador.Trim() : "PLAYER NOT SET";
     }
 
     private static Color CorVisivel(Color cor)

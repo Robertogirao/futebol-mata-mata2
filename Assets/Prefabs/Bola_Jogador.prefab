@@ -368,7 +368,7 @@ MonoBehaviour:
   tempoMaximoDeVida: 0.5
   raioConsideradoPreso: 0.25
   dadosJogador:
-    nomeJogador: Nome do Jogador
+    nomeJogador: Player Name
     numeroCamisa: 10
     foto512x512: {fileID: 0}
     estrelasSkill: 3

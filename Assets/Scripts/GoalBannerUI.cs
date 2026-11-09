@@ -117,8 +117,8 @@ public class GoalBannerUI : MonoBehaviour
             {
                 textoDados.text =
                     string.IsNullOrEmpty(atual.nome)
-                        ? "<color=yellow>GOAL! / GOL!</color>"
-                        : "<color=yellow>GOAL! / GOL!</color>\n" +
+                        ? "<color=yellow>GOAL!</color>"
+                        : "<color=yellow>GOAL!</color>\n" +
                           atual.nome;
             }
 

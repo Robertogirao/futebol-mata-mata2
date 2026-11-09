@@ -36,12 +36,34 @@ O sorteio tem prioridade sobre a seleção manual. Os elementos adicionais do ca
 
 O limite de bolas simultâneas permanece independente da quantidade de jogadores: várias bolas podem representar o mesmo atleta.
 
+## Temas de competição
+
+O jogo inclui seis identidades visuais. Os textos da transmissão aparecem em inglês; nomes próprios de clubes e atletas são preservados.
+
+| Tema | Visual | Cena de demonstração |
+| --- | --- | --- |
+| Champions League | Azul e prata | `DEMO_Champions_16` |
+| Europa League | Preto e laranja | `DEMO_EuropaLeague_16` |
+| Legends | Preto e dourado | `DEMO_Legends_16` |
+| Nations League | Azul-marinho e detalhes multicoloridos | `DEMO_NationsLeague_16` |
+| World Cup | Verde-esmeralda e dourado | `DEMO_WorldCup_16` |
+| Copa America | Azul, branco e vermelho | `DEMO_CopaAmerica_16` |
+
+![Artwork preview of the four new competition themes](docs/CompetitionThemes.png)
+
+As cenas estão em `Assets/Scenes`. Cada nova demonstração usa 16 clubes já cadastrados, para permitir testar o tema imediatamente. Elas apresentam o visual da competição; não adicionam seleções nacionais nem novos atletas.
+
+Para aplicar um tema ao seu torneio, selecione o objeto que contém `MataMataCampeonato` e atribua o asset correspondente de `Assets/MataMata/Temas` ao campo `Tema`. Os assets sem `_DEMO` usam o nome da competição e uma pasta de resultados própria; as variantes `_DEMO` identificam a prévia e as cenas de demonstração não salvam progresso. Cadastre os participantes desejados na lista `Participantes`.
+
+Cada tema inclui arena, fundo de apresentação, emblema, cores da interface e material para o gol, a hélice e o goleiro. As fichas continuam nos cantos superiores, com um atleta por equipe.
+
 ## Estrutura
 
 - `Assets`: cenas, scripts, imagens, áudios e fichas das equipes.
 - `Packages`: dependências do Unity.
 - `ProjectSettings`: configurações do projeto e versão do editor.
 - `docs/Previa_layout.png`: prévia ilustrativa.
+- `docs/CompetitionThemes.png`: catálogo ilustrativo dos novos temas.
 
 ## Validação
 

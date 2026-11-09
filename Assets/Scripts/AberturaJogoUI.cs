@@ -131,10 +131,10 @@ public sealed class AberturaJogoUI : MonoBehaviour
             timeB.nomeEquipe, "AWAY TEAM");
 
         textoRodada.text =
-            $"MATCHDAY {Mathf.Max(1, rodada)}  /  GIORNATA {Mathf.Max(1, rodada)}";
+            $"MATCHDAY {Mathf.Max(1, rodada)}";
 
         textoJogo.text =
-            $"MATCH {Mathf.Max(1, numeroJogo)}  /  PARTITA {Mathf.Max(1, numeroJogo)}";
+            $"MATCH {Mathf.Max(1, numeroJogo)}";
 
         principal.gameObject.SetActive(true);
         cortina.gameObject.SetActive(false);

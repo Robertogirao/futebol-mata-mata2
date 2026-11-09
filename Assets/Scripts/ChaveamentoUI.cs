@@ -461,7 +461,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
             texto, true, TextAlignmentOptions.Center, 26f);
         TextMeshProUGUI subtitulo = Texto("Subtitulo", conteudo, new Vector2(0f, 401f),
             new Vector2(1400f, 36f), encerramento
-                ? string.IsNullOrEmpty(campeao) ? "PHASE COMPLETE" : "THE ROAD TO THE TITLE"
+                ? string.IsNullOrEmpty(campeao) ? "ROUND COMPLETE" : "THE ROAD TO THE TITLE"
                 : "TOURNAMENT BRACKET",
             25f, acento, true);
         subtitulo.characterSpacing = 7f;
@@ -482,7 +482,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Imagem(Caixa("DivisorRodape", conteudo, new Vector2(0f, -433f), new Vector2(1760f, 1.5f)),
             ComAlpha(acento, 0.35f));
         string rodape = foco != null && faseFoco != null
-            ? "UP NEXT  |  " + NomeFase(faseFoco.vagas) + "  |  GAME " + (foco.indice + 1)
+            ? "UP NEXT  |  " + NomeFase(faseFoco.vagas) + "  |  MATCH " + (foco.indice + 1)
             : encerramento && !string.IsNullOrEmpty(campeao) ? "ONE CHAMPION. ONE UNFORGETTABLE JOURNEY."
             : "WINNERS ADVANCE  |  TBD: TO BE DECIDED  |  BYE: AUTOMATIC ADVANCE";
         Texto("Rodape", conteudo, new Vector2(0f, -474f), new Vector2(1720f, 45f), rodape,
@@ -690,7 +690,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
     {
         Texto("UpNext", destaque, new Vector2(0f, 310f), new Vector2(1300f, 60f), "UP NEXT", 48f, acento, true);
         Texto("Etapa", destaque, new Vector2(0f, 246f), new Vector2(1400f, 50f),
-            (fase != null ? NomeFase(fase.vagas) : "KNOCKOUT STAGE") + "  |  GAME " + (jogo.indice + 1),
+            (fase != null ? NomeFase(fase.vagas) : "KNOCKOUT STAGE") + "  |  MATCH " + (jogo.indice + 1),
             29f, discreto, true);
         Texto("Versus", destaque, new Vector2(0f, 5f), new Vector2(160f, 100f), "VS", 67f, acento, true);
         Linha(destaque, new Vector2(-110f, -116f), new Vector2(110f, -116f), ComAlpha(acento, 0.5f));

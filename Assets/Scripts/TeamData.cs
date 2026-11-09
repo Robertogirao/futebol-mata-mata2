@@ -12,7 +12,7 @@ public enum PosturaTatica
 public class JogadorDados
 {
     [Header("Identificação")]
-    public string nomeJogador = "Nome do Jogador";
+    public string nomeJogador = "Player Name";
     [HideInInspector]
     public int numeroCamisa = 10;
     public Sprite foto512x512;
@@ -37,7 +37,7 @@ public class JogadorDados
 public class TeamData : ScriptableObject
 {
     [Header("Dados Básicos da Equipe")]
-    public string nomeEquipe = "Nome do Time";
+    public string nomeEquipe = "Team Name";
     public string sigla = "BRA";
     public Sprite escudoOuBandeira;
 
