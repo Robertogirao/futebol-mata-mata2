@@ -73,6 +73,14 @@ public class TournamentManager : MonoBehaviour
     public bool mostrarAbertura = true;
     public AberturaJogoUI aberturaJogoUI;
 
+    [Header("Apresentação dos jogadores na arena")]
+    [Min(0f)]
+    [Tooltip("Segundos com as fichas ampliadas no centro, antes do início da partida.")]
+    public float tempoApresentacaoJogadores = 5f;
+
+    [Min(0.1f)]
+    public float tempoDeslocamentoFichas = 0.8f;
+
     [Header("Ritmo entre os jogos")]
     public float intervaloEntreJogos = 4f;
 
@@ -807,17 +815,21 @@ public class TournamentManager : MonoBehaviour
             }
             else
             {
-                IniciarJogoPreparado(
-                    confronto,
-                    duracao,
-                    titularesA,
-                    titularesB,
-                    corA,
-                    corB,
-                    geracao,
-                    numero,
-                    total,
-                    false);
+                Coroutine iniciada = StartCoroutine(
+                    RodarApresentacaoJogadores(
+                        confronto,
+                        duracao,
+                        titularesA,
+                        titularesB,
+                        corA,
+                        corB,
+                        geracao,
+                        numero,
+                        total,
+                        false));
+
+                if (PreparacaoAtual(confronto, geracao))
+                    rotinaAbertura = iniciada;
             }
         }
         catch (Exception e)
@@ -840,6 +852,12 @@ public class TournamentManager : MonoBehaviour
             preparandoPartida &&
             geracao == versaoAbertura &&
             confrontoEmAndamento == confronto;
+    }
+
+    public bool EstaPreparandoConfronto(Confronto confronto)
+    {
+        return preparandoPartida &&
+            ReferenceEquals(confrontoEmAndamento, confronto);
     }
 
     private IEnumerator RodarAbertura(
@@ -938,7 +956,7 @@ public class TournamentManager : MonoBehaviour
             yield break;
         }
 
-        IniciarJogoPreparado(
+        yield return RodarApresentacaoJogadores(
             confronto,
             duracao,
             titularesA,
@@ -951,7 +969,7 @@ public class TournamentManager : MonoBehaviour
             true);
     }
 
-    private void IniciarJogoPreparado(
+    private IEnumerator RodarApresentacaoJogadores(
         Confronto confronto,
         float duracao,
         List<JogadorDados> titularesA,
@@ -962,6 +980,110 @@ public class TournamentManager : MonoBehaviour
         int numero,
         int total,
         bool revelarArena)
+    {
+        if (!PreparacaoAtual(confronto, geracao)) yield break;
+
+        var interfacePartida = UniversalUI.Instance;
+        IEnumerator animacao = null;
+        Exception falhaPreparacao = null;
+        try
+        {
+            if (interfacePartida == null ||
+                !interfacePartida.isActiveAndEnabled ||
+                !interfacePartida.PrepararApresentacaoJogadores())
+            {
+                throw new InvalidOperationException(
+                    "Não foi possível preparar as fichas dos jogadores no Canvas.");
+            }
+
+            Time.timeScale = 0f;
+            animacao = interfacePartida.ExibirApresentacaoJogadores(
+                tempoApresentacaoJogadores, tempoDeslocamentoFichas);
+            if (revelarArena && aberturaEmUso != null)
+                aberturaEmUso.RevelarArena();
+        }
+        catch (Exception e)
+        {
+            falhaPreparacao = e;
+        }
+
+        if (falhaPreparacao != null)
+        {
+            CancelarAbertura();
+            Debug.LogError("Falha na apresentação dos jogadores: " +
+                falhaPreparacao.Message, this);
+            yield break;
+        }
+
+        // No mata-mata, o controlador revela a cortina após aceitar o confronto.
+        // As fichas já estão centralizadas neste primeiro frame.
+        yield return null;
+        while (PreparacaoAtual(confronto, geracao) &&
+            ((revelarArena && aberturaEmUso != null && aberturaEmUso.EstaExibindo) ||
+             (modoMataMata && mataMata != null && mataMata.apresentacao != null &&
+              mataMata.apresentacao.EstaExibindo)))
+        {
+            yield return null;
+        }
+
+        if (!PreparacaoAtual(confronto, geracao)) yield break;
+
+        while (PreparacaoAtual(confronto, geracao))
+        {
+            bool continuar = false;
+            object passo = null;
+            Exception falha = null;
+            try
+            {
+                if (interfacePartida == null ||
+                    interfacePartida != UniversalUI.Instance ||
+                    !interfacePartida.isActiveAndEnabled)
+                    throw new InvalidOperationException("UniversalUI indisponível.");
+
+                continuar = animacao.MoveNext();
+                if (continuar) passo = animacao.Current;
+            }
+            catch (Exception e)
+            {
+                falha = e;
+            }
+
+            if (falha != null)
+            {
+                CancelarAbertura();
+                Debug.LogError("Falha na apresentação dos jogadores: " +
+                    falha.Message, this);
+                yield break;
+            }
+
+            if (!continuar) break;
+            yield return passo;
+        }
+
+        if (!PreparacaoAtual(confronto, geracao)) yield break;
+
+        if (!interfacePartida.ApresentacaoJogadoresConcluida)
+        {
+            CancelarAbertura();
+            Debug.LogWarning("A apresentação dos jogadores foi interrompida. " +
+                "A partida não foi iniciada.", this);
+            yield break;
+        }
+
+        IniciarJogoPreparado(confronto, duracao, titularesA, titularesB,
+            corA, corB, geracao, numero, total);
+    }
+
+    private void IniciarJogoPreparado(
+        Confronto confronto,
+        float duracao,
+        List<JogadorDados> titularesA,
+        List<JogadorDados> titularesB,
+        Color corA,
+        Color corB,
+        int geracao,
+        int numero,
+        int total)
     {
         if (!PreparacaoAtual(
             confronto, geracao))
@@ -991,12 +1113,6 @@ public class TournamentManager : MonoBehaviour
                 titularesB,
                 corA,
                 corB);
-
-            if (revelarArena &&
-                aberturaEmUso != null)
-            {
-                aberturaEmUso.RevelarArena();
-            }
 
             preparandoPartida = false;
             rotinaAbertura = null;
@@ -1037,6 +1153,9 @@ public class TournamentManager : MonoBehaviour
         }
 
         aberturaEmUso = null;
+
+        if (UniversalUI.Instance != null)
+            UniversalUI.Instance.CancelarApresentacaoJogadores();
 
         if (!preparandoPartida)
         {

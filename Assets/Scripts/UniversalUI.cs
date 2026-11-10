@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 
 public class UniversalUI : MonoBehaviour
@@ -61,6 +62,11 @@ public class UniversalUI : MonoBehaviour
 
     private LayoutJogadorUnicoUI layoutJogadorUnico;
 
+    public bool ApresentacaoJogadoresConcluida
+    {
+        get { return layoutJogadorUnico != null && layoutJogadorUnico.ApresentacaoConcluida; }
+    }
+
     private int golsA = 0;
     private int golsB = 0;
     private float tempoAtual = 0f;
@@ -84,6 +90,11 @@ public class UniversalUI : MonoBehaviour
 
         PrepararAudio();
         PrepararEscalacao();
+    }
+
+    private void OnDisable()
+    {
+        CancelarApresentacaoJogadores();
     }
 
     private void PrepararAudio()
@@ -142,6 +153,7 @@ public class UniversalUI : MonoBehaviour
         List<JogadorDados> titularesA,
         List<JogadorDados> titularesB)
     {
+        CancelarApresentacaoJogadores();
         // Uma partida nova começa sem banners antigos.
         if (GoalBannerUI.Instance != null)
         {
@@ -189,6 +201,25 @@ public class UniversalUI : MonoBehaviour
         }
 
         Time.timeScale = 1f;
+    }
+
+    public bool PrepararApresentacaoJogadores()
+    {
+        return isActiveAndEnabled && layoutJogadorUnico != null &&
+            layoutJogadorUnico.PrepararApresentacao();
+    }
+
+    public IEnumerator ExibirApresentacaoJogadores(float tempoLeitura, float tempoDeslocamento)
+    {
+        if (!isActiveAndEnabled || layoutJogadorUnico == null) yield break;
+        IEnumerator animacao = layoutJogadorUnico.ExibirApresentacao(tempoLeitura, tempoDeslocamento);
+        while (isActiveAndEnabled && animacao.MoveNext())
+            yield return animacao.Current;
+    }
+
+    public void CancelarApresentacaoJogadores()
+    {
+        if (layoutJogadorUnico != null) layoutJogadorUnico.CancelarApresentacao();
     }
 
     private void PrepararEscalacao()
@@ -273,6 +304,7 @@ public class UniversalUI : MonoBehaviour
     public void CancelarPartida()
     {
         StopAllCoroutines();
+        CancelarApresentacaoJogadores();
         partidaEmAndamento = false;
         partidaEncerrando = false;
         emProrrogacao = false;

@@ -1,4 +1,4 @@
-# Unity: generated files and local settings
+# Unity: arquivos gerados e preferências locais
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -9,15 +9,12 @@
 /[Mm]emoryCaptures/
 /[Rr]ecordings/
 
-# IDE and compiler output
+# IDEs e saída de compilação
 /.vs/
 /.idea/
 /.vscode/
 .gradle/
 *.csproj
-!/Tests/AntiStick/*.csproj
-/Tests/**/bin/
-/Tests/**/obj/
 *.unityproj
 *.sln
 *.slnx
@@ -33,12 +30,12 @@
 *.opendb
 *.VC.db
 
-# Unity crash reports and exported packages
+# Relatórios locais e pacotes exportados
 sysinfo.txt
 *.stackdump
 *.unitypackage
 
-# Operating systems
+# Sistema operacional
 .DS_Store
 ._*
 Thumbs.db

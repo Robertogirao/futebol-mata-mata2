@@ -365,7 +365,7 @@ MonoBehaviour:
   numeroPersonalizado: 99
   nomePersonalizado: 
   removerBolasPresas: 1
-  tempoMaximoDeVida: 8
+  tempoMaximoDeVida: 0.5
   raioConsideradoPreso: 0.25
   dadosJogador:
     nomeJogador: Player Name

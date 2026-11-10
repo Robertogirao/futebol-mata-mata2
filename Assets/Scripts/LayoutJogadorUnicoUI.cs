@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,6 +10,10 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 {
     private sealed class Ficha
     {
+        public RectTransform retangulo;
+        public Vector2 minimoOriginal;
+        public Vector2 maximoOriginal;
+        public Vector3 escalaOriginal;
         public Image faixa;
         public Image escudo;
         public Image foto;
@@ -20,6 +25,10 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
     private Ficha fichaA;
     private Ficha fichaB;
     private TMP_FontAsset fonte;
+    private int versaoApresentacao;
+    private bool apresentacaoPreparada;
+
+    public bool ApresentacaoConcluida { get; private set; }
 
     public static LayoutJogadorUnicoUI Criar(Canvas canvas, TMP_FontAsset fonte)
     {
@@ -45,9 +54,113 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         TeamData timeA, TeamData timeB,
         List<JogadorDados> titularesA, List<JogadorDados> titularesB)
     {
+        CancelarApresentacao();
         Preencher(fichaA, timeA, PrimeiroValido(titularesA), "TEAM A");
         Preencher(fichaB, timeB, PrimeiroValido(titularesB), "TEAM B");
         gameObject.SetActive(true);
+    }
+
+    public bool PrepararApresentacao()
+    {
+        CancelarApresentacao();
+        if (!isActiveAndEnabled || fichaA == null || fichaB == null ||
+            fichaA.retangulo == null || fichaB.retangulo == null)
+            return false;
+
+        apresentacaoPreparada = true;
+        PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), 0f);
+        PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), 0f);
+        return true;
+    }
+
+    public IEnumerator ExibirApresentacao(float tempoLeitura, float tempoDeslocamento)
+    {
+        if (!apresentacaoPreparada || !isActiveAndEnabled)
+            yield break;
+
+        int minhaVersao;
+        unchecked { minhaVersao = ++versaoApresentacao; }
+        ApresentacaoConcluida = false;
+        float leitura = DuracaoValida(tempoLeitura);
+        float deslocamento = DuracaoValida(tempoDeslocamento);
+        double tempo = 0d;
+
+        while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < leitura)
+        {
+            yield return null;
+            tempo += PassoTempo();
+        }
+
+        if (!SequenciaAtual(minhaVersao)) yield break;
+        tempo = 0d;
+        while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < deslocamento)
+        {
+            float progresso = Mathf.SmoothStep(0f, 1f, (float)tempo / deslocamento);
+            PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), progresso);
+            PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), progresso);
+            yield return null;
+            tempo += PassoTempo();
+        }
+
+        if (!SequenciaAtual(minhaVersao)) yield break;
+        RestaurarFicha(fichaA);
+        RestaurarFicha(fichaB);
+        apresentacaoPreparada = false;
+        ApresentacaoConcluida = true;
+    }
+
+    public void CancelarApresentacao()
+    {
+        unchecked { versaoApresentacao++; }
+        apresentacaoPreparada = false;
+        ApresentacaoConcluida = false;
+        RestaurarFicha(fichaA);
+        RestaurarFicha(fichaB);
+    }
+
+    private void OnDisable()
+    {
+        CancelarApresentacao();
+    }
+
+    private bool SequenciaAtual(int minhaVersao)
+    {
+        return this != null && isActiveAndEnabled && apresentacaoPreparada &&
+            minhaVersao == versaoApresentacao && fichaA != null && fichaB != null &&
+            fichaA.retangulo != null && fichaB.retangulo != null;
+    }
+
+    private static void PosicionarFicha(Ficha ficha, Vector2 centro, float progresso)
+    {
+        Vector2 metade = (ficha.maximoOriginal - ficha.minimoOriginal) * 0.5f;
+        ficha.retangulo.anchorMin = Vector2.Lerp(centro - metade, ficha.minimoOriginal, progresso);
+        ficha.retangulo.anchorMax = Vector2.Lerp(centro + metade, ficha.maximoOriginal, progresso);
+        ficha.retangulo.offsetMin = Vector2.zero;
+        ficha.retangulo.offsetMax = Vector2.zero;
+        ficha.retangulo.localScale = Vector3.Lerp(
+            Vector3.Scale(ficha.escalaOriginal, new Vector3(1.75f, 1.75f, 1f)),
+            ficha.escalaOriginal, progresso);
+    }
+
+    private static void RestaurarFicha(Ficha ficha)
+    {
+        if (ficha == null || ficha.retangulo == null) return;
+        ficha.retangulo.anchorMin = ficha.minimoOriginal;
+        ficha.retangulo.anchorMax = ficha.maximoOriginal;
+        ficha.retangulo.offsetMin = Vector2.zero;
+        ficha.retangulo.offsetMax = Vector2.zero;
+        ficha.retangulo.localScale = ficha.escalaOriginal;
+    }
+
+    private static float DuracaoValida(float segundos)
+    {
+        return float.IsNaN(segundos) || float.IsInfinity(segundos) ? 0f : Mathf.Max(0f, segundos);
+    }
+
+    private static float PassoTempo()
+    {
+        float passo = Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
+        return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
     }
 
     private Ficha CriarFicha(string nome, Vector2 minimo, Vector2 maximo)
@@ -58,6 +171,10 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         fundo.raycastTarget = false;
 
         Ficha ficha = new Ficha();
+        ficha.retangulo = bloco;
+        ficha.minimoOriginal = minimo;
+        ficha.maximoOriginal = maximo;
+        ficha.escalaOriginal = bloco.localScale;
         ficha.faixa = CriarImagem("Cor_Time", bloco,
             new Vector2(0f, 0.985f), Vector2.one);
         Image linha = CriarImagem("Divisor", bloco,

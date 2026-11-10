@@ -244,12 +244,31 @@ public sealed class MataMataCampeonato : MonoBehaviour
                 gerenciador.textoTituloFase.text = MataMataModelo.NomeFase(
                     arquivoAtual.estado.fases[atual.fase].vagas);
             gerenciador.JogarConfronto(confrontoAtual, float.MaxValue);
-            Exigir(UniversalUI.Instance.partidaEmAndamento, "A partida não iniciou. Confira a arena e o prefab da bola.");
+            Exigir(gerenciador.EstaPreparandoConfronto(confrontoAtual),
+                "A partida não foi preparada. Confira a arena e o prefab da bola.");
             apresentacao.RevelarArena();
         }))
         {
             string erro = ultimoErro;
             Interromper(erro);
+            yield break;
+        }
+
+        // O cronômetro e as bolas só são liberados após a apresentação das fichas.
+        while (this != null && isActiveAndEnabled && token == versaoRotina &&
+               gerenciador != null && gerenciador.EstaPreparandoConfronto(confrontoAtual))
+            yield return null;
+
+        if (this == null || !isActiveAndEnabled || token != versaoRotina)
+            yield break;
+
+        if (!Tentar(() => Exigir(UniversalUI.Instance != null &&
+            UniversalUI.Instance.partidaEmAndamento,
+            "A partida não iniciou após a apresentação dos jogadores. Confira a arena.")))
+        {
+            string erro = ultimoErro;
+            Interromper(erro);
+            yield break;
         }
         ocupado = false;
         rotina = null;

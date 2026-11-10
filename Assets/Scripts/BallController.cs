@@ -33,7 +33,7 @@ public class BallController : MonoBehaviour
     [InspectorName("Tempo Preso Para Remover")]
     [Min(0.1f)]
     [Tooltip("Segundos sem sair da área de detecção antes de remover a bola. Não é mais um limite total de vida.")]
-    public float tempoMaximoDeVida = 8f;
+    public float tempoMaximoDeVida = 0.5f;
 
     [Min(0.01f)]
     [Tooltip("Raio em unidades de mundo. Ao sair dessa área, o contador zera. Use um valor pequeno para preservar trajetórias lentas.")]

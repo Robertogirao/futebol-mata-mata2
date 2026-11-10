@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Anderlecht
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Anderlecht
+  sigla: AND
+  escudoOuBandeira: {fileID: 21300000, guid: 947f8cabc23d7f04dbf31449df6e47bc, type: 3}
+  overall: 75
+  corPrincipal: {r: 0.23529413, g: 0.18823531, b: 0.5372549, a: 1}
+  corSecundaria: {r: 0.63529414, g: 0.62352943, b: 0.7411765, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: "Mihajlo Cvetkovi\u0107"
+    numeroCamisa: 16
+    foto512x512: {fileID: -3902058788809802688, guid: bdf4c8c81a974e446a9b81ebadf0b41f, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

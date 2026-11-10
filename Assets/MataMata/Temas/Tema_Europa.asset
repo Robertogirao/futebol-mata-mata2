@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tema_Europa
   m_EditorClassIdentifier: Assembly-CSharp::TemaCompeticao
   competicaoId: europa
-  nomeCompeticao: EUROPA LEAGUE
+  nomeCompeticao: EUROPA LEAGUE 26/27
   corPrimaria: {r: 0.025, g: 0.028, b: 0.035, a: 1}
   corSecundaria: {r: 0.16, g: 0.075, b: 0.025, a: 1}
   corDestaque: {r: 1, g: 0.45, b: 0.04, a: 1}
@@ -23,8 +23,10 @@ MonoBehaviour:
   fundoChaveamento: {fileID: 21300000, guid: 8555d3fc7356446f86d03dfd08d9ba13, type: 3}
   logoCompeticao: {fileID: 21300000, guid: f0f9497f13a84a34b96098e94ea921bc, type: 3}
   logoCanal: {fileID: 4855796935591688104, guid: ad156cc26f25ca747a789d97728ab529, type: 3}
-  fonteTitulo: {fileID: 11400000, guid: 4d4833c87e04f3a4b980330701066f9d, type: 2}
+  fonteTitulo: {fileID: 11400000, guid: e389b8f1955c2e44d9e6be7eae700c5b, type: 2}
   fonteTexto: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  escalaFonteTitulo: 1
+  escalaFonteTexto: 1
   somAbertura: {fileID: 0}
   fundoArena: {fileID: 0}
   campo: {fileID: -4329228532589240902, guid: 2de5abc548f242c288f75e8357ac3e02, type: 3}
