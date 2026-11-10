@@ -6,10 +6,10 @@ As fichas aparecem ampliadas no centro da arena por **5 segundos** e retornam ao
 
 ## Baixar
 
-Os arquivos estão em [Releases](https://github.com/Robertogirao/futebol-mata-mata2/releases/latest):
+Baixe pelos links abaixo ou pela [página da versão](https://github.com/Robertogirao/futebol-mata-mata2/releases/latest):
 
-- **PROJETO_CORRIGIDO.zip**: cópia completa; extraia e abra a pasta `Projeto` no Unity Hub.
-- **ATUALIZACAO_BOLAS_E_ABERTURA.zip**: atualização do projeto atual; com o Unity fechado, copie a pasta `Assets` do pacote sobre a do seu projeto, substituindo os arquivos correspondentes.
+- [**PROJETO_CORRIGIDO.zip**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/v2026.11.10-bolas-abertura/Downloads/PROJETO_CORRIGIDO.zip): cópia completa; extraia e abra a pasta `Projeto` no Unity Hub.
+- [**ATUALIZACAO_BOLAS_E_ABERTURA.zip**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/v2026.11.10-bolas-abertura/Downloads/ATUALIZACAO_BOLAS_E_ABERTURA.zip): atualização do projeto atual; com o Unity fechado, copie a pasta `Assets` do pacote sobre a do seu projeto, substituindo os arquivos correspondentes.
 
 ## Abrir o código deste repositório
 
