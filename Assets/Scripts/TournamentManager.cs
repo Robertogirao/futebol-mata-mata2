@@ -73,12 +73,13 @@ public class TournamentManager : MonoBehaviour
     public bool mostrarAbertura = true;
     public AberturaJogoUI aberturaJogoUI;
 
-    [Header("Apresentação dos jogadores na arena")]
+    [Header("Apresentação dos jogadores na arena (liga)")]
     [Min(0f)]
-    [Tooltip("Segundos com as fichas ampliadas no centro, antes do início da partida.")]
+    [Tooltip("Segundos com as fichas ampliadas no centro. No mata-mata, use Tempo Fotos Jogadores no MataMataCampeonato.")]
     public float tempoApresentacaoJogadores = 5f;
 
     [Min(0.1f)]
+    [Tooltip("Segundos de retorno das fichas aos cantos. No mata-mata, use Tempo Transição Fotos no MataMataCampeonato.")]
     public float tempoDeslocamentoFichas = 0.8f;
 
     [Header("Ritmo entre os jogos")]
@@ -997,8 +998,12 @@ public class TournamentManager : MonoBehaviour
             }
 
             Time.timeScale = 0f;
+            float tempoFotos = modoMataMata && mataMata != null
+                ? mataMata.tempoFotosJogadores : tempoApresentacaoJogadores;
+            float tempoTransicao = modoMataMata && mataMata != null
+                ? mataMata.tempoTransicaoFotos : tempoDeslocamentoFichas;
             animacao = interfacePartida.ExibirApresentacaoJogadores(
-                tempoApresentacaoJogadores, tempoDeslocamentoFichas);
+                tempoFotos, tempoTransicao);
             if (revelarArena && aberturaEmUso != null)
                 aberturaEmUso.RevelarArena();
         }

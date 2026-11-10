@@ -44,8 +44,21 @@ public sealed class MataMataCampeonato : MonoBehaviour
     [Header("Gravação e continuidade")]
     public bool salvarProgresso = true;
     public bool gravarSomenteUmaFase = true;
+
+    [Header("Duração das apresentações (segundos)")]
     [Min(0f)] public float tempoInicio = 15f;
     [Min(0f)] public float tempoPreJogo = 10f;
+
+    [Min(0f)]
+    [InspectorName("Tempo Fotos Jogadores")]
+    [Tooltip("Segundos com as fichas ampliadas no centro da arena, após abrir a cortina. O jogo permanece pausado.")]
+    public float tempoFotosJogadores = 5f;
+
+    [Min(0f)]
+    [InspectorName("Tempo Transição Fotos")]
+    [Tooltip("Segundos para as fichas diminuírem e voltarem aos cantos. O cronômetro, o apito e as bolas começam depois.")]
+    public float tempoTransicaoFotos = 0.8f;
+
     [Min(0f)] public float tempoFinal = 20f;
 
     [Header("Regravação de uma partida")]

@@ -1,29 +1,42 @@
-PROJETO UNITY — CORREÇÕES DAS BOLAS E ABERTURA DOS JOGADORES
+PROJETO UNITY — TROFÉU DA COMPETIÇÃO E CONTROLE DAS FOTOS
 
 O QUE FOI AJUSTADO
 
-1. Bolas sem atividade
-O tempo estava em 8 segundos no script e no prefab da bola. Ambos agora
-estão em 0,5 segundo. O contador reinicia quando a bola sai da área de
-observação de 0,25 unidade. Assim, uma bola parada ou presa nessa área
-é removida; bolas que continuam se deslocando reiniciam a observação.
-O contador não avança enquanto a partida está congelada.
+1. Troféu central
+O centro do chaveamento, a final e a apresentação do campeão usam a
+mesma imagem de Logo Competição já configurada no tema e exibida no
+topo esquerdo. A imagem preserva suas cores e proporções. O Logo Canal
+continua no topo oposto. Não é necessário cadastrar outra imagem.
+Se Logo Competição estiver vazio, permanece o desenho genérico.
 
-2. Apresentação adicional na arena
-Depois do anúncio dos times e da abertura da cortina:
-- As mesmas fichas dos jogadores aparecem ampliadas em 1,75 vez,
-  centralizadas, uma de cada lado.
-- Permanecem no centro por 5 segundos completos, com o jogo pausado.
-- Deslizam e diminuem até as posições atuais nos cantos, em 0,8 segundo.
-- Só então começam o cronômetro, o apito inicial e os lançamentos.
-A sequência foi integrada à liga e ao mata-mata e usa o tempo de captura
-quando o Unity Recorder está gravando.
+2. Controle do tempo das fotos no mata-mata
+Na Hierarchy, selecione TournamentManager. No Inspector, procure o
+componente Mata Mata Campeonato (Script), seção Duração das
+apresentações (segundos). Os controles ficam juntos, nesta ordem:
+- Tempo Inicio: apresentação inicial da competição.
+- Tempo Pre Jogo: apresentação do próximo confronto.
+- Tempo Fotos Jogadores: permanência das fichas ampliadas no centro.
+- Tempo Transição Fotos: tempo para diminuir e levar fichas aos cantos.
+- Tempo Final: apresentação de encerramento.
+
+Os novos controles começam com 5 segundos de fotos e 0,8 segundo de
+transição. Ajuste conforme desejar, fora do Play, e salve a cena.
+Durante as fotos e a transição, a partida permanece pausada. O
+cronômetro, o apito e as bolas começam ao terminar a transição.
+Na liga, continuam valendo os controles de fotos do TournamentManager.
+
+3. Bolas sem atividade e abertura dos jogadores
+Este pacote também inclui as correções anteriores: bolas sem sair da
+área de observação de 0,25 unidade são removidas após 0,5 segundo de
+tempo do jogo, e o contador reinicia ao se deslocarem. O tempo não
+avança com a partida congelada. As fichas dos jogadores aparecem
+ampliadas em 1,75 vez antes do início, na liga e no mata-mata.
 
 COMO USAR O PROJETO COMPLETO
 
 1. Extraia PROJETO_CORRIGIDO.zip em uma nova pasta.
 2. No Unity Hub, adicione a pasta Projeto que está dentro do ZIP.
-3. Abra com Unity 6000.4.11f1, a versão registrada no seu backup.
+3. Abra com Unity 6000.4.11f1, a versão do seu backup.
 4. Aguarde a importação dos assets e pacotes antes de entrar em Play.
 
 COMO ATUALIZAR O SEU PROJETO ATUAL
@@ -33,49 +46,48 @@ COMO ATUALIZAR O SEU PROJETO ATUAL
 3. Copie a pasta Assets do pacote para a raiz do seu projeto atual
    (a pasta que já contém Assets, Packages e ProjectSettings).
 4. Aceite substituir os arquivos correspondentes e reabra o Unity.
-O pacote contém os 6 arquivos alterados e seus .meta originais.
+O pacote contém os 7 arquivos alterados e os .meta originais.
+Os novos controles aparecem automaticamente no componente já existente.
+As cenas e os temas não precisam ser substituídos para aplicar a atualização.
 Basta escolher uma das duas opções acima.
 
-AJUSTES NO INSPECTOR
+ONDE CONFIGURAR A IMAGEM DO TROFÉU
 
-No TournamentManager, seção Apresentação dos jogadores na arena:
-- Tempo Apresentacao Jogadores = 5
-- Tempo Deslocamento Fichas = 0.8
-No prefab Assets/Prefabs/Bola_Jogador, componente BallController:
-- Remover Bolas Presas = marcado
-- Tempo Preso Para Remover = 0.5
-- Raio Considerado Preso = 0.25
-Os valores já vêm definidos. Não é necessário criar objetos ou ligar
-novas referências nas cenas.
+No componente Mata Mata Campeonato, abra o asset indicado no campo
+Tema. Em Imagens da transmissão, use Logo Competicao para a imagem
+do troféu e Logo Canal para o canal. A imagem do troféu é compartilhada
+entre o topo e o centro do chaveamento, inclusive na final e no campeão.
 
 VALIDAÇÃO
 
-Os scripts C# alterados foram compilados e sua lógica passou em testes
-executáveis com substitutos das APIs do Unity: 11 verificações das bolas,
-211 da apresentação/início e 33 do fluxo do mata-mata. Foram verificados
-movimento, pausa, cortinas, início tardio, cancelamento e repetição.
-O Unity não está instalado no ambiente desta correção: a compilação com
-as bibliotecas reais, a aparência e a física em Play Mode precisam ser
-conferidas no seu editor. Os testes com substitutos não são Play Mode.
+Os scripts reais foram compilados e exercitados em C# com substitutos
+das APIs Unity e TMPro. Foram conferidos os tempos personalizados,
+seleção dos controles de liga e mata-mata, início tardio do jogo,
+cancelamentos e escolha do sprite do troféu.
+O Unity não está instalado neste ambiente: a aparência, a física e a
+compilação com as bibliotecas reais ainda precisam ser conferidas no
+seu editor. Os testes com substitutos não equivalem a Play Mode.
+Os ZIPs tiveram integridade CRC e hashes SHA256 conferidos.
 
 CONFERÊNCIA RÁPIDA NO UNITY
 
-- Teste uma cena de liga e uma de mata-mata.
-- Confira as fichas no centro por 5 segundos após abrir a cortina.
-- Durante a apresentação, o relógio deve permanecer em 00:00 e sem bolas.
-- Após a transição para os cantos, confira o apito e o início do jogo.
-- Confira que bolas presas desaparecem após cerca de 0,5 segundo.
-- Se for gravar, faça um trecho curto com o Recorder para revisar o ritmo.
+- Confira o mesmo troféu no topo e no centro de uma cena de mata-mata.
+- Troque o tema e confira a imagem da nova competição.
+- Ajuste Tempo Fotos Jogadores para 2 segundos e teste um confronto.
+- Durante fotos e transição, confira relógio em 00:00 e sem bolas.
+- Depois da transição, confira apito, relógio e lançamentos.
+- Grave um trecho curto com Recorder para revisar o ritmo.
 
 CONTEÚDO DO BACKUP
 
 Como no backup recebido, a cópia completa contém o projeto Unity,
-mas não contém temporadas salvas nem gravações externas. Para manter
-os dados locais do seu projeto atual, use a opção de atualização acima.
+mas não contém temporadas salvas nem gravações externas. Aplique o
+pacote de atualização ao seu projeto para manter seus dados locais.
 
-ARQUIVOS ALTERADOS
+ARQUIVOS ALTERADOS EM RELAÇÃO AO BACKUP ORIGINAL
 Assets/Prefabs/Bola_Jogador.prefab
 Assets/Scripts/BallController.cs
+Assets/Scripts/ChaveamentoUI.cs
 Assets/Scripts/LayoutJogadorUnicoUI.cs
 Assets/Scripts/MataMataCampeonato.cs
 Assets/Scripts/TournamentManager.cs

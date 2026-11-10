@@ -472,11 +472,12 @@ public sealed class ChaveamentoUI : MonoBehaviour
 
         quadro = TelaInteira("Chaveamento", conteudo);
         grupoQuadro = Grupo(quadro);
-        ConstruirQuadro(fases, focoQuadro, campeao);
+        Sprite trofeuCompeticao = tema != null ? tema.logoCompeticao : null;
+        ConstruirQuadro(fases, focoQuadro, campeao, trofeuCompeticao);
         destaque = TelaInteira("Destaque", conteudo);
         grupoDestaque = Grupo(destaque);
         grupoDestaque.alpha = 0f;
-        if (encerramento && !string.IsNullOrEmpty(campeao)) ConstruirCampeao(campeao);
+        if (encerramento && !string.IsNullOrEmpty(campeao)) ConstruirCampeao(campeao, trofeuCompeticao);
         else if (foco != null) ConstruirConfronto(foco, faseFoco);
 
         Imagem(Caixa("DivisorRodape", conteudo, new Vector2(0f, -433f), new Vector2(1760f, 1.5f)),
@@ -495,7 +496,8 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Imagem(progresso, acento);
     }
 
-    private void ConstruirQuadro(List<FaseVista> fases, JogoVista foco, string campeao)
+    private void ConstruirQuadro(List<FaseVista> fases, JogoVista foco, string campeao,
+        Sprite trofeuCompeticao)
     {
         RectTransform linhas = TelaInteira("Conexoes", quadro);
         RectTransform jogos = TelaInteira("Partidas", quadro);
@@ -569,7 +571,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
             float tituloFinalY = Mathf.Max(64f, CentroQuadro + altura * 0.5f + 40f);
             Texto("Final", quadro, new Vector2(0f, tituloFinalY), new Vector2(larguraCentro, 52f), "FINAL",
                 colunas >= 3 ? 30f : 38f, acento, true);
-            Trofeu(quadro, new Vector2(0f, 202f), colunas >= 4 ? 0.62f : 0.85f);
+            Trofeu(quadro, new Vector2(0f, 202f), colunas >= 4 ? 0.62f : 0.85f, trofeuCompeticao);
             EquipeVista vencedor = ObterEquipe(campeao);
             if (vencedor != null)
             {
@@ -592,7 +594,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
         {
             Texto("Final", quadro, new Vector2(0f, 170f), new Vector2(900f, 80f), "THE FINAL",
                 50f, acento, true);
-            Trofeu(quadro, new Vector2(0f, -267f), 0.9f);
+            Trofeu(quadro, new Vector2(0f, -267f), 0.9f, trofeuCompeticao);
         }
     }
 
@@ -715,7 +717,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
                 equipe.sigla, 88f, acento, true, TextAlignmentOptions.Center, 42f);
     }
 
-    private void ConstruirCampeao(string id)
+    private void ConstruirCampeao(string id, Sprite trofeuCompeticao)
     {
         EquipeVista equipe = ObterEquipe(id);
         if (equipe == null) return;
@@ -730,7 +732,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
             Imagem(parte, ComAlpha(i % 3 == 0 ? texto : acento, 0.35f + i % 3 * 0.12f));
             fragmentos.Add(new Fragmento { rect = parte, origem = parte.anchoredPosition, fase = i * 0.7f });
         }
-        Trofeu(destaque, new Vector2(0f, 299f), 0.68f);
+        Trofeu(destaque, new Vector2(0f, 299f), 0.68f, trofeuCompeticao);
         Texto("TituloCampeao", destaque, new Vector2(0f, 208f), new Vector2(1400f, 80f),
             "CHAMPIONS", 66f, acento, true);
         SpriteNoQuadro("EscudoCampeao", destaque, new Vector2(0f, 15f), new Vector2(260f, 260f), equipe.escudo);
@@ -937,10 +939,16 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Imagem(rect, cor);
     }
 
-    private void Trofeu(Transform pai, Vector2 posicao, float escala)
+    private void Trofeu(Transform pai, Vector2 posicao, float escala, Sprite sprite)
     {
         RectTransform trofeu = Caixa("Trofeu", pai, posicao, new Vector2(160f, 170f));
         trofeu.localScale = Vector3.one * escala;
+        if (sprite != null)
+        {
+            SpriteNoQuadro("ImagemTrofeu", trofeu, Vector2.zero, new Vector2(160f, 170f), sprite);
+            return;
+        }
+
         Color ouro = Color.Lerp(acento, new Color(1f, 0.78f, 0.30f), 0.68f);
         Imagem(Caixa("Taca", trofeu, new Vector2(0f, 32f), new Vector2(80f, 65f)), ouro);
         Imagem(Caixa("Boca", trofeu, new Vector2(0f, 67f), new Vector2(96f, 10f)), texto);
