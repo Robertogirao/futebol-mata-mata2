@@ -1,0 +1,21 @@
+{
+  "assertions_total": 376,
+  "assertions_retained": 360,
+  "new_lifecycle_assertions": 16,
+  "compiled_real_hud_sha256": "f1bf406fdaddb4be766ed86efc81e497ec6dc219cc929d3146ec6b9f4680db74",
+  "lifecycle_fixture": "enabled=true, activeInHierarchy=true, onEnableRegistered=false before and through explicit real Awake invocation",
+  "verified": [
+    "canvas created",
+    "UniversalUI.hudPokemon connected",
+    "both score text references and initial zeros",
+    "clock text reference and configured 01:30 countdown",
+    "runtime league theme and fonts",
+    "no manufactured OnEnable registration",
+    "idempotent preparation",
+    "disabled and inactive HUD do not prepare"
+  ],
+  "limits": [
+    "Unity callbacks are explicitly invoked by the C# harness.",
+    "No Unity Editor, asset import, actual callback timing, rendering or real physics test was performed."
+  ]
+}

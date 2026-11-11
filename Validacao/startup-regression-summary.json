@@ -1,0 +1,13 @@
+{
+  "assertions": 154,
+  "previous_assertions_preserved": 106,
+  "startup_assertions_added": 48,
+  "current_source_sha256": "bfbe5d7fd22801fb9f007a7bb07e5c452de6f06ddfb6b1b7baa416ab1a5ff19d",
+  "negative_control_source_commit": "04c4491c7e8626a887bc71fbae9b37849c8deaeb",
+  "negative_control_source_sha256": "b82fe7c0d0c1ab31dc331d7500d8b56b2772ba9fefac20bea3cbf2f3c6646ff5",
+  "negative_control_compile": "PASS",
+  "negative_control_execution": "EXPECTED FAIL at early Awake with exact reported error",
+  "current_controller_execution": "PASS",
+  "lifecycle_contract": "enabled and activeInHierarchy can be true before OnEnable registration; fixture registers before Start",
+  "unity_editor_executed": false
+}

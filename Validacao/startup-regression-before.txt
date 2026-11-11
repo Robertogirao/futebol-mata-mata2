@@ -1,0 +1,15 @@
+EXPECTED FAIL using previous committed LigaPokemon.cs with updated lifecycle test contract.
+
+Unhandled Exception:
+System.Exception: FAILED: early Awake prepares without requiring dependencies to have received OnEnable
+Ative os componentes da liga antes do Play.
+Ative os componentes da liga antes do Play.
+  at Harness.Check (System.Boolean value, System.String name) [0x00036] in <13480dcf857f464b9b0dc0ec6774d56f>:0 
+  at Harness.RunAwakeAndComponentGuards () [0x0007f] in <13480dcf857f464b9b0dc0ec6774d56f>:0 
+  at Harness.Main () [0x0003a] in <13480dcf857f464b9b0dc0ec6774d56f>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.Exception: FAILED: early Awake prepares without requiring dependencies to have received OnEnable
+Ative os componentes da liga antes do Play.
+Ative os componentes da liga antes do Play.
+  at Harness.Check (System.Boolean value, System.String name) [0x00036] in <13480dcf857f464b9b0dc0ec6774d56f>:0 
+  at Harness.RunAwakeAndComponentGuards () [0x0007f] in <13480dcf857f464b9b0dc0ec6774d56f>:0 
+  at Harness.Main () [0x0003a] in <13480dcf857f464b9b0dc0ec6774d56f>:0 

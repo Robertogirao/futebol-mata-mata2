@@ -12,7 +12,7 @@ Foram usados substitutos de UnityEngine, TMPro, UnityEditor e dos demais compone
 Reexecutar:
 /workspace/work/pokemon-liga/validation/ui/run.sh
 
-360 verificações aprovadas:
+376 verificações aprovadas (360 anteriores e 16 de ciclo Awake):
 - Tabelas com 10, 15 e 20 participantes contêm todas as linhas.
 - Nome da liga, pontos e resultados são mostrados sem alterar a ordenação recebida.
 - Retratos das linhas e dos confrontos correspondem ao ID estável de cada participante.
@@ -27,13 +27,14 @@ Reexecutar:
 Saída:
 PASS standings10/15/20, portraits, scores, background and canvas order
 PASS ArenaPokemon and PokemonHUD resolve LigaPokemon runtime/base themes
+PASS HUD Awake before OnEnable builds scoreboard, clock and runtime theme; disabled/inactive HUD stays unprepared
 PASS league menus retain specials and Rocket configuration
-PASS 360 assertions using five real UI/Editor source files with Unity/TMP/dependency stubs
+PASS 376 assertions using five real UI/Editor source files with Unity/TMP/dependency stubs
 
 Hashes das fontes verificadas:
 0484d84381b378878f1ce6d9c85ab8f2efac6cf0617ac9737372033266f4b988  Assets/Scripts/ClassificacaoUI.cs
 b070c6ffcda465c2ef4f9c90add2a219926492a2bbc7c7a9c3584fce47c4e5d9  Assets/Scripts/ArenaPokemon.cs
-862dc930c964002fd566f10344223e644bc7fc799476b72d0459d2158cb17f39  Assets/Scripts/PokemonHUD.cs
+f1bf406fdaddb4be766ed86efc81e497ec6dc219cc929d3146ec6b9f4680db74  Assets/Scripts/PokemonHUD.cs
 9f81316aa26725d15eaf13ec5bc4e3d6983c556f1c4b2a5c97f4906325f2803b  Assets/Editor/EventosPartidaPokemonMenu.cs
 565c326b5a70595b49896017c70b5f386da136808c15bf30c55f655960b8c7a7  Assets/Editor/LancadorEquipeRocketMenu.cs
 
@@ -42,3 +43,9 @@ Fontes compiladas diretamente de /workspace/work/github/pokemon-liga-entrega/Pro
 Compilação e todas as verificações acima passaram novamente, sem avisos do compilador de teste.
 Os stubs não expõem FindFirstObjectByType, FindObjectsSortMode nem enableWordWrapping; usos antigos seriam erros de compilação.
 São testes C# com APIs simuladas, não importação ou compilação no Unity Editor.
+
+REVALIDAÇÃO DO HUD ANTES DO ONENABLE — 2026-11-11
+Foram mantidas as 360 verificações anteriores e acrescentadas 16 verificações de ciclo de vida.
+O stub expõe onEnableRegistered como estado explicitamente controlado pela fixture. Os testes anteriores representam componentes já registrados; o novo cenário mantém HUD e UniversalUI sem registro de OnEnable antes e durante a invocação do Awake real.
+Com HUD habilitado e GameObject ativo, isActiveAndEnabled permanece false, mas Awake cria canvas, conecta hudPokemon, placares e cronômetro, usa duração configurada de 90 segundos e preserva o tema de execução da liga e suas fontes. Repetir o preparo não duplica canvas. Com HUD desabilitado ou GameObject inativo, Awake não prepara a interface.
+Nenhum OnEnable é disparado ou marcado retroativamente pelo harness. Isso simula o estado observável documentado para esse cenário; não demonstra a ordem real dos callbacks, renderização ou importação no Unity Editor, que não foi executado.

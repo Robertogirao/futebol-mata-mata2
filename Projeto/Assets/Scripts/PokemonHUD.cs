@@ -57,7 +57,7 @@ public sealed class PokemonHUD : MonoBehaviour
 
     private void Awake()
     {
-        if (isActiveAndEnabled) Preparar();
+        if (enabled && gameObject.activeInHierarchy) Preparar();
     }
 
     public bool Preparar()

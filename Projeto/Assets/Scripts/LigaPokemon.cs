@@ -139,15 +139,14 @@ public sealed class LigaPokemon : MonoBehaviour
     private void Preparar()
     {
         List<PokemonDados> usados = ConferirParticipantes();
-        Exigir(gerenciador != null && campeonato != null && classificacaoUI != null &&
-            hud != null && arena != null && interfacePartida != null,
-            "Confira os componentes da cena de liga Pokémon.");
-        Exigir(gerenciador.isActiveAndEnabled && campeonato.isActiveAndEnabled &&
-            classificacaoUI.isActiveAndEnabled && hud.isActiveAndEnabled &&
-            arena.isActiveAndEnabled && interfacePartida.isActiveAndEnabled,
-            "Ative os componentes da liga antes do Play.");
-        Exigir(!mostrarAbertura || (aberturaJogoUI != null && aberturaJogoUI.isActiveAndEnabled),
-            "Ative Abertura Jogo UI para exibir a apresentação dos participantes.");
+        ConferirComponenteConfigurado(gerenciador, nameof(TournamentManager));
+        ConferirComponenteConfigurado(campeonato, nameof(LigaCampeonato));
+        ConferirComponenteConfigurado(classificacaoUI, nameof(ClassificacaoUI));
+        ConferirComponenteConfigurado(hud, nameof(PokemonHUD));
+        ConferirComponenteConfigurado(arena, nameof(ArenaPokemon));
+        ConferirComponenteConfigurado(interfacePartida, nameof(UniversalUI));
+        if (mostrarAbertura)
+            ConferirComponenteConfigurado(aberturaJogoUI, nameof(AberturaJogoUI));
         campeonato.ligaId = ligaId;
         campeonato.temporadaId = temporadaId;
         List<string> ids = usados.Select(p => p.IdEstavel).ToList();
@@ -420,6 +419,16 @@ public sealed class LigaPokemon : MonoBehaviour
     private static bool IdentificadorValido(string texto)
     {
         return !string.IsNullOrEmpty(texto) && Regex.IsMatch(texto, @"\A[A-Za-z0-9_-]{1,80}\z");
+    }
+
+    private static void ConferirComponenteConfigurado(Behaviour componente, string nome)
+    {
+        Exigir(componente != null, "Adicione o componente " + nome + " à cena da liga Pokémon.");
+        Exigir(componente.enabled, "Ative o componente " + nome + " antes do Play.");
+        // Awake executa antes de OnEnable nas dependências. isActiveAndEnabled
+        // ainda pode ser false aqui, mesmo com o componente habilitado.
+        Exigir(componente.gameObject.activeInHierarchy,
+            "Ative o objeto " + componente.gameObject.name + " do componente " + nome + " antes do Play.");
     }
 
     private static bool TempoValido(float valor, float minimo)

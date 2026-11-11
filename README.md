@@ -2,14 +2,14 @@
 
 Projeto Unity dedicado a pontos corridos, com calendário, classificação e progresso salvos automaticamente. A configuração inicial tem **10 Pokémon e 9 rodadas**.
 
-## Correção de importação e APIs do Unity
+## Correção de inicialização e importação no Unity
 
-A versão `pokemon-liga-v2026.11.11.1` corrige duas referências de componentes inexistentes no prefab da bola e atualiza as chamadas obsoletas de busca de objetos e quebra de texto.
+A versão `pokemon-liga-v2026.11.11.2` corrige o bloqueio com a mensagem **Ative os componentes da liga antes do Play**, causado pela consulta de atividade dos componentes antes de seu `OnEnable`. A preparação do HUD também foi corrigida. Esta versão inclui as correções anteriores do prefab da bola e das APIs obsoletas.
 
 Para atualizar uma cópia já extraída, consulte [ATUALIZACAO.md](ATUALIZACAO.md).
 
-- [Baixar ZIP pequeno de atualização](https://raw.githubusercontent.com/Robertogirao/futebol-mata-mata2/pokemon-liga-v2026.11.11.1/Downloads/Pokemon_Liga_Correcao_Unity_2026-11-11.zip).
-- [Baixar projeto completo atualizado](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/pokemon-liga-v2026.11.11.1.zip).
+- [Baixar ZIP pequeno de atualização](https://raw.githubusercontent.com/Robertogirao/futebol-mata-mata2/pokemon-liga-v2026.11.11.2/Downloads/Pokemon_Liga_Correcao_Inicio_2026-11-11.zip).
+- [Baixar projeto completo atualizado](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/pokemon-liga-v2026.11.11.2.zip).
 
 ## Abrir no Unity
 

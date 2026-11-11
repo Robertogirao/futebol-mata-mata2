@@ -1,7 +1,7 @@
 {
-  "patch": "Pokemon_Liga_Correcao_Unity_2026-11-11.zip",
-  "patch_bytes": 50708,
-  "patch_sha256": "fad6e63ed0b9020d18384fddf26fb23779ca86106874d9ffff42c297f514acdb",
+  "patch": "Pokemon_Liga_Correcao_Inicio_2026-11-11.zip",
+  "patch_bytes": 51203,
+  "patch_sha256": "8829f71af8fec9167f135f2f592c4a1633acc9a1dcd298ef15898068a9d3c621",
   "changed_source_files": [
     "Projeto/Assets/Editor/EventosPartidaPokemonMenu.cs",
     "Projeto/Assets/Editor/LancadorEquipeRocketMenu.cs",
@@ -20,6 +20,10 @@
   ],
   "meta_files_included": 14,
   "zip_crc_valid": true,
-  "overlay_from_previous_release_equals_current_project_files": 4383,
+  "overlay_base_versions_verified": [
+    "pokemon-liga-v2026.11.11",
+    "pokemon-liga-v2026.11.11.1"
+  ],
+  "overlay_equals_current_project_files": 4383,
   "scene_and_project_settings_in_patch": false
 }
