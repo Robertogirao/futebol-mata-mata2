@@ -1,18 +1,24 @@
-# Atualização do gerador Pokémon
+# Atualizações do projeto Pokémon
 
-[**Baixar ZIP de atualização**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/pokemon-v2026.11.11-gerador/Downloads/ATUALIZACAO_GERADOR_POKEMON.zip)
+## Especiais Snorlax
 
-O pacote permite marcar várias gerações e vários tipos, escolher exatamente quantas cenas criar (padrão: **1**) e gerar novos confrontos a cada clique em **Gerar**, com histórico persistente para evitar repetições.
+[**Baixar ZIP — Snorlax Rage e Snorlax Gigante**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/pokemon-v2026.11.11-snorlax/Downloads/ATUALIZACAO_ESPECIAIS_SNORLAX.zip)
 
-## Aplicar no projeto Pokémon
+- Snorlax Rage: contato com o corpo ou com a onda repele e desintegra a bola.
+- A onda tem contato durante a expansão, inclusive para bolas que chegam depois.
+- Snorlax Gigante: terceiro especial separado, com usos, duração e tamanho ajustáveis; cresce a imagem e o colisor e restaura o tamanho anterior ao terminar.
+- As bolas atingidas deixam de pontuar imediatamente, recuam e se desfazem em fragmentos.
 
-1. Feche o Unity e extraia o ZIP.
-2. Copie a pasta **Assets** do pacote sobre a pasta **Assets** do projeto Pokémon, substituindo os arquivos correspondentes.
-3. Reabra o Unity e aguarde a recompilação.
-4. Use **Tools → Pokémon → Gerador de torneios**.
+Configure em **Tools → Pokémon → Configurar eventos da partida**, fora do Play, e salve a cena. **Eventos Por Partida** mantém o máximo dos dois clássicos; **Eventos Gigante Por Partida** é adicional.
 
-Use **Unity 6000.4.11f1**. O pacote contém seis scripts com seus arquivos `.meta`, instruções e relatório de validação. As cenas e os dados salvos do projeto são preservados.
+## Gerador de torneios
 
-A lógica foi compilada e testada em C# com substitutos das APIs Unity/UnityEditor, incluindo as 1.025 fichas reais do catálogo. A janela e o Play Mode ainda precisam ser conferidos no Unity.
+[**Baixar ZIP — filtros múltiplos e sorteios novos**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/pokemon-v2026.11.11-gerador/Downloads/ATUALIZACAO_GERADOR_POKEMON.zip)
 
-SHA256 do ZIP: `7e384967fd1ad42171a4f83ded0553858f2b0bc2d7d791ca27a823b4b3f635fc`.
+Marque várias gerações e tipos, escolha a quantidade exata de cenas (padrão **1**) e gere novos confrontos a cada clique, com histórico persistente para evitar repetições.
+
+## Aplicar os pacotes
+
+Feche o Unity, extraia o ZIP desejado e copie a pasta **Assets** sobre a pasta **Assets** do seu projeto Pokémon. Aceite substituir os arquivos correspondentes e aguarde a recompilação ao reabrir. Os dois pacotes são compatíveis e podem ser instalados juntos.
+
+Use **Unity 6000.4.11f1**. Cada pacote inclui instruções e relatório. A lógica foi compilada e verificada em C# com substitutos das APIs Unity/TMPro/UnityEditor; aparência e física em Play Mode ainda precisam ser conferidas no editor.
