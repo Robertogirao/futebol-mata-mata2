@@ -1,0 +1,40 @@
+VALIDAÇÃO DO EDITOR DA LIGA POKÉMON
+
+Scripts reais compilados:
+- Assets/Editor/LigaPokemonEditor.cs
+- Assets/Scripts/PokemonDados.cs
+
+Substitutos: APIs UnityEngine/UnityEditor e contrato de dados do LigaPokemon.
+O arquivo LigaPokemon.cs real foi conferido para os mesmos campos, métodos
+e propriedades públicos utilizados pelo editor. O editor Unity e Play Mode
+não foram executados.
+
+Compilação: sucesso, sem erros ou avisos.
+
+Reexecutar:
+/workspace/work/pokemon-liga/validation/editor/run.sh
+
+Cobertura:
+- Controles de nome, imagens, contagens e continuidade exibidos uma vez.
+- Atalhos10/15/20 e sincronização da lista manual fora do Play.
+- Expansão da lista conserva escolhas anteriores e deixa novas vagas vazias,
+  sem repetir automaticamente o último Pokémon.
+- Sorteio de10/15/20 sem espécies repetidas, catálogo deduplicado e intacto.
+- Quantidade insuficiente ou ficha inválida preserva a lista anterior.
+- Undo e marcação de cena após sorteio ou novo identificador de temporada.
+- Nova temporada gera ID válido e único sem tocar o arquivo de dados anterior.
+- Configuração e sorteio bloqueados durante o Play.
+- Abertura da pasta e tratamento de identificador inválido.
+- Menu abre a cena correta, respeita cancelamento e seleciona o objeto da liga.
+- Ações de validação e continuação no Play.
+
+Saída:
+PASS controls, presets, manual slots and Play lock
+PASS valid deduplicated draws, failures and immutability
+PASS new season preserves saved files and folder action
+PASS scene menu and user cancellation
+PASS validation and continuation buttons
+PASS 105 assertions on real LigaPokemonEditor/PokemonDados with UnityEditor data stubs
+
+SHA256 do editor testado: c4b03ac022148ab0d59d9ec2c36e448dbe552f838b878e35c8ab400cc22197b9
+GUID novo: e70448673e374ca5882f1c8fd8264e18 (único no projeto).

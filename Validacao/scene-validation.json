@@ -1,0 +1,32 @@
+[
+  {
+    "path": "Assets/Scenes/Ligas/Liga_Pokemon.unity",
+    "documents": 82,
+    "valid_yaml": true,
+    "local_references_missing": [],
+    "record_ids_unique": true,
+    "removed_legacy_components": true,
+    "configured_participants": 10,
+    "configured_rounds": 9
+  },
+  {
+    "path": "Assets/Pokemon/Temas/Tema_Pokemon_Liga.asset",
+    "documents": 1,
+    "valid_yaml": true
+  },
+  {
+    "path": "ProjectSettings/EditorBuildSettings.asset",
+    "documents": 1,
+    "valid_yaml": true
+  },
+  {
+    "path": "ProjectSettings/ProjectSettings.asset",
+    "documents": 1,
+    "valid_yaml": true
+  },
+  {
+    "path": "Assets/Pokemon/Prefabs/Bola_Pokemon.prefab",
+    "documents": 11,
+    "valid_yaml": true
+  }
+]

@@ -1,0 +1,26 @@
+VALIDAÇÃO DO MOTOR E ARMAZENAMENTO DA LIGA POKÉMON
+
+Scripts reais compilados juntos, sem erros ou avisos:
+- Assets/Scripts/TournamentManager.cs
+- Assets/Scripts/LigaCampeonato.cs
+- Assets/Scripts/CalendarioCsvParser.cs
+
+Reexecutar:
+/workspace/work/pokemon-liga/validation/engine/run.sh
+
+41 asserções aprovadas:
+- Temporada nova inicia na rodada1; consulta não grava arquivo vazio.
+- Rascunho parcial retorna a rodada pendente, com placares registrados recuperados.
+- Rodada confirmada leva à próxima; confirmação repetida não duplica jogos/pontos.
+- Empate dá1ponto e vitória3pontos, com tabela recarregada por outra instância.
+- Rodada confirmada não pode ser preparada novamente.
+- Temporadas distintas permanecem independentes.
+- Histórico corrompido retorna erro e número0, sem iniciar outra rodada.
+- iniciarAutomaticamente=false impede carregamento noStart, preservando a validação legada quando true.
+- Flags RodadaConcluida/EncerramentoRodadaConcluido exigem resultados salvos e seguram durante tabela/preparação/pending.
+- Falha real de escrita em disco deixa o resultado pendente e impede progressão.
+- Após restaurar o destino, tentar salvar novamente persiste o placar uma vez e permite retomada.
+
+Limites: APIs de cena/corrotinas/GUI foram substituídas por stubs. O adaptador JsonUtility desta validação usa um serializador XML genérico para exercitar cópia de DTOs, validação, atomicidade e recarga em disco; não testa o formato JSON real do Unity. Os jogos, importação de assets e Play Mode não foram executados. O runtime Mono recebeu apenas duas bibliotecas oficiais Debian extraídas localmente para habilitar o serializador de teste, sem instalação no sistema.
+
+A compilação confirmou que TournamentManager não depende mais de nenhum tipo de mata-mata nesta cópia só de liga.

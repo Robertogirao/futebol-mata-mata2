@@ -1,0 +1,8 @@
+PASS complete lifecycle, theme/adapters, automatic confirmation, animation gate, final-table reload and preserved export selector
+PASS 15 participant byes and partial JSON reload without duplicate points
+PASS saved/live participant, round, seed and ID guards preserve history
+PASS one-round-per-Play pause, manual Continue and resume
+PASS corrupt/missing JSON, failed result writes and failed auto-confirmation retain recoverable data
+PASS cross-check saved calendar round count and effective fixed seed against season metadata
+PASS 106 assertions using real LigaPokemon, model, manager, storage, CSV, PokemonDados, TeamData, TemaCompeticao and FiltrosPokemon.
+Scope: C# logic with Unity/UI/physics test stubs; not a Unity Play Mode run. DTOs are persisted as actual JSON using DataContractJsonSerializer, not Unity JsonUtility.

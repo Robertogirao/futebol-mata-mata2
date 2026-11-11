@@ -1,0 +1,43 @@
+VALIDAÇÃO DO CALENDÁRIO DA LIGA POKÉMON — 2026-11-11
+
+Entradas reais compiladas juntas:
+- Assets/Scripts/LigaPokemonModelo.cs
+- Assets/Scripts/CalendarioCsvParser.cs
+
+Compilação sem erros ou avisos. Estes scripts não dependem do Unity;
+nenhum stub Unity foi necessário. Não houve importação de assets,
+renderização, persistência de classificação ou execução em Play Mode.
+Nenhum arquivo do projeto foi alterado pelo teste.
+
+Reexecutar:
+/workspace/work/pokemon-liga/validation/model/run.sh
+
+Cobertura:
+- 10 Pokémon:9 rodadas,45 jogos,todos pares únicos,cada participante joga9 vezes.
+- 15 Pokémon:15 rodadas,105 jogos,cada participante joga14 vezes e folga1 vez.
+- 20 Pokémon:19 rodadas,190 jogos,todos pares únicos,cada participante joga19 vezes.
+- Fronteiras de2 e3 Pokémon em turnos completos.
+- Quantidades exatas1,3,10,40 rodadas em ligas2,3,4,5,10,15,20,21.
+- Por rodada:ninguém joga duas vezes,não há autojogo,nem adversário nulo.
+- Cada rodada ímpar tem exatamente uma folga e cada rodada par tem todos em campo.
+- Segundo turno mantém adversários/ordem de jogos e inverte os lados.
+- Terceiro turno restaura os lados do primeiro.
+- Sementes int.MinValue,-4,0,2026,int.MaxValue são reproduzíveis.
+- Catálogo de IDs de entrada preservado e metadados copiados.
+- CSV gerado lido pelo parser real sem avisos,com todos os jogos/rodadas/IDs preservados.
+- Entradas vazias/nulas/repetidas,rodadas não positivas,IDs inseguros e calendários
+  adulterados(versão,rodadas,folga,confronto,IDs e estruturas nulas) são rejeitados.
+
+Saída:
+PASS complete league 2 Pokemon / 1 rounds / 1 games
+PASS complete league 3 Pokemon / 3 rounds / 3 games
+PASS complete league 10 Pokemon / 9 rounds / 45 games
+PASS complete league 15 Pokemon / 15 rounds / 105 games
+PASS complete league 20 Pokemon / 19 rounds / 190 games
+PASS exact round quantities, even/odd boundaries and mirrored return cycles
+PASS invalid inputs and tampered calendars rejected
+PASS 75275 assertions using real LigaPokemonModelo and real CalendarioCsvParser, without Unity stubs
+
+SHA256 das fontes verificadas:
+0dfec54283956f2db3fe4c6fe9e614649dbf60ffdf15ab5894606787244f503d  LigaPokemonModelo.cs
+795bb9017084cc897361aef3d8db9ec5e4482f537a80fd38fc3ed2d6a59b6df1  CalendarioCsvParser.cs

@@ -1,0 +1,38 @@
+VALIDAÇÃO DA INTERFACE DA LIGA POKÉMON
+
+Cinco arquivos reais alterados foram compilados juntos, além do RitmoEventosPokemon real para os enums de eventos, sem erros ou avisos:
+- ClassificacaoUI.cs
+- ArenaPokemon.cs
+- PokemonHUD.cs
+- EventosPartidaPokemonMenu.cs
+- LancadorEquipeRocketMenu.cs
+
+Foram usados substitutos de UnityEngine, TMPro, UnityEditor e dos demais componentes (inclusive a API LigaPokemon.TemaEmUso/tema). Esses testes não executam Unity Editor, importação de assets, renderização ou física real e não equivalem a Play Mode.
+
+Reexecutar:
+/workspace/work/pokemon-liga/validation/ui/run.sh
+
+360 verificações aprovadas:
+- Tabelas com 10, 15 e 20 participantes contêm todas as linhas.
+- Nome da liga, pontos e resultados são mostrados sem alterar a ordenação recebida.
+- Retratos das linhas e dos confrontos correspondem ao ID estável de cada participante.
+- Linhas de 20 participantes cabem antes do rodapé; os jogos da rodada são todos representados.
+- Sprite de fundo escolhido usa branco opaco; ausência de imagem mantém a cor configurada com alpha1.
+- Canvas da classificação usa ordem1400, acima do HUD1200 e abaixo da abertura2000; ordem personalizada é respeitada.
+- Abertura da tabela oculta placares; encerramento mantém a tabela visível e OnDisable limpa a sobreposição.
+- ArenaPokemon e PokemonHUD usam TemaEmUso da LigaPokemon, com fallback para tema base, sem referência a TorneioPokemon.
+- O fundo e as fontes do tema da liga chegam à arena e ao HUD.
+- Menus da liga encontram o componente correto, preservam contagem de especiais e parâmetros do Rocket e marcam a cena modificada.
+
+Saída:
+PASS standings10/15/20, portraits, scores, background and canvas order
+PASS ArenaPokemon and PokemonHUD resolve LigaPokemon runtime/base themes
+PASS league menus retain specials and Rocket configuration
+PASS 360 assertions using five real UI/Editor source files with Unity/TMP/dependency stubs
+
+Hashes das fontes verificadas:
+2af9a03ca9805c2253716de20f6d66f17f29b7d49baa9a97e5c2ee61ac757dc9  Assets/Scripts/ClassificacaoUI.cs
+b070c6ffcda465c2ef4f9c90add2a219926492a2bbc7c7a9c3584fce47c4e5d9  Assets/Scripts/ArenaPokemon.cs
+d5bae9c7c61f25fafd35ef3e2ebef66782db8377e460d853f55ad0797516574e  Assets/Scripts/PokemonHUD.cs
+8e163d6a32150c46c312e249ec2bfad06f17a2017ac5811b8dfb6a5398908490  Assets/Editor/EventosPartidaPokemonMenu.cs
+634052b7c23010f6ea346063f2611f48a6b123f0661ce99bc40826967a06dacd  Assets/Editor/LancadorEquipeRocketMenu.cs
