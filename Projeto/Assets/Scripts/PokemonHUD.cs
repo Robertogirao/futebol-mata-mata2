@@ -70,7 +70,7 @@ public sealed class PokemonHUD : MonoBehaviour
             if (temaLiga != null) tema = temaLiga;
         }
         if (universalUI == null) universalUI = GetComponent<UniversalUI>();
-        if (universalUI == null) universalUI = FindFirstObjectByType<UniversalUI>();
+        if (universalUI == null) universalUI = FindAnyObjectByType<UniversalUI>();
         if (universalUI == null)
         {
             Debug.LogError("PokemonHUD: atribua UniversalUI antes de iniciar a cena.", this);
@@ -78,7 +78,7 @@ public sealed class PokemonHUD : MonoBehaviour
         }
 
         if (canvasAntigo == null) canvasAntigo = universalUI.GetComponent<Canvas>();
-        if (bannerOriginal == null) bannerOriginal = FindFirstObjectByType<GoalBannerUI>();
+        if (bannerOriginal == null) bannerOriginal = FindAnyObjectByType<GoalBannerUI>();
         ConfigurarTema();
         CriarCanvas();
         CriarPlacar();
@@ -118,7 +118,7 @@ public sealed class PokemonHUD : MonoBehaviour
         if (!usarEquipeRocket) return;
         TournamentManager gerenciador = GetComponent<TournamentManager>();
         AutoBallPipe cano = gerenciador != null ? gerenciador.canoAutomatizado : null;
-        if (cano == null) cano = FindFirstObjectByType<AutoBallPipe>();
+        if (cano == null) cano = FindAnyObjectByType<AutoBallPipe>();
         if (cano != null && cano.GetComponent<LancadorEquipeRocket>() == null)
             cano.gameObject.AddComponent<LancadorEquipeRocket>();
     }

@@ -20,7 +20,7 @@ public class GoalDetector : MonoBehaviour
             // O trigger do portal pode chegar antes do Update dos especiais.
             // Consulte o contato/onda antes de aceitar a pontuação deste passo.
             EventosPartidaPokemon bloqueio = ui.hudPokemon.GetComponent<EventosPartidaPokemon>();
-            if (bloqueio == null) bloqueio = FindFirstObjectByType<EventosPartidaPokemon>();
+            if (bloqueio == null) bloqueio = FindAnyObjectByType<EventosPartidaPokemon>();
             if (bloqueio != null && bloqueio.isActiveAndEnabled && bloqueio.TentarInterceptarBola(bola)) return;
             if (bola.EmDesintegracao) return;
         }

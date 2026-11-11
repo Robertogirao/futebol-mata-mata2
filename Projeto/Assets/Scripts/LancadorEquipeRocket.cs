@@ -75,7 +75,7 @@ public sealed class LancadorEquipeRocket : MonoBehaviour
 
         if (materialSprite == null)
         {
-            ArenaPokemon arena = FindFirstObjectByType<ArenaPokemon>();
+            ArenaPokemon arena = FindAnyObjectByType<ArenaPokemon>();
             if (arena != null) materialSprite = arena.materialSprite;
         }
 

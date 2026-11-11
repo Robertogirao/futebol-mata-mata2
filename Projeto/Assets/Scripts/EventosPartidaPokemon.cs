@@ -77,7 +77,7 @@ public sealed class EventosPartidaPokemon : MonoBehaviour
         {
             TournamentManager motor = GetComponent<TournamentManager>();
             if (motor != null) cano = motor.canoAutomatizado;
-            if (cano == null) cano = FindFirstObjectByType<AutoBallPipe>();
+            if (cano == null) cano = FindAnyObjectByType<AutoBallPipe>();
         }
         if (rocket == null && cano != null) rocket = cano.GetComponent<LancadorEquipeRocket>();
         if (arena != null && arena.goleiro != null)
@@ -177,7 +177,7 @@ public sealed class EventosPartidaPokemon : MonoBehaviour
     {
         // Nem a onda nem o histórico de posições avançam durante o congelamento.
         if (!PartidaAtiva || Time.deltaTime <= 0f) return;
-        BallController[] bolas = FindObjectsByType<BallController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+        BallController[] bolas = FindObjectsByType<BallController>(FindObjectsInactive.Exclude);
         var presentes = new HashSet<BallController>();
         foreach (BallController bola in bolas)
         {

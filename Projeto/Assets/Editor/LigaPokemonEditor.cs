@@ -214,7 +214,7 @@ public sealed class LigaPokemonEditor : Editor
         }
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         EditorSceneManager.OpenScene(CaminhoCena, OpenSceneMode.Single);
-        LigaPokemon liga = UnityEngine.Object.FindFirstObjectByType<LigaPokemon>();
+        LigaPokemon liga = UnityEngine.Object.FindAnyObjectByType<LigaPokemon>();
         if (liga != null) Selection.activeGameObject = liga.gameObject;
     }
 }

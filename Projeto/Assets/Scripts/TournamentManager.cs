@@ -676,8 +676,7 @@ public class TournamentManager : MonoBehaviour
             {
                 var encontradas =
                     UnityEngine.Object
-                        .FindObjectsByType<AberturaJogoUI>(
-                            FindObjectsSortMode.None);
+                        .FindObjectsByType<AberturaJogoUI>();
 
                 if (encontradas.Length == 1)
                 {

@@ -24,3 +24,9 @@ Reexecutar:
 Limites: APIs de cena/corrotinas/GUI foram substituídas por stubs. O adaptador JsonUtility desta validação usa um serializador XML genérico para exercitar cópia de DTOs, validação, atomicidade e recarga em disco; não testa o formato JSON real do Unity. Os jogos, importação de assets e Play Mode não foram executados. O runtime Mono recebeu apenas duas bibliotecas oficiais Debian extraídas localmente para habilitar o serializador de teste, sem instalação no sistema.
 
 A compilação confirmou que TournamentManager não depende mais de nenhum tipo de mata-mata nesta cópia só de liga.
+
+REVALIDAÇÃO APÓS MIGRAÇÃO DE APIs UNITY — 2026-11-11
+Fontes compiladas diretamente de /workspace/work/github/pokemon-liga-entrega/Projeto.
+Compilação e todas as verificações acima passaram novamente, sem avisos do compilador de teste.
+Os stubs não expõem FindFirstObjectByType, FindObjectsSortMode nem enableWordWrapping; usos antigos seriam erros de compilação.
+São testes C# com APIs simuladas, não importação ou compilação no Unity Editor.

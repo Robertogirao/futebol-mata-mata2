@@ -1,0 +1,21 @@
+{
+  "scope": "Static YAML validation; not Unity import or Play Mode",
+  "asset_count": 1,
+  "assets": [
+    {
+      "path": "/workspace/work/pokemon-liga/validation/prefab-repair/Bola_Pokemon-before.prefab",
+      "documents": 11,
+      "gameobjects": 2,
+      "local_nonzero_references": 24,
+      "source_guid_count": 6,
+      "external_package_or_builtin_guids": [
+        "9541d86e2fd84c1d9990edf0852d74ab"
+      ],
+      "errors": [
+        "8192777858039416350/m_Component/5/component: missing local fileID -6015267977959516197",
+        "8192777858039416350/m_Component/6/component: missing local fileID -2723555834122662228"
+      ]
+    }
+  ],
+  "error_count": 2
+}

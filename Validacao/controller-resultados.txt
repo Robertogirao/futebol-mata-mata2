@@ -6,3 +6,9 @@ PASS corrupt/missing JSON, failed result writes and failed auto-confirmation ret
 PASS cross-check saved calendar round count and effective fixed seed against season metadata
 PASS 106 assertions using real LigaPokemon, model, manager, storage, CSV, PokemonDados, TeamData, TemaCompeticao and FiltrosPokemon.
 Scope: C# logic with Unity/UI/physics test stubs; not a Unity Play Mode run. DTOs are persisted as actual JSON using DataContractJsonSerializer, not Unity JsonUtility.
+
+REVALIDAÇÃO APÓS MIGRAÇÃO DE APIs UNITY — 2026-11-11
+Fontes compiladas diretamente de /workspace/work/github/pokemon-liga-entrega/Projeto.
+Compilação e todas as verificações acima passaram novamente, sem avisos do compilador de teste.
+Os stubs não expõem FindFirstObjectByType, FindObjectsSortMode nem enableWordWrapping; usos antigos seriam erros de compilação.
+São testes C# com APIs simuladas, não importação ou compilação no Unity Editor.

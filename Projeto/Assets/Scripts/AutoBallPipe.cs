@@ -215,9 +215,7 @@ public class AutoBallPipe : MonoBehaviour
         }
 
         BallController[] bolas =
-            FindObjectsByType<BallController>(
-                FindObjectsInactive.Include,
-                FindObjectsSortMode.None);
+            FindObjectsByType<BallController>(FindObjectsInactive.Include);
 
         foreach (BallController bola in bolas)
         {
@@ -273,9 +271,7 @@ public class AutoBallPipe : MonoBehaviour
     private bool ArenaCheia()
     {
         BallController[] bolas =
-            FindObjectsByType<BallController>(
-                FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None);
+            FindObjectsByType<BallController>(FindObjectsInactive.Exclude);
 
         return bolas.Length >=
             LimiteAtualDeBolas;

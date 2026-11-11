@@ -194,8 +194,6 @@ GameObject:
   - component: {fileID: 7886882497744359443}
   - component: {fileID: 3813457240465019747}
   - component: {fileID: 3144005875255005440}
-  - component: {fileID: -6015267977959516197}
-  - component: {fileID: -2723555834122662228}
   - component: {fileID: 620000000001}
   m_Layer: 0
   m_Name: Bola_Pokemon

@@ -36,5 +36,11 @@ PASS scene menu and user cancellation
 PASS validation and continuation buttons
 PASS 105 assertions on real LigaPokemonEditor/PokemonDados with UnityEditor data stubs
 
-SHA256 do editor testado: c4b03ac022148ab0d59d9ec2c36e448dbe552f838b878e35c8ab400cc22197b9
+SHA256 do editor testado: a4559ce68a2d27b5e3190d6839ba51d03435c7a90579cbe40191925f19578eda
 GUID novo: e70448673e374ca5882f1c8fd8264e18 (único no projeto).
+
+REVALIDAÇÃO APÓS MIGRAÇÃO DE APIs UNITY — 2026-11-11
+Fontes compiladas diretamente de /workspace/work/github/pokemon-liga-entrega/Projeto.
+Compilação e todas as verificações acima passaram novamente, sem avisos do compilador de teste.
+Os stubs não expõem FindFirstObjectByType, FindObjectsSortMode nem enableWordWrapping; usos antigos seriam erros de compilação.
+São testes C# com APIs simuladas, não importação ou compilação no Unity Editor.

@@ -256,7 +256,7 @@ public class BallController : MonoBehaviour
                 !string.IsNullOrWhiteSpace(nome) ? nome : numero;
 
             textoNumeroCamisa.richText = false;
-            textoNumeroCamisa.enableWordWrapping = false;
+            textoNumeroCamisa.textWrappingMode = TextWrappingModes.NoWrap;
             textoNumeroCamisa.overflowMode =
                 TextOverflowModes.Overflow;
 

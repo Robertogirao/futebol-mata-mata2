@@ -1007,7 +1007,7 @@ public class ClassificacaoUI : MonoBehaviour
         texto.alignment = TextAlignmentOptions.Left;
 
         texto.enableAutoSizing = false;
-        texto.enableWordWrapping = false;
+        texto.textWrappingMode = TextWrappingModes.NoWrap;
         texto.overflowMode = TextOverflowModes.Ellipsis;
         texto.richText = false;
         texto.raycastTarget = false;

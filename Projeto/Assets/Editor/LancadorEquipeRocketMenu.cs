@@ -13,7 +13,7 @@ public static class LancadorEquipeRocketMenu
             Debug.LogWarning("Saia do Play para salvar os ajustes do lançador.");
             return;
         }
-        LigaPokemon liga = Object.FindFirstObjectByType<LigaPokemon>();
+        LigaPokemon liga = Object.FindAnyObjectByType<LigaPokemon>();
         if (liga == null)
         {
             Debug.LogWarning("Abra primeiro uma cena da liga Pokémon.");
@@ -21,7 +21,7 @@ public static class LancadorEquipeRocketMenu
         }
         TournamentManager motor = liga.GetComponent<TournamentManager>();
         AutoBallPipe cano = motor != null ? motor.canoAutomatizado : null;
-        if (cano == null) cano = Object.FindFirstObjectByType<AutoBallPipe>();
+        if (cano == null) cano = Object.FindAnyObjectByType<AutoBallPipe>();
         if (cano == null)
         {
             Debug.LogWarning("A cena não contém AutoBallPipe.");

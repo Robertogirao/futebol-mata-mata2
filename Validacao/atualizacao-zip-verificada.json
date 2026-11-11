@@ -1,0 +1,25 @@
+{
+  "patch": "Pokemon_Liga_Correcao_Unity_2026-11-11.zip",
+  "patch_bytes": 50708,
+  "patch_sha256": "fad6e63ed0b9020d18384fddf26fb23779ca86106874d9ffff42c297f514acdb",
+  "changed_source_files": [
+    "Projeto/Assets/Editor/EventosPartidaPokemonMenu.cs",
+    "Projeto/Assets/Editor/LancadorEquipeRocketMenu.cs",
+    "Projeto/Assets/Editor/LigaPokemonEditor.cs",
+    "Projeto/Assets/Pokemon/Prefabs/Bola_Pokemon.prefab",
+    "Projeto/Assets/Scripts/AutoBallPipe.cs",
+    "Projeto/Assets/Scripts/BallController.cs",
+    "Projeto/Assets/Scripts/ClassificacaoUI.cs",
+    "Projeto/Assets/Scripts/EventosPartidaPokemon.cs",
+    "Projeto/Assets/Scripts/GoalDetector.cs",
+    "Projeto/Assets/Scripts/GoalkeeperController.cs",
+    "Projeto/Assets/Scripts/LancadorEquipeRocket.cs",
+    "Projeto/Assets/Scripts/LigaPokemon.cs",
+    "Projeto/Assets/Scripts/PokemonHUD.cs",
+    "Projeto/Assets/Scripts/TournamentManager.cs"
+  ],
+  "meta_files_included": 14,
+  "zip_crc_valid": true,
+  "overlay_from_previous_release_equals_current_project_files": 4383,
+  "scene_and_project_settings_in_patch": false
+}

@@ -13,7 +13,7 @@ public static class EventosPartidaPokemonMenu
             Debug.LogWarning("Saia do Play para salvar os ajustes dos eventos.");
             return;
         }
-        LigaPokemon liga = Object.FindFirstObjectByType<LigaPokemon>();
+        LigaPokemon liga = Object.FindAnyObjectByType<LigaPokemon>();
         if (liga == null)
         {
             Debug.LogWarning("Abra uma cena da liga Pokémon.");

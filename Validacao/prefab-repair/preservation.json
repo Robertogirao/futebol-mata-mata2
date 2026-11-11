@@ -1,0 +1,14 @@
+{
+  "only_change": "Removed two stale component list entries; all serialized records and values unchanged",
+  "preserved_records": 11,
+  "preserved_prefab_meta": "fileFormatVersion: 2\nguid: c4561a294dbf59858b04e9c07c674ec1\nPrefabImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n",
+  "before_sha256": "497eca58c6fd57352b19c41d59b8bdb50920a0fb27949ecb1b5258a4a8e79044",
+  "after_sha256": "b7734519fc0a0d947b260ed5b673d2e7d1ec67c81841d39a80a7d7faa27353c1",
+  "before_invalid_component_entries": 2,
+  "after_invalid_component_entries": 0,
+  "original_football_components": {
+    "-6015267977959516197": "TrailRenderer",
+    "-2723555834122662228": "DesprenderBolaDaHelice"
+  },
+  "scope": "Static serialization validation only; Unity Editor import and Play not executed"
+}

@@ -1,0 +1,38 @@
+{
+  "verified_at": "2026-11-11T17:40:51.763867+00:00",
+  "source_project": "/workspace/work/github/pokemon-liga-entrega/Projeto",
+  "changed_source_hashes": {
+    "Projeto/Assets/Editor/EventosPartidaPokemonMenu.cs": "9f81316aa26725d15eaf13ec5bc4e3d6983c556f1c4b2a5c97f4906325f2803b",
+    "Projeto/Assets/Editor/LancadorEquipeRocketMenu.cs": "565c326b5a70595b49896017c70b5f386da136808c15bf30c55f655960b8c7a7",
+    "Projeto/Assets/Editor/LigaPokemonEditor.cs": "a4559ce68a2d27b5e3190d6839ba51d03435c7a90579cbe40191925f19578eda",
+    "Projeto/Assets/Scripts/AutoBallPipe.cs": "379a305398041d3cd960fc4729e33b7fcd5b81f024d1bd4b95cfd7bd5141e41f",
+    "Projeto/Assets/Scripts/BallController.cs": "e38960be47520b191ad645b00a230386f196682c283920722844f3d7b5214b41",
+    "Projeto/Assets/Scripts/ClassificacaoUI.cs": "0484d84381b378878f1ce6d9c85ab8f2efac6cf0617ac9737372033266f4b988",
+    "Projeto/Assets/Scripts/EventosPartidaPokemon.cs": "73fb81bbd71c4480e5ab0043d2e5d7df764753e83b080d5593a8690c4311ff57",
+    "Projeto/Assets/Scripts/GoalDetector.cs": "c79f26d153554d421c89325b27cfa223271ca0ba43812b6e61b57348fd8d5387",
+    "Projeto/Assets/Scripts/GoalkeeperController.cs": "251881bffbf76222212b77798ce12b8aaa72efe0adab0a4d077184cbe6c4bb61",
+    "Projeto/Assets/Scripts/LancadorEquipeRocket.cs": "b461ebff93841d2ef431c7d1c24b7acbde63d7733b250b7bba083008e59e6020",
+    "Projeto/Assets/Scripts/LigaPokemon.cs": "b82fe7c0d0c1ab31dc331d7500d8b56b2772ba9fefac20bea3cbf2f3c6646ff5",
+    "Projeto/Assets/Scripts/PokemonHUD.cs": "862dc930c964002fd566f10344223e644bc7fc799476b72d0459d2158cb17f39",
+    "Projeto/Assets/Scripts/TournamentManager.cs": "593721a7c1f336a3e5ea63cf35a9132c79e46a1632ddea89fb453afa6b4a1e3b"
+  },
+  "deprecated_symbols_in_project_cs": 0,
+  "deprecated_symbols_in_harness_cs": 0,
+  "results": {
+    "controller": 106,
+    "engine": 41,
+    "ui": 360,
+    "editor": 105
+  },
+  "compiled_real_sources_scope": {
+    "controller": "LigaPokemon, LigaPokemonModelo, TournamentManager, LigaCampeonato, CalendarioCsvParser, PokemonDados, TeamData, TemaCompeticao, FiltrosPokemon",
+    "engine": "TournamentManager, LigaCampeonato, CalendarioCsvParser",
+    "ui": "ClassificacaoUI, ArenaPokemon, PokemonHUD, RitmoEventosPokemon, EventosPartidaPokemonMenu, LancadorEquipeRocketMenu",
+    "editor": "LigaPokemonEditor, PokemonDados"
+  },
+  "limits": [
+    "Unity Editor is unavailable; these runs use C# Unity/TMP/UI/physics stubs.",
+    "Existing regression groups do not compile BallController, AutoBallPipe, GoalDetector, GoalkeeperController, EventosPartidaPokemon or LancadorEquipeRocket; their API migration was checked by source scan and reviewed by the migration agent.",
+    "Prefab validity and actual asset import are not tested by these C# groups."
+  ]
+}

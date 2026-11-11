@@ -31,8 +31,14 @@ PASS league menus retain specials and Rocket configuration
 PASS 360 assertions using five real UI/Editor source files with Unity/TMP/dependency stubs
 
 Hashes das fontes verificadas:
-2af9a03ca9805c2253716de20f6d66f17f29b7d49baa9a97e5c2ee61ac757dc9  Assets/Scripts/ClassificacaoUI.cs
+0484d84381b378878f1ce6d9c85ab8f2efac6cf0617ac9737372033266f4b988  Assets/Scripts/ClassificacaoUI.cs
 b070c6ffcda465c2ef4f9c90add2a219926492a2bbc7c7a9c3584fce47c4e5d9  Assets/Scripts/ArenaPokemon.cs
-d5bae9c7c61f25fafd35ef3e2ebef66782db8377e460d853f55ad0797516574e  Assets/Scripts/PokemonHUD.cs
-8e163d6a32150c46c312e249ec2bfad06f17a2017ac5811b8dfb6a5398908490  Assets/Editor/EventosPartidaPokemonMenu.cs
-634052b7c23010f6ea346063f2611f48a6b123f0661ce99bc40826967a06dacd  Assets/Editor/LancadorEquipeRocketMenu.cs
+862dc930c964002fd566f10344223e644bc7fc799476b72d0459d2158cb17f39  Assets/Scripts/PokemonHUD.cs
+9f81316aa26725d15eaf13ec5bc4e3d6983c556f1c4b2a5c97f4906325f2803b  Assets/Editor/EventosPartidaPokemonMenu.cs
+565c326b5a70595b49896017c70b5f386da136808c15bf30c55f655960b8c7a7  Assets/Editor/LancadorEquipeRocketMenu.cs
+
+REVALIDAÇÃO APÓS MIGRAÇÃO DE APIs UNITY — 2026-11-11
+Fontes compiladas diretamente de /workspace/work/github/pokemon-liga-entrega/Projeto.
+Compilação e todas as verificações acima passaram novamente, sem avisos do compilador de teste.
+Os stubs não expõem FindFirstObjectByType, FindObjectsSortMode nem enableWordWrapping; usos antigos seriam erros de compilação.
+São testes C# com APIs simuladas, não importação ou compilação no Unity Editor.

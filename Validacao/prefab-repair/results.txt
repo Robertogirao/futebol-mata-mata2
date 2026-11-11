@@ -1,0 +1,21 @@
+VALIDAÇÃO DE REFERÊNCIAS DO PREFAB E DAS CENAS — 11/11/2026
+
+Antes: 2 referências inválidas no m_Component de Bola_Pokemon.
+8192777858039416350/m_Component/5/component -> -6015267977959516197
+8192777858039416350/m_Component/6/component -> -2723555834122662228
+
+Depois: 0 erros em todos os 3 assets prefab/cena.
+- Assets/Pokemon/Prefabs/Bola_Pokemon.prefab: 11 documentos, 2 GameObjects.
+- Assets/Scenes/Ligas/Liga_Pokemon.unity: 82 documentos, 18 GameObjects.
+- Assets/Settings/Scenes/URP2DSceneTemplate.unity: 12 documentos, 2 GameObjects.
+
+IDs locais e GUIDs de fonte conferidos. Listas de componentes únicas e com
+proprietários corretos, um Transform por GameObject, hierarquia consistente
+e sem ciclos. Os dois IDs removidos não possuíam registros serializados.
+
+PASS: diff do prefab é exatamente a remoção das duas entradas órfãs.
+PASS: todos os 11 registros serializados e parâmetros restantes preservados.
+PASS: metadado/GUID do prefab não alterado.
+
+Escopo: inspeção estática YAML e referências. Não executa Unity Editor,
+importação de assets, resolução real de pacotes ou Play Mode.

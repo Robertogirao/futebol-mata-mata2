@@ -106,7 +106,7 @@ public sealed class LigaPokemon : MonoBehaviour
         if (hud == null) hud = GetComponent<PokemonHUD>();
         if (arena == null) arena = GetComponent<ArenaPokemon>();
         if (interfacePartida == null) interfacePartida = GetComponent<UniversalUI>();
-        if (interfacePartida == null) interfacePartida = FindFirstObjectByType<UniversalUI>();
+        if (interfacePartida == null) interfacePartida = FindAnyObjectByType<UniversalUI>();
         if (aberturaJogoUI == null) aberturaJogoUI = GetComponent<AberturaJogoUI>();
     }
 
@@ -202,7 +202,7 @@ public sealed class LigaPokemon : MonoBehaviour
         gerenciador.todosOsTimesDisponiveis = new List<TeamData>(fichas);
         gerenciador.arquivoCsvCalendario = csv;
         if (gerenciador.canoAutomatizado == null)
-            gerenciador.canoAutomatizado = FindFirstObjectByType<AutoBallPipe>();
+            gerenciador.canoAutomatizado = FindAnyObjectByType<AutoBallPipe>();
         Exigir(gerenciador.canoAutomatizado != null, "Atribua o lançador de bolas da liga.");
         interfacePartida.duracaoRealEmSegundos = duracaoPartida;
         interfacePartida.ativarGoldenGoal = false;

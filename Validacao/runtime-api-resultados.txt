@@ -1,0 +1,66 @@
+VALIDAÇÃO DE REGRESSÃO DAS APIS UNITY 6.4 — 2026-11-11
+
+Fontes reais da entrega compiladas sem alteração específica para teste:
+- BallController, DesintegracaoBolaPokemon, GoalDetector, GoalkeeperController,
+  EventosPartidaPokemon, ContatoSnorlaxPokemon, ContatoOndaPokemon e
+  RitmoEventosPokemon compilados juntos: 56 asserções.
+- AutoBallPipe, LancadorEquipeRocket e RitmoEventosPokemon compilados juntos
+  em uma segunda execução: 13 asserções adicionais.
+
+As duas compilações passaram sem erros ou avisos. Os substitutos de APIs
+expõem FindAnyObjectByType, FindObjectsByType sem ordenação e textWrappingMode.
+FindFirstObjectByType, FindObjectsSortMode e enableWordWrapping foram removidos
+inteiramente dos stubs: seus usos antigos não seriam aceitos pela compilação.
+
+A cobertura existente de Snorlax foi reutilizada: corpo e onda repelem e
+condenam bolas de ambos os lados sem pontuar, contatos são idempotentes,
+interceptação precede pontuação, varrimentos alcançam bolas entre frames,
+pausas respeitadas e bola já pontuada preservada. O gigante aumenta visual e
+área física e restaura escala ao finalizar/cancelar/desativar/trocar partida.
+Equipe Rocket mantém parâmetros de rajada e limpeza. O efeito da bola faz
+recuo antes de dissolver/remover fragmentos sem pontuar.
+
+A execução adicional do lançador verifica que a capacidade conta somente
+bolas ativas, enquanto PararChuva remove bolas ativas e inativas e cancela
+rajada. O Rocket real resolve o material da arena via FindAny, conecta saída,
+força e imagem e restaura saída/força ao desativar.
+
+LIMITES
+Não houve execução do Unity Editor nem Play Mode. As APIs Unity, física,
+registro de objetos, callbacks e dependências da cena são substitutos de
+teste. A compilação usa a forma das APIs novas reportada pelo Unity do usuário,
+não os assemblies reais do Unity. O teste adicional do lançador não instancia
+bolas nem simula a física: o substituto de Instantiate lança exceção para
+impedir que esse limite seja confundido com uma implementação funcional.
+A importação do prefab e aparência dependem de verificação no Unity.
+
+Reexecutar:
+/workspace/work/pokemon-liga/validation/runtime-api/run.sh
+bash /workspace/work/pokemon-liga/validation/runtime-api/run-launcher.sh
+
+SAÍDA
+PASS body interception, symmetry and idempotence
+PASS expanding ring and unaffected distant ball
+PASS final-wave maximum reach on a long ending frame
+PASS goal ordering and continuous body/ring sweep wiring
+PASS goalie collision proxy
+PASS outgoing velocity, pause and scoring safeguards
+PASS giant physical growth and end/cancel/disable/new-match cleanup
+PASS unchanged Rocket integration
+PASS actual ball-effect lifecycle connected to Snorlax defense
+PASS 56 integration assertions using real Events/Ritmo/Ball/Goal/Contact/Wave/Effect source
+PASS real launcher active capacity and inactive cleanup
+PASS real Rocket arena fallback, connection and cleanup
+PASS 13 launcher assertions using real AutoBallPipe and LancadorEquipeRocket; object creation and physics are not simulated
+
+SHA256 DAS FONTES
+e38960be47520b191ad645b00a230386f196682c283920722844f3d7b5214b41  Assets/Scripts/BallController.cs
+ac35c8eec7e6c1d2ccd6c1dfa54002468935c0837a740e08eaef8837350951cb  Assets/Scripts/DesintegracaoBolaPokemon.cs
+c79f26d153554d421c89325b27cfa223271ca0ba43812b6e61b57348fd8d5387  Assets/Scripts/GoalDetector.cs
+251881bffbf76222212b77798ce12b8aaa72efe0adab0a4d077184cbe6c4bb61  Assets/Scripts/GoalkeeperController.cs
+73fb81bbd71c4480e5ab0043d2e5d7df764753e83b080d5593a8690c4311ff57  Assets/Scripts/EventosPartidaPokemon.cs
+e2ca465c2ae8f7f4a82360329a6699a3939031a35713eda082cb0594a56457bf  Assets/Scripts/ContatoSnorlaxPokemon.cs
+d635042a9c99e934a61b29543a44047456b2ba1776232209494bf971e75a0d93  Assets/Scripts/ContatoOndaPokemon.cs
+4a7e0c79bddb9145459a271f9cb368f62c49c5b199da081b68f3f65ac5c7dae3  Assets/Scripts/RitmoEventosPokemon.cs
+379a305398041d3cd960fc4729e33b7fcd5b81f024d1bd4b95cfd7bd5141e41f  Assets/Scripts/AutoBallPipe.cs
+b461ebff93841d2ef431c7d1c24b7acbde63d7733b250b7bba083008e59e6020  Assets/Scripts/LancadorEquipeRocket.cs

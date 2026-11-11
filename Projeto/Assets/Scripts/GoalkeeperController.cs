@@ -34,9 +34,7 @@ public class GoalkeeperController : MonoBehaviour
         }
 
         BallController[] bolasNoCampo =
-            FindObjectsByType<BallController>(
-                FindObjectsInactive.Exclude,
-                FindObjectsSortMode.None);
+            FindObjectsByType<BallController>(FindObjectsInactive.Exclude);
 
         float alvoYDesejado = 0f;
         bool achouBolaPerigosa = false;
