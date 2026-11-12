@@ -32,7 +32,7 @@ PASS league menus retain specials and Rocket configuration
 PASS 376 assertions using five real UI/Editor source files with Unity/TMP/dependency stubs
 
 Hashes das fontes verificadas:
-0484d84381b378878f1ce6d9c85ab8f2efac6cf0617ac9737372033266f4b988  Assets/Scripts/ClassificacaoUI.cs
+969a5d72e520991de021544b183292d4d643c0e820302f353baa78baa36a987e  Assets/Scripts/ClassificacaoUI.cs
 b070c6ffcda465c2ef4f9c90add2a219926492a2bbc7c7a9c3584fce47c4e5d9  Assets/Scripts/ArenaPokemon.cs
 f1bf406fdaddb4be766ed86efc81e497ec6dc219cc929d3146ec6b9f4680db74  Assets/Scripts/PokemonHUD.cs
 9f81316aa26725d15eaf13ec5bc4e3d6983c556f1c4b2a5c97f4906325f2803b  Assets/Editor/EventosPartidaPokemonMenu.cs
@@ -49,3 +49,6 @@ Foram mantidas as 360 verificações anteriores e acrescentadas 16 verificaçõe
 O stub expõe onEnableRegistered como estado explicitamente controlado pela fixture. Os testes anteriores representam componentes já registrados; o novo cenário mantém HUD e UniversalUI sem registro de OnEnable antes e durante a invocação do Awake real.
 Com HUD habilitado e GameObject ativo, isActiveAndEnabled permanece false, mas Awake cria canvas, conecta hudPokemon, placares e cronômetro, usa duração configurada de 90 segundos e preserva o tema de execução da liga e suas fontes. Repetir o preparo não duplica canvas. Com HUD desabilitado ou GameObject inativo, Awake não prepara a interface.
 Nenhum OnEnable é disparado ou marcado retroativamente pelo harness. Isso simula o estado observável documentado para esse cenário; não demonstra a ordem real dos callbacks, renderização ou importação no Unity Editor, que não foi executado.
+
+REVALIDAÇÃO DE TEXTOS EM INGLÊS — 2026-11-11
+O teste existente da interface foi repetido contra as fontes atuais:376 verificações passaram. Alterações limitadas a textos visíveis em ClassificacaoUI,AberturaJogoUI e TournamentManager. A revisão de diff e literais não encontrou os termos italianos antigos nos scripts. Não houve execução do Unity Editor.

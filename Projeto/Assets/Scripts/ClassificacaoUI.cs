@@ -406,7 +406,7 @@ public class ClassificacaoUI : MonoBehaviour
         Texto(
             painel,
             "Title",
-            "STANDINGS   /   CLASSIFICA",
+            "STANDINGS",
             150f,
             69f,
             1320f,
@@ -437,7 +437,7 @@ public class ClassificacaoUI : MonoBehaviour
             cabecalho,
             new[]
             {
-                "POS", "TEAM / SQUADRA", "PTS",
+                "POS", "TEAM", "PTS",
                 "P", "W", "D", "L", "GD"
             },
             19f,
@@ -448,8 +448,8 @@ public class ClassificacaoUI : MonoBehaviour
             painel,
             "Fixtures Title",
             encerramento
-                ? "RESULTS   /   RISULTATI"
-                : "FIXTURES   /   PARTITE",
+                ? "RESULTS"
+                : "FIXTURES",
             1140f,
             142f,
             540f,
@@ -642,8 +642,8 @@ public class ClassificacaoUI : MonoBehaviour
             painel,
             "Footer",
             encerramento
-                ? $"AFTER MATCHDAY {rodada}   /   DOPO LA GIORNATA {rodada}"
-                : $"BEFORE MATCHDAY {rodada}   /   PRIMA DELLA GIORNATA {rodada}",
+                ? $"AFTER MATCHDAY {rodada}"
+                : $"BEFORE MATCHDAY {rodada}",
             40f,
             913f,
             1640f,

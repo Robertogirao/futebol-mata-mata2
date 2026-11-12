@@ -1,32 +1,15 @@
 {
-  "patch": "Pokemon_Liga_Correcao_Tamanho_Bolas_2026-11-11.zip",
-  "patch_bytes": 108726,
-  "patch_sha256": "70c2d30517dfba6deb3005f9e9a5eb09a5808f35504d6d3a89c10cd05e13a161",
+  "patch": "Pokemon_Liga_Apenas_Ingles_2026-11-11.zip",
+  "patch_bytes": 17635,
+  "patch_sha256": "a24d0aa8986e129cb7ebdaf4c25b9eb625be041fddab1e2c6d9f47eea03ba2db",
   "changed_source_files": [
-    "Projeto/Assets/Editor/EventosPartidaPokemonMenu.cs",
-    "Projeto/Assets/Editor/LancadorEquipeRocketMenu.cs",
-    "Projeto/Assets/Editor/LigaPokemonEditor.cs",
-    "Projeto/Assets/Pokemon/Arte/Bola_Base_Pokemon.png",
-    "Projeto/Assets/Pokemon/Arte/Bola_Base_Pokemon.png.meta",
-    "Projeto/Assets/Pokemon/Prefabs/Bola_Pokemon.prefab",
-    "Projeto/Assets/Scripts/AutoBallPipe.cs",
-    "Projeto/Assets/Scripts/BallController.cs",
+    "Projeto/Assets/Scripts/AberturaJogoUI.cs",
     "Projeto/Assets/Scripts/ClassificacaoUI.cs",
-    "Projeto/Assets/Scripts/EventosPartidaPokemon.cs",
-    "Projeto/Assets/Scripts/GoalDetector.cs",
-    "Projeto/Assets/Scripts/GoalkeeperController.cs",
-    "Projeto/Assets/Scripts/LancadorEquipeRocket.cs",
-    "Projeto/Assets/Scripts/LigaPokemon.cs",
-    "Projeto/Assets/Scripts/PokemonHUD.cs",
     "Projeto/Assets/Scripts/TournamentManager.cs"
   ],
-  "project_files_in_patch": 30,
+  "project_files_in_patch": 6,
   "zip_crc_valid": true,
-  "overlay_base_versions_verified": [
-    "pokemon-liga-v2026.11.11",
-    "pokemon-liga-v2026.11.11.1",
-    "pokemon-liga-v2026.11.11.2"
-  ],
+  "overlay_base_version_verified": "pokemon-liga-v2026.11.11.3",
   "overlay_equals_current_project_files": 4385,
-  "scene_and_project_settings_in_patch": false
+  "scene_prefab_sprite_and_project_settings_in_patch": false
 }

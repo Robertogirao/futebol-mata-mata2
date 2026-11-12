@@ -1,0 +1,14 @@
+{
+  "version": "pokemon-liga-v2026.11.11.4",
+  "visible_texts_changed": 10,
+  "source_hashes": {
+    "Projeto/Assets/Scripts/AberturaJogoUI.cs": "1ccc2e63cacf360a69d56241de1ccdadb1e9182d146b9db77fe535105506866f",
+    "Projeto/Assets/Scripts/ClassificacaoUI.cs": "969a5d72e520991de021544b183292d4d643c0e820302f353baa78baa36a987e",
+    "Projeto/Assets/Scripts/TournamentManager.cs": "89a57727a8f35be8ad08b1cc5ebddeea96c1fe807fe72bca8c8d167bdc6a853a"
+  },
+  "changes_outside_string_literals": false,
+  "italian_labels_remaining_in_scripts": 0,
+  "existing_ui_assertions_passed": 376,
+  "unity_editor_executed": false,
+  "limits": "Existing UI regression uses Unity/TMP/dependency stubs; the actual opening renderer and Unity Editor were not executed."
+}

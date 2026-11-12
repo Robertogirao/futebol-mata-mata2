@@ -2,14 +2,14 @@
 
 Projeto Unity dedicado a pontos corridos, com calendário, classificação e progresso salvos automaticamente. A configuração inicial tem **10 Pokémon e 9 rodadas**.
 
-## Correção do tamanho das bolas
+## Interface somente em inglês
 
-A versão `pokemon-liga-v2026.11.11.3` corrige as bolas gigantes. O sprite substituto media 4,86 unidades antes da escala do prefab; agora a bola usa um sprite dedicado de uma unidade. Com a escala existente de 0,65, seu desenho acompanha o diâmetro físico de 0,65 unidade. A hélice e os logos mantêm a imagem original. Esta versão inclui as correções anteriores de inicialização, importação e APIs.
+A versão `pokemon-liga-v2026.11.11.4` deixa a abertura, a classificação e os avisos de rodada somente em inglês. Foram removidas as traduções italianas que apareciam junto aos textos ingleses. O projeto completo inclui as correções anteriores de tamanho das bolas, inicialização, importação e APIs.
 
 Para atualizar uma cópia já extraída, consulte [ATUALIZACAO.md](ATUALIZACAO.md).
 
-- [Baixar ZIP pequeno de atualização](https://raw.githubusercontent.com/Robertogirao/futebol-mata-mata2/pokemon-liga-v2026.11.11.3/Downloads/Pokemon_Liga_Correcao_Tamanho_Bolas_2026-11-11.zip).
-- [Baixar projeto completo atualizado](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/pokemon-liga-v2026.11.11.3.zip).
+- [Baixar ZIP pequeno de idioma para atualizar a versão .3](https://raw.githubusercontent.com/Robertogirao/futebol-mata-mata2/pokemon-liga-v2026.11.11.4/Downloads/Pokemon_Liga_Apenas_Ingles_2026-11-11.zip).
+- [Baixar projeto completo atualizado](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/pokemon-liga-v2026.11.11.4.zip).
 
 ## Abrir no Unity
 

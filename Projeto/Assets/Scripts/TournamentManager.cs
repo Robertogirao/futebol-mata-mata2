@@ -374,7 +374,7 @@ public class TournamentManager : MonoBehaviour
         if (textoTituloFase != null)
         {
             textoTituloFase.text =
-                $"MATCHDAY {rodadaDesejada} / GIORNATA {rodadaDesejada}";
+                $"MATCHDAY {rodadaDesejada}";
         }
 
         if (UsarTabela)
@@ -1132,7 +1132,7 @@ public class TournamentManager : MonoBehaviour
         if (textoTituloFase != null)
         {
             textoTituloFase.text =
-                $"MATCHDAY {rodadaDesejada} COMPLETE / GIORNATA {rodadaDesejada} CONCLUSA";
+                $"MATCHDAY {rodadaDesejada} COMPLETE";
         }
 
         Debug.Log(

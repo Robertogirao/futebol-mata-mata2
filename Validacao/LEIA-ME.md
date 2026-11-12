@@ -21,7 +21,7 @@ A versão `pokemon-liga-v2026.11.11.1` repete os grupos de controlador, motor, a
 
 `prefab-repair` registra as duas referências locais inválidas antes da correção e zero erros depois em todos os três prefabs/cenas do projeto, incluindo composição dos GameObjects e hierarquia. A importação real continua dependendo do Unity.
 
-`atualizacao-zip-verificada.json` confirma que aplicar o ZIP pequeno às entregas anteriores produz os mesmos arquivos do projeto atualizado, preservando a cena e as configurações.
+`atualizacao-zip-verificada.json` registra a versão de origem e confirma que aplicar o ZIP pequeno produz os mesmos arquivos do projeto atualizado, preservando a cena e as configurações.
 
 ## Inicialização antes de OnEnable
 
@@ -36,3 +36,9 @@ Os relatórios `startup-regression-summary.json`, `startup-regression-before.txt
 Na versão `pokemon-liga-v2026.11.11.3`, a correção é restrita aos assets: um sprite dedicado com PPU normalizado e a referência desse sprite no prefab. O PNG mantém os pixels da imagem original. A checagem dimensional usa recorte, PPU, escala do prefab, raio do colisor e a ocupação do retrato para conferir os tamanhos antes e depois. Também confere que os demais registros do prefab, parâmetros físicos e o sprite original compartilhado permanecem iguais.
 
 Os relatórios em `ball-scale` registram o alcance da verificação estática. Não foram alterados scripts nesta correção, e não houve renderização, importação ou execução em Play no Unity.
+
+## Textos somente em inglês
+
+Na versão `pokemon-liga-v2026.11.11.4`, dez textos visíveis em `ClassificacaoUI`, `AberturaJogoUI` e `TournamentManager` perderam os trechos italianos. Os nomes de campos, dados salvos, tempos e cálculos permanecem iguais. A revisão do diff conferiu que as mudanças de código se limitam aos textos; o teste existente da interface foi repetido e manteve 376 verificações aprovadas. Não foram criados testes adicionais para esta alteração de texto.
+
+`english-ui-update.json` lista as fontes e o escopo da verificação. A revisão da interface usa APIs simuladas e não equivale a executar o Unity Editor.
