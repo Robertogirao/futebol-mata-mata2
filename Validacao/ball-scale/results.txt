@@ -1,0 +1,4 @@
+PASS dedicated ball diameter 0.65, rim 0.715 and portrait maximum 0.572 world units
+PASS original PNG bytes; prefab-only GUID change; 1075 preserved source hashes
+PASS 3 scene/prefab files without PPtr/component/hierarchy errors
+Scope: static source validation; Unity Editor was not executed.

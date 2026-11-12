@@ -1,0 +1,78 @@
+{
+  "baseline_commit": "39304b8fa604aeb931e6d717c0df7460d39e45b4",
+  "source_asset": "Assets/Pokemon/Arte/Bola_Base_Pokemon.png",
+  "texture_guid": "3ffa0a1e721d46d5a5069348e9140557",
+  "sprite_id": "c3f8e520852845389e7cba89f5f008c8",
+  "sprite_file_id": 21300000,
+  "png_sha256": "d9065d2342e1b861c23159916629f3b46cf82cc0deb24886771f718cb04ac3dc",
+  "png_bytes_identical_to_original": true,
+  "texture_pixels": [
+    512,
+    512
+  ],
+  "sprite_crop_pixels": [
+    486,
+    486
+  ],
+  "old_pixels_per_unit": 100,
+  "new_pixels_per_unit": 486,
+  "root_scale": {
+    "x": 0.65,
+    "y": 0.65,
+    "z": 1
+  },
+  "collider_local_radius": 0.5,
+  "old_world_diameter": 3.1590000000000003,
+  "old_rim_world_diameter": 3.4749000000000008,
+  "new_world_diameter": 0.65,
+  "new_rim_world_diameter": 0.7150000000000001,
+  "new_max_portrait_world_size": 0.5720000000000001,
+  "physical_world_diameter": 0.65,
+  "prefab_change_only_sprite_guid": true,
+  "preserved_source_files": 1075,
+  "source_asset_guids_unique": 2191,
+  "prefab_scene_audits": [
+    {
+      "path": "/workspace/work/github/pokemon-liga-entrega/Projeto/Assets/Pokemon/Prefabs/Bola_Pokemon.prefab",
+      "documents": 11,
+      "gameobjects": 2,
+      "local_nonzero_references": 22,
+      "source_guid_count": 6,
+      "external_package_or_builtin_guids": [
+        "9541d86e2fd84c1d9990edf0852d74ab"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/pokemon-liga-entrega/Projeto/Assets/Scenes/Ligas/Liga_Pokemon.unity",
+      "documents": 82,
+      "gameobjects": 18,
+      "local_nonzero_references": 166,
+      "source_guid_count": 36,
+      "external_package_or_builtin_guids": [
+        "01614664b831546d2ae94a42149d80ac",
+        "073797afb82c5a1438f328866b10b3f0",
+        "311925a002f4447b3a28927169b83ea6",
+        "76c392e42b5098c458856cdf6ecaaaa1",
+        "a79441f348de89743a2939f4d699eac1",
+        "a97c105638bdf8b4a8650670310a4cd3",
+        "ca9f5fa95ffab41fb9a615ab714db018"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/pokemon-liga-entrega/Projeto/Assets/Settings/Scenes/URP2DSceneTemplate.unity",
+      "documents": 12,
+      "gameobjects": 2,
+      "local_nonzero_references": 12,
+      "source_guid_count": 0,
+      "external_package_or_builtin_guids": [
+        "073797afb82c5a1438f328866b10b3f0",
+        "a79441f348de89743a2939f4d699eac1"
+      ],
+      "errors": []
+    }
+  ],
+  "unity_editor_executed": false,
+  "limits": "Static importer metadata, PNG bytes, source dimensions and YAML references. Does not run Unity import, rendering, callbacks or real physics."
+}

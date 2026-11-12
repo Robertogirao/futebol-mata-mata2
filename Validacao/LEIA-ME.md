@@ -21,7 +21,7 @@ A versão `pokemon-liga-v2026.11.11.1` repete os grupos de controlador, motor, a
 
 `prefab-repair` registra as duas referências locais inválidas antes da correção e zero erros depois em todos os três prefabs/cenas do projeto, incluindo composição dos GameObjects e hierarquia. A importação real continua dependendo do Unity.
 
-`atualizacao-zip-verificada.json` confirma que aplicar o ZIP pequeno à entrega anterior produz os mesmos 4.383 arquivos do projeto atualizado, preservando a cena e as configurações.
+`atualizacao-zip-verificada.json` confirma que aplicar o ZIP pequeno às entregas anteriores produz os mesmos arquivos do projeto atualizado, preservando a cena e as configurações.
 
 ## Inicialização antes de OnEnable
 
@@ -30,3 +30,9 @@ Na versão `pokemon-liga-v2026.11.11.2`, as regressões do controlador e do HUD 
 O controlador anterior reproduziu a mensagem exata **Ative os componentes da liga antes do Play** nesse cenário; o código corrigido passou no mesmo teste. Foram preservadas as 106 verificações anteriores e acrescentadas 48 sobre inicialização, componentes realmente desativados, objetos inativos e validação sem gravação. No HUD, as 360 verificações anteriores foram preservadas e 16 novas conferem o `Awake` real antes do registro de `OnEnable`, as referências do placar, o cronômetro e o tema.
 
 Os relatórios `startup-regression-summary.json`, `startup-regression-before.txt` e `hud-awake-regression.json` detalham a execução. A sequência de ativação foi simulada em C#; isso não equivale a executar o Unity Editor.
+
+## Escala do sprite da bola
+
+Na versão `pokemon-liga-v2026.11.11.3`, a correção é restrita aos assets: um sprite dedicado com PPU normalizado e a referência desse sprite no prefab. O PNG mantém os pixels da imagem original. A checagem dimensional usa recorte, PPU, escala do prefab, raio do colisor e a ocupação do retrato para conferir os tamanhos antes e depois. Também confere que os demais registros do prefab, parâmetros físicos e o sprite original compartilhado permanecem iguais.
+
+Os relatórios em `ball-scale` registram o alcance da verificação estática. Não foram alterados scripts nesta correção, e não houve renderização, importação ou execução em Play no Unity.

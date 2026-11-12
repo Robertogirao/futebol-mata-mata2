@@ -1,0 +1,39 @@
+{
+  "baseline_commit": "39304b8fa604aeb931e6d717c0df7460d39e45b4",
+  "scope": "Independent static asset/serialization review; Unity import and Play not executed",
+  "project_tracked_changes": [
+    "Projeto/Assets/Pokemon/Prefabs/Bola_Pokemon.prefab"
+  ],
+  "project_new_files": [
+    "Projeto/Assets/Pokemon/Arte/Bola_Base_Pokemon.png",
+    "Projeto/Assets/Pokemon/Arte/Bola_Base_Pokemon.png.meta"
+  ],
+  "unique_asset_guids": 2191,
+  "new_texture_bytes_equal_to_original": true,
+  "original_texture_and_meta_unchanged": true,
+  "prefab_meta_unchanged": true,
+  "prefab_change_exactly_one_guid": true,
+  "scene_physics_and_existing_assets_unchanged": true,
+  "new_guid": "3ffa0a1e721d46d5a5069348e9140557",
+  "new_sprite_id": "c3f8e520852845389e7cba89f5f008c8",
+  "sprite_subasset_file_id": 21300000,
+  "texture_dimensions": [
+    512,
+    512
+  ],
+  "sprite_rect": {
+    "serializedVersion": 2,
+    "x": 13,
+    "y": 13,
+    "width": 486,
+    "height": 486
+  },
+  "old_pixels_per_unit": 100,
+  "new_pixels_per_unit": 486,
+  "old_world_base_diameter": 3.1590000000000003,
+  "new_world_base_diameter": 0.65,
+  "world_collider_diameter": 0.65,
+  "new_portrait_max_dimension": 0.5720000000000001,
+  "new_outline_diameter": 0.7150000000000001,
+  "result": "PASS"
+}
