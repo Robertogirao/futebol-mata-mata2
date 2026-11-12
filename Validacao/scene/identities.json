@@ -1,0 +1,26 @@
+{
+  "scene_guid": "2f36b54bf17342639499fbab8fe77168",
+  "theme_guid": "7b880d4b3a074ecba3d48629c8285577",
+  "editor_guid": "38f64881c94040f5a7c3f3aa0787a253",
+  "manager_guid": "a6bfe1fc140649d5a13c3703f3c19da1",
+  "participants": [
+    1,
+    4,
+    7,
+    25,
+    54,
+    74,
+    92,
+    133
+  ],
+  "participant_guids": [
+    "1fad43906d925441ba0be69975adcf16",
+    "175219f40e6d53f0acedca3d6e13e452",
+    "d38f6eaa68d65916b1b380ceaeceb41f",
+    "589b85138a13509b82ec05e7ab3f0d98",
+    "7a22363d71d05ba096f5646da84a9a10",
+    "dc4264f9fe0d59d68415b1931843a4f4",
+    "e911002c914252c69b359048ba67d01c",
+    "de05a425d932510e940d0485aad4b49b"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "assertions_passed": 232,
+  "compiled_source": "Assets/MarbleRace/Scripts/RaceHud.cs",
+  "sha256": "430b79c68f6dc3f31ba557c3441d851075dc501135b0cb1222ceaff886c41a53",
+  "unity_editor_executed": false,
+  "layout_target": "1920x1080 / 16:9",
+  "api": "RaceHud contract in CONTRACTS.md",
+  "limit": "Unity/TMP/UI stubs; tests validate source behavior and declared geometry, not rendered glyphs or real callback timing."
+}

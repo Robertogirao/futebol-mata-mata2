@@ -1,0 +1,2 @@
+PASS 64 checks: editor contract matches actual compiled MarbleRaceManager public fields, properties, methods and format values.
+Scope: reflection over real source compiled with runtime Unity stubs, not Unity Editor execution.

@@ -1,0 +1,25 @@
+VALIDAÇÃO DO INSPECTOR MARBLE RACE
+
+Compilados juntos: MarbleRaceManagerEditor.cs e PokemonDados.cs reais.
+UnityEngine, UnityEditor e o contrato público do gerenciador são simulados.
+Não executa Unity Editor, importação ou Play Mode.
+
+Cobertura: campos centrais, presets e formatos, listas sem duplicação automática,
+filtros múltiplos de geração/tipo e inclusão do tipo secundário, sorteios sem
+espécies repetidas, falhas sem alterar a lista, nova temporada sem apagar
+resultados, Undo e marcação de cena, menu respeitando cancelamento, bloqueio
+em Play e continuação manual.
+
+PASS central controls, all format presets, multiselect and immutable Play configuration
+PASS filtered distinct draws, secondary types, invalid counts/cards and failure immutability
+PASS isolated seasons, saved-file preservation, scene menu and continuation actions
+PASS 125 assertions using real MarbleRaceManagerEditor/PokemonDados with UnityEditor/manager contract stubs
+
+SHA256 do editor real compilado:
+b0c7839272231b3171364250ca5c08281815027c7e08f2eb48618e8ded87a664
+
+Verificações adicionais: slider de diâmetro 0,30–0,65, valor padrão 0,55 e ausência de normalização durante Play.
+
+CONFERÊNCIA CONTRA O CONTROLADOR REAL
+PASS 64 checks: editor contract matches actual compiled MarbleRaceManager public fields, properties, methods and format values.
+Scope: reflection over real source compiled with runtime Unity stubs, not Unity Editor execution.

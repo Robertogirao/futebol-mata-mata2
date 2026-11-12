@@ -1,0 +1,25 @@
+VALIDAÇÃO DO HUD — POKÉMON MARBLE RACE
+
+Fonte real compilada: Assets/MarbleRace/Scripts/RaceHud.cs.
+APIs de UnityEngine, Unity.UI e TextMeshPro substituídas por contratos de teste.
+Compilação sem erros e avisos. Unity Editor, importação, renderização e Play Mode
+não foram executados.
+
+232 verificações cobrem:
+- Build explícito com componente ainda sem registro de OnEnable.
+- Criação de um único canvas, fontes configuradas e fallback TMP.
+- Atualização idempotente de nome e fontes sem criar outro canvas.
+- Relógio regressivo, segurança para NaN e números de corrida.
+- 8 e 16 participantes com retratos, nomes, posições e resultados corretos.
+- Limites geométricos do placar lateral e da tabela antes do rodapé.
+- Reordenação de participantes mantendo identidade e foto.
+- Pooling estável após 100 atualizações do placar por tamanho de lista.
+- Resultado reutilizável, intro/countdown, esconder/mostrar overlay.
+- Aviso de habilidade e remoção ao expirar.
+- Listas vazias, OnDisable/OnEnable, Clear e reconstrução.
+
+Saída:
+PASS lifecycle, fonts, pooling, countdown, timing, abilities and 8/16 entrant standings
+PASS 232 assertions using real RaceHud with Unity/TMP/UI stubs
+
+SHA256 RaceHud.cs: 430b79c68f6dc3f31ba557c3441d851075dc501135b0cb1222ceaff886c41a53

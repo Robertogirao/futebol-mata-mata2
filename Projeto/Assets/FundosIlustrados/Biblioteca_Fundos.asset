@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb9e75832c28559686b780f5d48ec457, type: 3}
+  m_Name: Biblioteca_Fundos
+  m_EditorClassIdentifier: Assembly-CSharp::BibliotecaFundosPokemon
+  fundoMisto: {fileID: 21300000, guid: 1d522876fec75de190a51f2e78a39e6b, type: 3}
+  apresentacaoMista: {fileID: 0}
+  fundos:
+  - tipo: 1
+    arena: {fileID: 21300000, guid: 1d522876fec75de190a51f2e78a39e6b, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 2
+    arena: {fileID: 21300000, guid: f9355e2aa0b4571ea70cc73f7a8f0873, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 3
+    arena: {fileID: 21300000, guid: 9632b52668df5ccfa85623f32d337c88, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 4
+    arena: {fileID: 21300000, guid: bc0c97c7cf1a59b1afbc858d59ab4e02, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 5
+    arena: {fileID: 21300000, guid: d4ac6b993cf951c5bb80c0da5626c7b5, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 6
+    arena: {fileID: 21300000, guid: 2c244a6c6d0450c88751bb3b6c8a3878, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 7
+    arena: {fileID: 21300000, guid: 69e71b22ff595fe486ea6379ec88db31, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 8
+    arena: {fileID: 21300000, guid: 8706649c925a5436bb238ca3a67ab8be, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 9
+    arena: {fileID: 21300000, guid: 036eb93c6a0458c2a1d6b1ab9bebb932, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 10
+    arena: {fileID: 21300000, guid: 8fb8bf93695855f1af0aa9bc1925ff93, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 11
+    arena: {fileID: 21300000, guid: 79294f2e7a08505f8d6876633c9d46c4, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 12
+    arena: {fileID: 21300000, guid: 1c40aa521550578b866663c47c42a1d2, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 13
+    arena: {fileID: 21300000, guid: 9d1ae34ee67958f39d7d9ec5c8e005e3, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 14
+    arena: {fileID: 21300000, guid: 8978adcaf2215c2e8b3a6da82c46bf69, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 15
+    arena: {fileID: 21300000, guid: 8b02f5afac285c19ace8b22255d4c041, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 16
+    arena: {fileID: 21300000, guid: a4e7f5221b385bbba48749a242a9bee6, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 17
+    arena: {fileID: 21300000, guid: 622e8f7921cb5bdeb431956c1dccafb5, type: 3}
+    apresentacao: {fileID: 0}
+  - tipo: 18
+    arena: {fileID: 21300000, guid: 1b9439d3bc015e2d98f957ce30d57a12, type: 3}
+    apresentacao: {fileID: 0}

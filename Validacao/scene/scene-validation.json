@@ -1,0 +1,37 @@
+{
+  "path": "/workspace/work/pokemon-marble-race/Projeto/Assets/Scenes/MarbleRace/MarbleRace_Pokemon.unity",
+  "documents": 20,
+  "gameobjects": 4,
+  "local_nonzero_references": 26,
+  "source_guid_count": 13,
+  "external_package_or_builtin_guids": [
+    "01614664b831546d2ae94a42149d80ac",
+    "073797afb82c5a1438f328866b10b3f0",
+    "76c392e42b5098c458856cdf6ecaaaa1",
+    "a79441f348de89743a2939f4d699eac1",
+    "ca9f5fa95ffab41fb9a615ab714db018"
+  ],
+  "errors": [],
+  "unique_source_guids": true,
+  "missing_cs_metas": [],
+  "root_count": 4,
+  "legacy_gameplay_components": false,
+  "participant_ids": [
+    1,
+    4,
+    7,
+    25,
+    54,
+    74,
+    92,
+    133
+  ],
+  "default_races": 3,
+  "default_target_seconds": 45,
+  "default_max_seconds": 60,
+  "camera_orthographic_size": 8.3,
+  "build_only_race": true,
+  "product_name": "Pokemon Marble Race",
+  "resources_unlit_material": true,
+  "manager_source_present": true
+}

@@ -1,0 +1,20 @@
+COMPETITION AND PERSISTENCE VALIDATION — 2026-11-12
+
+Real source files compiled together without Unity dependencies or Unity stubs:
+- Assets/MarbleRace/Scripts/RaceCompetition.cs
+- Assets/MarbleRace/Scripts/RaceStorage.cs
+
+Compilation succeeded with no warnings or errors.
+
+PASS GP/single schedules, deterministic saved seeds, real JSON resumes and idempotent scoring
+PASS Best of Three early finish, deciding race and restored winner
+PASS knockout rosters2..32, qualifiers, complete saved bracket and final champion ranking
+PASS invalid configuration, changed seasons, tampered schedules and invalid results preserve domain state
+PASS actual JSON disk writes, atomic failures/retries, concurrency, backup recovery and corrupt-file preservation
+PASS 2769 assertions on real RaceCompetition and RaceStorage sources, without Unity stubs
+
+JSON tests inject DataContractJsonSerializer through IRaceSerializer. The Unity runtime supplies JsonUtility through the same interface; Unity's serializer and actual Play Mode were not executed here.
+
+Source SHA256:
+b0ab8a060776c1cbd1dd9ce7d6e69e95129ab55d564c8a1d952a884345b09ab4  RaceCompetition.cs
+68e08e3608a48cf57ee1102a6df752eec3c4809cd8485dfd00ea83f8edba4b35  RaceStorage.cs

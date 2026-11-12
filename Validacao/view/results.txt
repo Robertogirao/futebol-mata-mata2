@@ -1,0 +1,25 @@
+VALIDAÇÃO DO MUNDO DA PISTA — MARBLE RACE
+
+PASS road meshes, physical walls, main/shortcut passage, obstacle lists and elapsed animation
+PASS resource cleanup, world-unit sizes, missing-font fallback and empty-course safety
+PASS 150 assertions using real RaceCourse, RaceTrackView and RaceObstacleMotion with Unity contract facade
+Scope: no Unity Editor, native import, rendering or collision solver was executed.
+
+Fontes reais compiladas: RaceCourse, RaceTrackView e RaceObstacleMotion.
+O contrato Unity é uma fachada de C# e objetos, não um renderizador ou solver físico.
+
+Cobertura:
+- Seis seeds reais, todos os cinco tipos de obstáculos e pistas com bypass.
+- Malhas de estrada finitas, índices válidos e dimensões dentro da câmera.
+- Corredores principais e atalhos sem paredes bloqueando o centro para a marble padrão0.55.
+- Paredes físicas com material compartilhado; lista Ghost exclui rails e triggers.
+- Checkers START/FINISH, setas, tamanhos de sprite e lista de recursos.
+- Animação por tempo de hélices e portões; Snorlax abre/fecha a colisão.
+- Limpeza, fontes ausentes e pista vazia.
+
+Limites: nenhuma importação nativa, renderização, callback real do Unity ou colisão entre rigidbodies foi executada. Destruição no contrato é imediata; no Unity real ela é agendada para o fim do frame, com o objeto já desativado pelo Clear.
+
+Hashes das fontes:
+9908766c5c469924a9142976ad3d7534163fb8a9594086ee8e0b9a734961ed6d  Assets/MarbleRace/Scripts/RaceCourse.cs
+3643e6a43fee1c3af3c076724ea66a8f68502cbb615099a30e9ef77d0d2dde68  Assets/MarbleRace/Scripts/RaceTrackView.cs
+514da96b191685b2889672a9c65f9e84a89bf11b34f890e3060acfcfece3c3a8  Assets/MarbleRace/Scripts/RaceObstacleMotion.cs

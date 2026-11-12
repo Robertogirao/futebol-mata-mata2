@@ -1,0 +1,71 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+namespace UnityEngine {
+[AttributeUsage(AttributeTargets.All)] public class DefaultExecutionOrder:Attribute{public DefaultExecutionOrder(int n){}}
+[AttributeUsage(AttributeTargets.All)] public class HeaderAttribute:Attribute{public HeaderAttribute(string s){}}
+[AttributeUsage(AttributeTargets.All)] public class TooltipAttribute:Attribute{public TooltipAttribute(string s){}}
+[AttributeUsage(AttributeTargets.All)] public class InspectorNameAttribute:Attribute{public InspectorNameAttribute(string s){}}
+[AttributeUsage(AttributeTargets.All)] public class MinAttribute:Attribute{public MinAttribute(float n){}}
+[AttributeUsage(AttributeTargets.All)] public class RangeAttribute:Attribute{public RangeAttribute(float a,float b){}}
+[AttributeUsage(AttributeTargets.All)] public class HideInInspector:Attribute{}
+[AttributeUsage(AttributeTargets.All)] public class DisallowMultipleComponent:Attribute{}
+[AttributeUsage(AttributeTargets.All)] public class ContextMenu:Attribute{public ContextMenu(string n){}}
+public class Object { public string name; public bool destroyed; public static void Destroy(Object o){if(o!=null)o.destroyed=true;} public static void DestroyImmediate(Object o){Destroy(o);} public static T FindAnyObjectByType<T>()where T:Object{foreach(var g in GameObject.all){if(!g.activeInHierarchy)continue;foreach(var c in g.Components)if(c is T)return c as T;}return null;} public static T[] FindObjectsByType<T>() where T:Object{return new T[0];} public static T[] FindObjectsByType<T>(FindObjectsInactive inactive) where T:Object{return new T[0];} }
+public enum FindObjectsInactive{Exclude,Include}
+public class GameObject:Object {
+ public UnityEngine.SceneManagement.Scene scene;public static List<GameObject> all=new List<GameObject>();public IEnumerable<Component> Components{get{return comps.Values;}}Dictionary<Type,Component> comps=new Dictionary<Type,Component>(); public Transform transform; public int layer; public bool activeSelf=true;
+ public GameObject(string n="",params Type[] types){all.Add(this);name=n; bool rect=Array.IndexOf(types,typeof(RectTransform))>=0; transform=rect?(Transform)new RectTransform():new Transform();transform.gameObject=this; comps[transform.GetType()]=transform; foreach(var t in types)if(!typeof(Transform).IsAssignableFrom(t))AddComponent(t);}
+ public bool activeInHierarchy{get{return activeSelf&&(transform.parent==null||transform.parent.gameObject.activeInHierarchy);}}
+ public Component AddComponent(Type t){var c=(Component)Activator.CreateInstance(t);c.gameObject=this;comps[t]=c;return c;}
+ public T AddComponent<T>()where T:Component,new(){return(T)AddComponent(typeof(T));}
+ public T GetComponent<T>()where T:class{foreach(var c in comps.Values)if(c is T)return c as T;return null;}
+ public T[] GetComponents<T>()where T:Component{var r=new List<T>();foreach(var c in comps.Values)if(c is T)r.Add((T)c);return r.ToArray();}
+ public T[] GetComponentsInChildren<T>(bool inactive)where T:Component{var r=new List<T>();foreach(var c in comps.Values)if(c is T&&(inactive||activeInHierarchy))r.Add((T)c);foreach(var child in transform.children)r.AddRange(child.gameObject.GetComponentsInChildren<T>(inactive));return r.ToArray();}
+ public void SetActive(bool active){bool old=activeInHierarchy;activeSelf=active;if(old&&!activeInHierarchy)DisableTree();}
+ void DisableTree(){foreach(var c in comps.Values){var m=c.GetType().GetMethod("OnDisable",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);if(m!=null)m.Invoke(c,null);} foreach(var child in transform.children)child.gameObject.DisableTree();}
+}
+public class Component:Object {public GameObject gameObject;public T[] GetComponents<T>()where T:Component{return gameObject.GetComponents<T>();}public T[] GetComponentsInChildren<T>(bool inactive)where T:Component{return gameObject.GetComponentsInChildren<T>(inactive);}public Transform transform{get{return gameObject.transform;}}public T GetComponent<T>()where T:class{return gameObject.GetComponent<T>();}public T GetComponentInParent<T>()where T:class{for(var t=transform;t!=null;t=t.parent){var c=t.gameObject.GetComponent<T>();if(c!=null)return c;}return null;}}
+// Existing fixtures represent already registered callbacks; the lifecycle fixture explicitly keeps this false before/through Awake.
+public class Behaviour:Component{public bool enabled=true; public bool onEnableRegistered=true; public bool isActiveAndEnabled{get{return enabled&&onEnableRegistered&&gameObject!=null&&gameObject.activeInHierarchy&&!destroyed;}}}
+public class MonoBehaviour:Behaviour{
+ public Coroutine StartCoroutine(IEnumerator e){return Scheduler.Start(e);} public void StopCoroutine(Coroutine c){if(c!=null)c.stopped=true;}public void StopAllCoroutines(){}public void CancelInvoke(string s){}public void Invoke(string s,float f){}
+}
+public class Coroutine{public Stack<IEnumerator> stack=new Stack<IEnumerator>();public bool stopped;public Coroutine(IEnumerator e){stack.Push(e);}}
+public static class Scheduler{
+ static List<Coroutine> routines=new List<Coroutine>();public static double Seconds;
+ public static void Reset(){routines.Clear();Seconds=0;Time.timeScale=1;Time.captureDeltaTime=0;Time.unscaledDeltaTime=0.1f;Time.deltaTime=.1f;}
+ public static Coroutine Start(IEnumerator e){var c=new Coroutine(e);routines.Add(c);Advance(c);return c;}
+ static void Advance(Coroutine c){while(!c.stopped&&c.stack.Count>0){var e=c.stack.Peek();if(!e.MoveNext()){c.stack.Pop();continue;}var child=e.Current as IEnumerator;if(child!=null){c.stack.Push(child);continue;}return;}}
+ public static void Tick(float dt=.1f){Time.unscaledDeltaTime=dt;Time.deltaTime=dt*Time.timeScale;Seconds+=dt;foreach(var c in routines.ToArray())Advance(c);routines.RemoveAll(c=>c.stopped||c.stack.Count==0);}
+}
+public class Transform:Component{public Quaternion rotation,localRotation;public Vector3 localPosition;public Transform parent;public List<Transform>children=new List<Transform>();public Vector3 localScale=Vector3.one;public Vector3 lossyScale{get{return parent==null?localScale:Vector3.Scale(parent.lossyScale,localScale);}}public Vector3 position{get{return parent==null?localPosition:parent.position+localPosition;}set{localPosition=parent==null?value:value-parent.position;}}public void SetParent(Transform p,bool world){parent=p;if(p!=null)p.children.Add(this);}public void SetAsFirstSibling(){}public Transform Find(string n){return children.Find(c=>c.gameObject.name==n);}}
+public struct Rect{public float width,height;public Rect(float w,float h){width=w;height=h;}}
+public class RectTransform:Transform{public Rect rect{get{return new Rect(sizeDelta.x>0?sizeDelta.x:1920,sizeDelta.y>0?sizeDelta.y:1080);}}public Vector2 pivot,sizeDelta,anchoredPosition;public Vector2 anchorMin,anchorMax,offsetMin,offsetMax;}
+public struct Vector2{public float x,y;public Vector2(float x,float y){this.x=x;this.y=y;}public static Vector2 zero{get{return new Vector2();}}public static Vector2 one{get{return new Vector2(1,1);}}public static Vector2 operator+(Vector2 a,Vector2 b){return new Vector2(a.x+b.x,a.y+b.y);}public static Vector2 operator-(Vector2 a,Vector2 b){return new Vector2(a.x-b.x,a.y-b.y);}public static Vector2 operator*(Vector2 a,float b){return new Vector2(a.x*b,a.y*b);}public static Vector2 Lerp(Vector2 a,Vector2 b,float t){return a+(b-a)*Mathf.Clamp01(t);}}
+public struct Vector3{public static Vector3 operator+(Vector3 a,Vector3 b){return new Vector3(a.x+b.x,a.y+b.y,a.z+b.z);}public static Vector3 operator-(Vector3 a,Vector3 b){return new Vector3(a.x-b.x,a.y-b.y,a.z-b.z);}public static Vector3 operator*(Vector3 a,float n){return new Vector3(a.x*n,a.y*n,a.z*n);}public float x,y,z;public Vector3(float x,float y,float z){this.x=x;this.y=y;this.z=z;}public static Vector3 zero{get{return new Vector3();}}public static Vector3 one{get{return new Vector3(1,1,1);}}public static Vector3 Scale(Vector3 a,Vector3 b){return new Vector3(a.x*b.x,a.y*b.y,a.z*b.z);}public static Vector3 Lerp(Vector3 a,Vector3 b,float t){t=Mathf.Clamp01(t);return new Vector3(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);}}
+public struct Vector4{public static Vector4 zero{get{return new Vector4();}}}
+public struct Quaternion{public static Quaternion identity{get{return new Quaternion();}}public static Quaternion Euler(float a,float b,float c){return new Quaternion();}}
+public struct Color{public static Color operator*(Color a,Color b){return new Color(a.r*b.r,a.g*b.g,a.b*b.b,a.a*b.a);}public static Color black{get{return new Color(0,0,0);}}public float r,g,b,a;public Color(float r,float g,float b,float a=1){this.r=r;this.g=g;this.b=b;this.a=a;}public static Color white{get{return new Color(1,1,1);}}public static Color yellow{get{return new Color(1,1,0);}}public float maxColorComponent{get{return Math.Max(r,Math.Max(g,b));}}public static Color Lerp(Color a,Color b,float t){return new Color(a.r+(b.r-a.r)*t,a.g+(b.g-a.g)*t,a.b+(b.b-a.b)*t,a.a+(b.a-a.a)*t);}}
+public static class Mathf{public static float Abs(float n){return Math.Abs(n);}public static float Lerp(float a,float b,float t){return a+(b-a)*Clamp01(t);}public static float Min(float a,float b){return Math.Min(a,b);}public static float Clamp(float v,float a,float b){return Math.Max(a,Math.Min(b,v));}public static int CeilToInt(float v){return(int)Math.Ceiling(v);}public static float Max(float a,float b){return Math.Max(a,b);}public static int Max(int a,int b){return Math.Max(a,b);}public static float Clamp01(float n){return Math.Max(0,Math.Min(1,n));}public static float SmoothStep(float a,float b,float n){n=Clamp01(n);return a+(b-a)*(n*n*(3-2*n));}public static int FloorToInt(float n){return(int)Math.Floor(n);}}
+public static class Time{public static float timeScale=1,deltaTime=.1f,unscaledDeltaTime=.1f,captureDeltaTime;}
+public static class Debug{public static List<string> errors=new List<string>();public static void Log(object s,Object o=null){}public static void LogWarning(object s,Object o=null){}public static void LogError(object s,Object o=null){errors.Add(s.ToString());}}
+public enum RenderMode{ScreenSpaceOverlay}
+public class Canvas:Behaviour{public bool overrideSorting;public static void ForceUpdateCanvases(){}public RenderMode renderMode;public int sortingOrder;}
+public class CanvasGroup:Behaviour{public bool interactable,blocksRaycasts;public float alpha;}
+public struct Bounds{public Vector3 center,size;public Bounds(Vector3 c,Vector3 s){center=c;size=s;}}public class Sprite:Object{public Bounds bounds=new Bounds(Vector3.zero,Vector3.one);}
+public class Material:Object{}public class PhysicsMaterial2D:Object{}
+public class Renderer:Behaviour{public int sortingLayerID,sortingOrder;public Material sharedMaterial;}public class SpriteRenderer:Renderer{public Sprite sprite;public Color color=Color.white;}
+public class Collider2D:Behaviour{public bool isTrigger;public Vector2 offset;public PhysicsMaterial2D sharedMaterial;}public enum CapsuleDirection2D{Vertical,Horizontal}public class CapsuleCollider2D:Collider2D{public Vector2 size;public CapsuleDirection2D direction;}public class CircleCollider2D:Collider2D{public float radius;}public class TextAsset:Object{public string text;}public class Rigidbody2D:Component{}
+public class AudioClip:Object{}public class AudioSource:Behaviour{public bool playOnAwake,loop;public float spatialBlend;public int plays;public void PlayOneShot(AudioClip clip,float v){plays++;}}
+public class WaitForSecondsRealtime{public WaitForSecondsRealtime(float s){}}
+public static class Application{public static bool isPlaying=true;} public static class Resources{public static T Load<T>(string key) where T:Object{return null;}}
+}
+namespace UnityEngine.UI{public class GraphicRaycaster:UnityEngine.Behaviour{}public class CanvasScaler:UnityEngine.Behaviour{public enum ScaleMode{ScaleWithScreenSize}public enum ScreenMatchMode{MatchWidthOrHeight}public ScaleMode uiScaleMode;public ScreenMatchMode screenMatchMode;public UnityEngine.Vector2 referenceResolution;public float matchWidthOrHeight;}public class Image:UnityEngine.Behaviour{public UnityEngine.RectTransform rectTransform{get{return transform as UnityEngine.RectTransform;}}public UnityEngine.Sprite sprite;public UnityEngine.Color color;public bool raycastTarget,preserveAspect;}}
+namespace TMPro{public class TMP_FontAsset:UnityEngine.Object{}public static class TMP_Settings{public static TMP_FontAsset defaultFontAsset=new TMP_FontAsset();}public enum FontStyles{Normal,Bold}public enum TextAlignmentOptions{Center,MidlineLeft,Left,Right}public enum TextOverflowModes{Ellipsis}public enum TextWrappingModes{Normal,NoWrap}public class TextMeshProUGUI:UnityEngine.Behaviour{public UnityEngine.RectTransform rectTransform{get{return transform as UnityEngine.RectTransform;}}public int maxVisibleLines;public TMP_FontAsset font;public float fontSize,fontSizeMin,fontSizeMax,characterSpacing;public bool enableAutoSizing,richText,raycastTarget;public FontStyles fontStyle;public TextAlignmentOptions alignment;public TextOverflowModes overflowMode;public TextWrappingModes textWrappingMode;public UnityEngine.Color color;public UnityEngine.Vector4 margin;public string text;}}
+
+namespace UnityEditor{[System.AttributeUsage(System.AttributeTargets.Method)]public class MenuItem:System.Attribute{public MenuItem(string s){}}public static class EditorApplication{public static bool isPlayingOrWillChangePlaymode;}public static class Undo{public static T AddComponent<T>(UnityEngine.GameObject g)where T:UnityEngine.Component,new(){return g.AddComponent<T>();}}public static class Selection{public static UnityEngine.GameObject activeGameObject;}}
+namespace UnityEditor.SceneManagement{public static class EditorSceneManager{public static int dirties;public static void MarkSceneDirty(object scene){dirties++;}}}
+
+namespace UnityEngine.SceneManagement{public struct Scene{public UnityEngine.GameObject[] roots;public UnityEngine.GameObject[] GetRootGameObjects(){return roots??new UnityEngine.GameObject[0];}}}

@@ -1,0 +1,11 @@
+PASS actual RaceMarble size normalization and non-overlapping16 grid
+PASS checkpoint ordering, stuck recovery and bounded timeout result
+PASS motor seed 1: 8/8 finishers, elapsed 44.98
+PASS motor seed 19: 8/8 finishers, elapsed 45.14
+PASS motor seed 66: 8/8 finishers, elapsed 44.66
+PASS motor seed 704: 8/8 finishers, elapsed 44.76
+PASS motor seed 1918: 8/8 finishers, elapsed 44.70
+PASS motor seed 2026: 8/8 finishers, elapsed 44.60
+Motor facade sweep: 48/48 finishers. This integrates velocity only, without rail/obstacle/other-marble collisions.
+PASS off-track bypass projection cannot advance the race cursor
+PASS 459 assertions on real RaceMarble/course code with explicit Unity-contract facade

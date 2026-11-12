@@ -1,0 +1,5 @@
+PASS arc-length, samples, normalized tangents and bounded projection
+PASS 750 generated courses, seed variety, safe grid, all surfaces/obstacles and connected bypasses
+PASS continuous progress, wrong-row rejection and non-finite input handling
+PASS invalid settings and corrupted geometry/metadata rejected
+PASS 107459 assertions using real Unity-independent course model and generator

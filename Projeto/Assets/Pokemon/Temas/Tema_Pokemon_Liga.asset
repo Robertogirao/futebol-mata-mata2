@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb732d7cfa3c4b5ca7e77c3f17805f22, type: 3}
+  m_Name: Tema_Pokemon_Liga
+  m_EditorClassIdentifier: Assembly-CSharp::TemaCompeticao
+  competicaoId: pokemon_liga
+  nomeCompeticao: POKEMON LEAGUE
+  corPrimaria: {r: 0.02, g: 0.05, b: 0.15, a: 1}
+  corSecundaria: {r: 0.04, g: 0.18, b: 0.4, a: 1}
+  corDestaque: {r: 0.05, g: 0.9, b: 1, a: 1}
+  corTexto: {r: 1, g: 1, b: 1, a: 1}
+  corPainel: {r: 0.02, g: 0.05, b: 0.15, a: 0.97}
+  fundoAbertura: {fileID: 21300000, guid: 71b38695333f53599beb426a025cf82a, type: 3}
+  fundoChaveamento: {fileID: 21300000, guid: 71b38695333f53599beb426a025cf82a, type: 3}
+  logoCompeticao: {fileID: 21300000, guid: d275150f7cf759d294ae938b87a13d73, type: 3}
+  logoCanal: {fileID: 21300000, guid: b3260be5c522555891a236c35349b3dc, type: 3}
+  fonteTitulo: {fileID: 11400000, guid: 4d4833c87e04f3a4b980330701066f9d, type: 2}
+  fonteTexto: {fileID: 11400000, guid: 4d4833c87e04f3a4b980330701066f9d, type: 2}
+  escalaFonteTitulo: 1
+  escalaFonteTexto: 1
+  filtrarPorTipoPokemon: 0
+  tipoPokemonPermitido: 0
+  geracaoPokemonPermitida: 0
+  usarFiltrosMultiplosPokemon: 0
+  tiposPokemonPermitidos: []
+  geracoesPokemonPermitidas: []
+  centroHelice: {fileID: 21300000, guid: d275150f7cf759d294ae938b87a13d73, type: 3}
+  somAbertura: {fileID: 0}
+  fundoArena: {fileID: 0}
+  campo: {fileID: 21300000, guid: 71b38695333f53599beb426a025cf82a, type: 3}
+  gol: {fileID: 21300000, guid: 2453c3c45e5f5d7fa6a899830096d55e, type: 3}
+  helice2: {fileID: 21300000, guid: e789fbcdfb455d9ba91782ca9bec8d1a, type: 3}
+  goleiro: {fileID: 21300000, guid: 90d8096c072752fc812f10c0a816653d, type: 3}
+  tintFundoArena: {r: 0.02, g: 0.05, b: 0.15, a: 1}
+  tintCampo: {r: 1, g: 1, b: 1, a: 1}
+  tintGol: {r: 0.05, g: 0.9, b: 1, a: 1}
+  tintHelice: {r: 0.05, g: 0.9, b: 1, a: 1}
+  tintGoleiro: {r: 1, g: 1, b: 1, a: 1}
+  materialGol: {fileID: 2100000, guid: 50cdd1c16e945ba994d19256725033d3, type: 2}
+  materialHelice: {fileID: 2100000, guid: 50cdd1c16e945ba994d19256725033d3, type: 2}
+  materialGoleiro: {fileID: 2100000, guid: 50cdd1c16e945ba994d19256725033d3, type: 2}

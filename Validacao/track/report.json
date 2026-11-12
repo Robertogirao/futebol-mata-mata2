@@ -1,0 +1,48 @@
+{
+  "source": "Assets/MarbleRace/Scripts/RaceCourse.cs",
+  "source_sha256": "9908766c5c469924a9142976ad3d7534163fb8a9594086ee8e0b9a734961ed6d",
+  "source_guid": "f98d70863689411da6261651a559d652",
+  "assertions_passed": 107459,
+  "generated_courses": 750,
+  "seed_range": [
+    -25,
+    24
+  ],
+  "tested_block_counts": [
+    3,
+    6,
+    9,
+    12,
+    24
+  ],
+  "tested_widths": [
+    1.8,
+    2.4,
+    2.6
+  ],
+  "tested_boundary_seeds": [
+    -2147483648,
+    2147483647,
+    0,
+    -1,
+    2026
+  ],
+  "unity_dependencies": false,
+  "unity_editor_executed": false,
+  "coverage": [
+    "Deterministic complete geometry, modules, obstacle settings and bypasses",
+    "Every centerline point inside visible world region; no duplicate points",
+    "Contiguous segment coverage and surface/label queries",
+    "All terrain and obstacle module kinds occur",
+    "Obstacle clearance and empty first6.5arcunits for starting grid",
+    "Connected optional bypass entrances/exits with mapped main progress",
+    "Arc-length sampling and normalized tangents across bends",
+    "Local projection forward/backward caps and wrong-row/offtrack rejection",
+    "Non-finite input handling",
+    "Invalid settings and corrupt geometry/block/obstacle/bypass rejection"
+  ],
+  "limits": [
+    "Static pure-C# geometry/domain tests, not Unity scene import, rendered layout or actual collisions.",
+    "The model does not guarantee an exact finish time or simulate the motor, powers, obstacles or championship persistence."
+  ]
+}

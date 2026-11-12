@@ -1,0 +1,9 @@
+PASS actual Start/countdown/three-raceGP/results/autosave/completed reload
+PASS one-race-perPlay, Continue and interrupted-race restart
+PASS failed actual file write preserves pending result and retry commits once
+PASS bounded timeout, bestOfThree and16-entrant knockout flow
+PASS invalid config, changed roster and corrupt JSON preserve prior files
+PASS maximum16 size/grid, disable-enable restart and32-entrant heat boundary
+PASS capture-aware presentation timing and unscaled fallback
+PASS obstacle pose stays driven while the race clock is stopped
+PASS 149 assertions on all real runtime scripts with Unity-contract, JSON and velocity-only physics facade

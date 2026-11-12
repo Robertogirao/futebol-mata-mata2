@@ -1,0 +1,21 @@
+{
+  "assertions": 150,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "all_five_obstacle_kinds_covered": true,
+  "main_and_bypass_centerline_minimum_clearance": ">0.30 world units",
+  "default_marble_diameter": 0.55,
+  "source_sha256": {
+    "Assets/MarbleRace/Scripts/RaceCourse.cs": "9908766c5c469924a9142976ad3d7534163fb8a9594086ee8e0b9a734961ed6d",
+    "Assets/MarbleRace/Scripts/RaceTrackView.cs": "3643e6a43fee1c3af3c076724ea66a8f68502cbb615099a30e9ef77d0d2dde68",
+    "Assets/MarbleRace/Scripts/RaceObstacleMotion.cs": "514da96b191685b2889672a9c65f9e84a89bf11b34f890e3060acfcfece3c3a8"
+  },
+  "unity_editor_executed": false,
+  "physics_solver_executed": false
+}

@@ -1,0 +1,11 @@
+{
+  "manager_source_sha256": "63d55745cbbbb308ef9551c1fb74644d83b30f9e61f651e701e6f071808525b1",
+  "compiled_runtime_assembly_sha256": "64c5a98622ee873f37d130717d282afbd1524cc3fd937261a69e7556ad8c68fa",
+  "editor_contract_reflection_checks": 64,
+  "public_fields_matched": 25,
+  "public_properties_matched": 3,
+  "public_methods_matched": 2,
+  "serialized_format_values_matched": 4,
+  "contract_divergences": [],
+  "unity_editor_executed": false
+}

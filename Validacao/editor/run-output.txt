@@ -1,0 +1,4 @@
+PASS central controls, all format presets, multiselect and immutable Play configuration
+PASS filtered distinct draws, secondary types, invalid counts/cards and failure immutability
+PASS isolated seasons, saved-file preservation, scene menu and continuation actions
+PASS 125 assertions using real MarbleRaceManagerEditor/PokemonDados with UnityEditor/manager contract stubs

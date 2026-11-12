@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-12",
+  "project_files_verified": 4414,
+  "new_runtime_source_count": 8,
+  "runtime_source_hashes": {
+    "RaceStorage.cs": "68e08e3608a48cf57ee1102a6df752eec3c4809cd8485dfd00ea83f8edba4b35",
+    "RaceCompetition.cs": "b0ab8a060776c1cbd1dd9ce7d6e69e95129ab55d564c8a1d952a884345b09ab4",
+    "RaceMarble.cs": "6b5abd7e1404b9005a3945b8cff68dcfcb900174532d28c14186eed4a60330b2",
+    "RaceHud.cs": "430b79c68f6dc3f31ba557c3441d851075dc501135b0cb1222ceaff886c41a53",
+    "RaceTrackView.cs": "3643e6a43fee1c3af3c076724ea66a8f68502cbb615099a30e9ef77d0d2dde68",
+    "MarbleRaceManager.cs": "63d55745cbbbb308ef9551c1fb74644d83b30f9e61f651e701e6f071808525b1",
+    "RaceCourse.cs": "9908766c5c469924a9142976ad3d7534163fb8a9594086ee8e0b9a734961ed6d",
+    "RaceObstacleMotion.cs": "514da96b191685b2889672a9c65f9e84a89bf11b34f890e3060acfcfece3c3a8"
+  },
+  "pure_track_assertions": 107459,
+  "pure_competition_storage_assertions": 2769,
+  "hud_contract_assertions": 232,
+  "view_contract_assertions": 150,
+  "editor_contract_assertions": 125,
+  "actual_editor_api_reflection_checks": 64,
+  "manager_integration_assertions": 149,
+  "marble_motion_assertions": 459,
+  "unity_editor_executed": false,
+  "real_collision_simulation_executed": false,
+  "integration_serializer": "DataContractJsonSerializer substitutes Unity JsonUtility",
+  "physics_facade": "Velocity integration only; no collisions, rendering or GPU shader execution"
+}

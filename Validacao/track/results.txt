@@ -1,0 +1,12 @@
+MARBLE RACE — COURSE MODEL VALIDATION
+
+Actual source: /workspace/work/pokemon-marble-race/Projeto/Assets/MarbleRace/Scripts/RaceCourse.cs
+SHA256: 9908766c5c469924a9142976ad3d7534163fb8a9594086ee8e0b9a734961ed6d
+
+PASS arc-length, samples, normalized tangents and bounded projection
+PASS 750 generated courses, seed variety, safe grid, all surfaces/obstacles and connected bypasses
+PASS continuous progress, wrong-row rejection and non-finite input handling
+PASS invalid settings and corrupted geometry/metadata rejected
+PASS 107459 assertions using real Unity-independent course model and generator
+
+Scope: actual Unity-independent C# source compiled with Mono; no Unity engine stubs or Editor were used. Does not test rendered world, collider import, motor physics, race completion timing or persistent championship storage.
