@@ -159,8 +159,49 @@ public static class Harness
         Check(Text((RectTransform)Field(hud,"raiz"),"Broadcast Format").text.Contains("LEAGUE"), "league label");
         ValidateStandings(((RectTransform)Field(hud,"raiz")).GetComponent<Canvas>().sortingOrder);
         ValidateRecordingTiming(banner);
+        ValidateEditableBranding(hud, config, ui, banner);
         Console.WriteLine("PASS scoreboard bindings, fonts, logos, goal queue, pitch clearances, player opening, Recorder time, cancellation and rebuild cleanup");
         Console.WriteLine("PASS " + checks + " assertions using real HUD, LayoutJogadorUnicoUI, GoalBannerUI, ClassificacaoUI, TeamData and TemaCompeticao with Unity UI/TMP contract adapters");
+    }
+
+    private static void ValidateEditableBranding(HudFutebolDiscos hud, ProjetoFutebolDiscos config, UniversalUI ui, GoalBannerUI banner)
+    {
+        config.tituloRodape = "  YOUR SQUAD  ";
+        config.subtituloRodape = "  Every disc has a story  ";
+        config.formato = FormatoDiscos.MataMata;
+        config.discosPorTime = 5;
+        hud.Construir(config, ui, banner);
+        var root = (RectTransform)Field(hud, "raiz");
+        Check(Text(root, "Broadcast Signature").text == "YOUR SQUAD", "custom footer heading replaces fixed branding");
+        string description = Text(root, "Broadcast Format").text;
+        Check(description.Contains("KNOCKOUT") && description.Contains("5 v 5") && description.EndsWith("Every disc has a story"), "custom footer subtitle retains independent format details");
+        Check(!description.Contains("AUTOMATIC DISC FOOTBALL"), "custom footer never retains old automatic-disc branding");
+        config.mostrarDetalhesFormato = false;
+        hud.Construir(config, ui, banner);
+        root = (RectTransform)Field(hud, "raiz");
+        Check(Text(root, "Broadcast Format").text == "Every disc has a story", "format details can hide while custom subtitle remains");
+        config.mostrarSubtituloRodape = false;
+        config.mostrarTituloRodape = false;
+        hud.Construir(config, ui, banner);
+        root = (RectTransform)Field(hud, "raiz");
+        Check(root.Find("Broadcast Signature") == null && root.Find("Broadcast Format") == null, "footer toggles remove both optional text objects");
+        config.mostrarDetalhesFormato = true;
+        hud.Construir(config, ui, banner);
+        root = (RectTransform)Field(hud, "raiz");
+        Check(Text(root, "Broadcast Format").text == "KNOCKOUT  ·  5 v 5", "format details stay visible without the subtitle");
+        config.mostrarTituloRodape = config.mostrarSubtituloRodape = true;
+        config.mostrarDetalhesFormato = false;
+        foreach (string empty in new [] { "", "  ", null })
+        {
+            config.tituloRodape = config.subtituloRodape = empty;
+            hud.Construir(config, ui, banner);
+            root = (RectTransform)Field(hud, "raiz");
+            Check(root.Find("Broadcast Signature") == null && root.Find("Broadcast Format") == null, "empty footer fields hide without restoring fixed defaults");
+            foreach (var text in root.gameObject.GetComponentsInChildren<TextMeshProUGUI>(true))
+                Check(!text.text.Contains("DISC FOOTBALL"), "cleared branding does not leak elsewhere in HUD / " + text.gameObject.name);
+        }
+        Check(ui.placarTimeA != null && ui.placarTimeB != null && ui.textoCronometro != null, "branding visibility never removes live match bindings");
+        Console.WriteLine("PASS editable footer heading/subtitle, independent format details, toggles and empty-field hiding");
     }
 
     private static void ValidateRecordingTiming(GoalBannerUI banner)

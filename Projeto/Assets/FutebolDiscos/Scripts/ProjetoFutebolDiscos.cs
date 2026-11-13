@@ -32,6 +32,10 @@ namespace FutebolDeDiscos
         public bool limitarDiscosNaMetade = true, usarForcaDosTimes = true;
         public float limiarCores = 45f;
         public Color corGramado = new Color(0.035f, 0.22f, 0.22f), corLinhas = new Color(0.25f, 0.93f, 0.92f);
+        public bool mostrarTagsJogadores = true, mostrarMarcaCapitao = true, usarFotoNoDiscoCapitao = true;
+        public float tamanhoFonteTags = 4.5f, larguraTags = 2.6f;
+        public string textoNoCampo = "DISC FOOTBALL", tituloRodape = "DISC FOOTBALL", subtituloRodape = "AUTOMATIC DISC FOOTBALL";
+        public bool mostrarTextoNoCampo = true, mostrarTituloRodape = true, mostrarSubtituloRodape = true, mostrarDetalhesFormato = true;
         [HideInInspector] public string situacao, ultimoErro;
 
         public bool Preparado { get; private set; }
@@ -315,6 +319,8 @@ namespace FutebolDeDiscos
                 foreach (float tempo in new[] { tempoAbertura, tempoFotos, tempoTransicaoFotos, tempoTabela, intervaloEntrePartidas })
                     if (!Faixa(tempo, 0f, 600f)) throw new InvalidOperationException("Os tempos devem ficar entre 0 e 600 segundos.");
                 if (!Faixa(limiarCores, 0f, 100f)) throw new InvalidOperationException("O contraste de cores deve ficar entre 0 e 100.");
+                if (!Faixa(tamanhoFonteTags, 2f, 8f) || !Faixa(larguraTags, 1f, 4f))
+                    throw new InvalidOperationException("Confira o tamanho da fonte e a largura das tags dos jogadores.");
                 ultimoErro = "";
                 return true;
             }

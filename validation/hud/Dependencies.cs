@@ -26,5 +26,7 @@ namespace FutebolDeDiscos
         public TemaCompeticao tema;
         public FormatoDiscos formato;
         public int discosPorTime = 3;
+        public string tituloRodape = "DISC FOOTBALL", subtituloRodape = "AUTOMATIC DISC FOOTBALL";
+        public bool mostrarTituloRodape = true, mostrarSubtituloRodape = true, mostrarDetalhesFormato = true;
     }
 }

@@ -1,1 +1,1 @@
-PASS 736 field assertions. Geometry, API, clocks and resource lifecycle validated against actual CampoDiscos source. Unity rendering and native contacts not executed.
+PASS 742 field assertions. Geometry, API, clocks and resource lifecycle validated against actual CampoDiscos source. Unity rendering and native contacts not executed.

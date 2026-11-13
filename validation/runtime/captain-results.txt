@@ -1,0 +1,2 @@
+PASS 87 captain, player-tag, portrait/flag scorer and queued identity assertions using actual game sources.
+Unity API facade with controlled goal crossings; native contacts, text rendering and appearance were not executed.

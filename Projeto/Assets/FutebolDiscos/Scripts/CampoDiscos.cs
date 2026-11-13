@@ -64,7 +64,7 @@ namespace FutebolDeDiscos
                 DesenharSprite("Custom Field Image", config.fundoCampo, Vector2.zero,
                     new Vector2(MeioComprimento * 2f, MeioLargura * 2f), new Color(1f, 1f, 1f, 0.35f), -73, false);
 
-            DesenharMarcacoes();
+            DesenharMarcacoes(config);
             CriarLimites();
             CriarGol(true);
             CriarGol(false);
@@ -98,7 +98,7 @@ namespace FutebolDeDiscos
             }
         }
 
-        private void DesenharMarcacoes()
+        private void DesenharMarcacoes(ProjetoFutebolDiscos config)
         {
             Contorno("Touchline", -MeioComprimento, -MeioLargura, MeioComprimento, MeioLargura, 0.055f, corLinha, -30);
             Linha("Halfway Line", new Vector2(0f, -MeioLargura), new Vector2(0f, MeioLargura), 0.045f, corLinha, -29);
@@ -117,8 +117,11 @@ namespace FutebolDeDiscos
                 Linha("Goal Box Bottom", new Vector2(six, -2.25f), new Vector2(end, -2.25f), 0.04f, corLinha, -29);
                 DesenharSprite("Penalty Spot", SpriteCirculo, new Vector2(side * 8.45f, 0f), new Vector2(0.11f, 0.11f), corLinha, -28, false);
             }
-            Color brand = new Color(corLinha.r, corLinha.g, corLinha.b, 0.11f);
-            TextoMundo("Field Signature", "DISC FOOTBALL", new Vector2(0f, -2.55f), 4.3f, 10f, brand, -35);
+            if (config.mostrarTextoNoCampo && !string.IsNullOrWhiteSpace(config.textoNoCampo))
+            {
+                Color brand = new Color(corLinha.r, corLinha.g, corLinha.b, 0.11f);
+                TextoMundo("Field Signature", config.textoNoCampo.Trim(), new Vector2(0f, -2.55f), 4.3f, 10f, brand, -35);
+            }
         }
 
         private void CriarLimites()
@@ -275,6 +278,8 @@ namespace FutebolDeDiscos
             go.transform.localPosition = new Vector3(position.x, position.y, 0f);
             TextMeshPro label = go.AddComponent<TextMeshPro>();
             label.font = fonte; label.text = text; label.fontSize = fontSize;
+            label.enableAutoSizing = true; label.fontSizeMin = 1f; label.fontSizeMax = fontSize;
+            label.richText = false;
             label.color = color; label.alignment = TextAlignmentOptions.Center;
             label.textWrappingMode = TextWrappingModes.NoWrap;
             label.overflowMode = TextOverflowModes.Ellipsis;

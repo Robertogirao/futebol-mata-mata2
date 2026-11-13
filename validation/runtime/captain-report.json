@@ -1,0 +1,21 @@
+{
+  "version": "2026.11.13.2",
+  "captain_assertions": 87,
+  "hud_assertions": 2309,
+  "field_assertions": 742,
+  "goal_reset_regression": 299,
+  "native_unity_play_executed": false,
+  "patch_scripts": [
+    "Assets/FutebolDiscos/Scripts/ProjetoFutebolDiscos.cs",
+    "Assets/FutebolDiscos/Scripts/PartidaDiscos.cs",
+    "Assets/FutebolDiscos/Scripts/BolaDiscos.cs",
+    "Assets/FutebolDiscos/Scripts/DiscoAtleta.cs",
+    "Assets/FutebolDiscos/Scripts/HudFutebolDiscos.cs",
+    "Assets/FutebolDiscos/Scripts/CampoDiscos.cs",
+    "Assets/FutebolDiscos/Editor/ProjetoFutebolDiscosEditor.cs",
+    "Assets/Scripts/GoalBannerUI.cs"
+  ],
+  "patch_bytes": 30620,
+  "patch_sha256": "74c5deb1229b13158bda23dca699b5f5cc3fa93ebdbb4b6116bdc11052c6cf0c",
+  "season_configuration_schema_changed": false
+}

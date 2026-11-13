@@ -102,6 +102,16 @@ Em **Tempos da transmissão (segundos)**:
 - **Leitura da classificação / do chaveamento**: tempo de apresentação da competição.
 - **Intervalo entre partidas**: pausa entre os jogos.
 
+### Tags dos jogadores e capitão
+
+Em **FutebolDiscos_Manager > Identificação dos jogadores**, ative **Mostrar nome nos discos** e ajuste fonte e largura. O capitão é o representante da foto: recebe a letra **C**, uma borda dourada e, opcionalmente, a foto dentro do disco. Os outros discos usam os demais jogadores do **Elenco** da ficha `TeamData`. Cadastre mais jogadores para nomear todos os discos; vagas sem jogador mostram a sigla do time e o número do disco.
+
+Nos gols, o capitão mostra nome e foto; os demais mostram nome e bandeira/escudo. Sem foto do capitão, usa a bandeira/escudo. Um gol contra identifica o autor com `(OG)`; sem último toque conhecido, a comemoração identifica somente o time.
+
+### Textos do campo e rodapé
+
+Abra **FutebolDiscos_Manager > Textos da arena** para mudar **Texto no campo**, **Título do rodapé** e **Subtítulo do rodapé**. Cada um pode ser desligado ou deixado vazio para ocultar. **Mostrar formato e quantidade de discos** controla a parte `LEAGUE/KNOCKOUT` e `3 v 3` separadamente. Você pode alterar esses textos e a identificação visual entre sessões, mantendo a mesma temporada.
+
 ## 7. Gravar uma rodada, continuar e retomar
 
 Com **Uma rodada por Play** ou **Uma fase por Play** desmarcado, a competição segue automaticamente. Marcado, ela espera após concluir a rodada ou fase. Use **Continuar no Play**, no painel central, para avançar sem sair do Play; também pode dar Stop e Play para continuar depois.

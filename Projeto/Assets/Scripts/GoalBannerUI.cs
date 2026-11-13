@@ -53,6 +53,12 @@ public class GoalBannerUI : MonoBehaviour
         JogadorDados jogador,
         Color corDoTime)
     {
+        ExibirBannerDeGol(jogador != null ? jogador.nomeJogador : null,
+            jogador != null ? jogador.foto512x512 : null, corDoTime);
+    }
+
+    public void ExibirBannerDeGol(string nome, Sprite imagem, Color corDoTime)
+    {
         // O painel deve ser filho de um objeto que permanece ativo.
         if (PainelDesativaEsteObjeto())
         {
@@ -77,19 +83,13 @@ public class GoalBannerUI : MonoBehaviour
             return;
         }
 
-        // Copiamos os dados agora para não depender da bola,
-        // que será destruída depois do gol.
-        var comemoracao = new Comemoracao();
-
-        if (jogador != null)
+        // Snapshot the name and chosen image; queued goals never depend on
+        // the actor lifetime and never change the source player/team assets.
+        var comemoracao = new Comemoracao
         {
-            comemoracao.nome =
-                string.IsNullOrWhiteSpace(jogador.nomeJogador)
-                    ? "PLAYER"
-                    : jogador.nomeJogador.ToUpperInvariant();
-
-            comemoracao.foto = jogador.foto512x512;
-        }
+            nome = nome == null ? null : string.IsNullOrWhiteSpace(nome) ? "PLAYER" : nome.ToUpperInvariant(),
+            foto = imagem
+        };
 
         fila.Enqueue(comemoracao);
 

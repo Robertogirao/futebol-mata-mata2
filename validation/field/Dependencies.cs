@@ -9,6 +9,8 @@ namespace FutebolDeDiscos
         public Sprite fundoCampo;
         public Color corGramado = new Color(.035f,.22f,.22f);
         public Color corLinhas = new Color(.25f,.93f,.92f);
+        public string textoNoCampo = "DISC FOOTBALL";
+        public bool mostrarTextoNoCampo = true;
     }
     public sealed class GolDiscos : MonoBehaviour { public bool esquerda; }
 }

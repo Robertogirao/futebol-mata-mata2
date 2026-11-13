@@ -51,6 +51,15 @@ namespace FutebolDeDiscos
                 Campo("corGramado", "Cor do gramado");
                 Campo("corLinhas", "Cor das linhas");
 
+                Titulo("Textos da arena");
+                Campo("mostrarTextoNoCampo", "Mostrar texto no campo");
+                Campo("textoNoCampo", "Texto no campo", "Deixe vazio para ocultar a assinatura no gramado.");
+                Campo("mostrarTituloRodape", "Mostrar título do rodapé");
+                Campo("tituloRodape", "Título do rodapé", "Texto maior abaixo do campo. Vazio: oculto.");
+                Campo("mostrarSubtituloRodape", "Mostrar subtítulo do rodapé");
+                Campo("subtituloRodape", "Subtítulo do rodapé", "Substitui Automatic Disc Football. Vazio: oculto.");
+                Campo("mostrarDetalhesFormato", "Mostrar formato e quantidade de discos", "Controla os detalhes Liga/Mata-mata e 3 v 3 separadamente do subtítulo.");
+
                 Titulo("Participantes");
                 bool mataMata = formato.enumValueIndex == 1;
                 int quantidade = P("quantidadeTimes").intValue;
@@ -113,6 +122,15 @@ namespace FutebolDeDiscos
                 Campo("tempoTransicaoFotos", "Retorno das fotos aos cantos");
                 Campo("tempoTabela", mataMata ? "Leitura do chaveamento" : "Leitura da classificação");
                 Campo("intervaloEntrePartidas", "Intervalo entre partidas");
+
+                Titulo("Identificação dos jogadores");
+                EditorGUILayout.HelpBox("Os nomes vêm do Elenco de cada ficha de time. O capitão é o representante da foto. " +
+                    "Cadastre os demais jogadores para nomear os outros discos; vagas sem jogador usam a sigla e o número do disco.", MessageType.Info);
+                Campo("mostrarTagsJogadores", "Mostrar nome nos discos");
+                Slider("tamanhoFonteTags", "Tamanho da fonte das tags", 2f, 8f);
+                Slider("larguraTags", "Largura das tags", 1f, 4f);
+                Campo("mostrarMarcaCapitao", "Destacar o capitão");
+                Campo("usarFotoNoDiscoCapitao", "Foto no disco do capitão", "O capitão é o representante da foto na abertura e na ficha da partida.");
 
                 Titulo("Discos e bola");
                 IntSlider("discosPorTime", "Discos por time", 1, 5);

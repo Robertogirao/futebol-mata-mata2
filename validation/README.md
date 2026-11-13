@@ -5,11 +5,12 @@ Os testes C# usam os arquivos reais do projeto e fachadas das APIs Unity/TMP/Edi
 | Conjunto | Verificações aprovadas | O que foi exercitado |
 | --- | ---: | --- |
 | Calendário e metadados | 37.629 | 2–32 equipes, turnos, folgas, CSV real, sementes e gravação em arquivos reais |
-| Interface | 2.271 | Placar, fichas, prioridade de Canvas, 32 equipes, banners e tempo do Recorder |
-| Campo | 736 | Geometria, limites, sensores, escalas e descarte de recursos |
+| Interface | 2.309 | Placar, fichas, prioridade de Canvas, 32 equipes, textos editáveis, banners e tempo do Recorder |
+| Campo | 742 | Geometria, limites, sensores, escalas, texto editável e descarte de recursos |
 | Torneios existentes | 68 | Liga, classificação, mata-mata, persistência e recuperação de resultado pendente |
 | Partida | 45 | Cruzamento completo da bola, gols repetidos, reposição, limites e ciclo dos componentes |
 | Regressão da reposição | 299 | Corpo congelado com Transform desatualizado, centenas de callbacks, saída confirmada na física e novos gols legítimos |
+| Capitães e identificação | 87 | Um capitão por time, nomes distintos, tags, foto/bandeira por autor, gols contra e fila de banners |
 | Controlador completo | 39 | Rodadas automáticas, continuar, retomada, tabela final, Golden Goal e falha de escrita |
 | Editor real | 37 | Painel central e editor de mata-mata compilados com todos os scripts de runtime |
 

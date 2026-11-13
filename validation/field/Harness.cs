@@ -124,6 +124,18 @@ public static class Harness
         campo.Construir(config);
         Check(oldResources.All(x=>x.destroyed)&&oldChildren.All(x=>x.destroyed),"rebuild disposes old geometry and all owned resources");
         Check(!config.fundoCampo.destroyed&&!externalTexture.destroyed&&!config.tema.fonteTexto.destroyed&&!externalMaterial.destroyed,"rebuild preserves all external assets");
+        config.textoNoCampo="  YOUR SQUAD  ";campo.Construir(config);
+        var customLabel=campo.GetComponentsInChildren<TextMeshPro>(true).Single(Active);
+        Check(customLabel.text=="YOUR SQUAD"&&customLabel.enableAutoSizing&&!customLabel.richText,"custom field branding uses the chosen plain text and fits its bounds");
+        config.mostrarTextoNoCampo=false;campo.Construir(config);
+        Check(!campo.GetComponentsInChildren<TextMeshPro>(true).Any(Active),"field branding toggle hides a configured signature");
+        Check(campo.GetComponentsInChildren<GolDiscos>(true).Count(Active)==2,"hiding field branding preserves both physical goals");
+        config.mostrarTextoNoCampo=true;
+        foreach(string empty in new[]{"", "  ", null})
+        {
+            config.textoNoCampo=empty;campo.Construir(config);
+            Check(!campo.GetComponentsInChildren<TextMeshPro>(true).Any(Active),"empty field branding never restores fixed DISC FOOTBALL text");
+        }
         var resources=Owned(campo);campo.Limpar();
         Check(resources.All(x=>x.destroyed)&&Owned(campo).Count==0&&campo.transform.childCount==0,"cleanup disposes owned resources and hierarchy");
         Check(campo.SpriteCirculo==null&&campo.MaterialSprites==null&&campo.MaterialFisica==null,"cleanup clears public resource API");

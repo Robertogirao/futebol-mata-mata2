@@ -70,15 +70,18 @@ namespace FutebolDeDiscos
 
         private void CriarEquipe(TeamData equipe, bool equipeA, List<JogadorDados> representantes, Color color)
         {
-            var elenco = (equipe.elenco ?? new List<JogadorDados>()).Where(j => j != null).ToList();
-            JogadorDados capitao = representantes != null ? representantes.FirstOrDefault(j => j != null) : null;
+            var elenco = (equipe.elenco ?? new List<JogadorDados>())
+                .Where(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador)).Distinct().ToList();
+            JogadorDados capitao = representantes != null
+                ? representantes.FirstOrDefault(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador)) : null;
             if (capitao == null) capitao = elenco.FirstOrDefault();
+            var demais = elenco.Where(j => !ReferenceEquals(j, capitao)).ToList();
             for (int i = 0; i < config.discosPorTime; i++)
             {
                 var go = new GameObject((equipeA ? "Home Disc " : "Away Disc ") + (i + 1));
                 go.transform.SetParent(raiz.transform, false);
                 var atleta = go.AddComponent<DiscoAtleta>();
-                JogadorDados jogador = i == 0 ? capitao : elenco.Count > 0 ? elenco[(i - 1) % elenco.Count] : capitao;
+                JogadorDados jogador = i == 0 ? capitao : i - 1 < demais.Count ? demais[i - 1] : null;
                 atleta.Criar(this, equipe, equipeA, i, jogador, color, campo.SpriteCirculo, campo.MaterialSprites,
                     campo.MaterialFisica, config.tema != null ? config.tema.fonteTexto : TMP_Settings.defaultFontAsset);
                 atletas.Add(atleta);
@@ -95,7 +98,7 @@ namespace FutebolDeDiscos
             tempoMovimento = tempoBolaLenta = 0f;
             saidaA = random.Next(2) == 0;
             Reposicionar(true);
-            if (hud != null) hud.MostrarEstado("AUTOMATIC DISC FOOTBALL");
+            if (hud != null) hud.MostrarEstado("KICKOFF");
         }
 
         public void PararPartida()
@@ -181,7 +184,9 @@ namespace FutebolDeDiscos
             bool pontoA = !golEsquerdo;
             DiscoAtleta ultimo = bola.UltimoToque;
             TeamData equipe = pontoA ? timeA : timeB;
-            JogadorDados jogador = ultimo != null && ultimo.TimeA == pontoA ? ultimo.Jogador : equipe.elenco.FirstOrDefault(j => j != null);
+            string nomeAutor = ultimo != null ? ultimo.NomeExibicao : equipe.nomeEquipe;
+            Sprite imagemAutor = ultimo != null ? ultimo.ImagemDoGol : equipe.escudoOuBandeira;
+            if (ultimo != null && ultimo.TimeA != pontoA) nomeAutor += " (OG)";
             golLiberado = false;
             EmReposicao = true;
             Congelar(true);
@@ -191,7 +196,7 @@ namespace FutebolDeDiscos
             if (hud != null) hud.MostrarEstado("GOAL — " + equipe.nomeEquipe.ToUpperInvariant());
             ui.RegistrarGol(pontoA, ui.TempoAtual);
             if (GoalBannerUI.Instance != null)
-                GoalBannerUI.Instance.ExibirBannerDeGol(jogador, pontoA ? corA : corB);
+                GoalBannerUI.Instance.ExibirBannerDeGol(nomeAutor, imagemAutor, pontoA ? corA : corB);
             if (!ui.partidaEmAndamento) PararPartida();
         }
 

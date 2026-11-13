@@ -11,6 +11,25 @@ namespace FutebolDeDiscos
         public int Indice { get; private set; }
         public JogadorDados Jogador { get; private set; }
         public Rigidbody2D Corpo { get; private set; }
+        public bool Capitao { get { return Indice == 0; } }
+        public string NomeExibicao
+        {
+            get
+            {
+                if (Jogador != null && !string.IsNullOrWhiteSpace(Jogador.nomeJogador)) return Jogador.nomeJogador.Trim();
+                string equipe = Equipe != null && !string.IsNullOrWhiteSpace(Equipe.sigla) ? Equipe.sigla.Trim()
+                    : Equipe != null && !string.IsNullOrWhiteSpace(Equipe.nomeEquipe) ? Equipe.nomeEquipe.Trim() : "PLAYER";
+                return equipe + " " + (Indice + 1);
+            }
+        }
+        public Sprite ImagemDoGol
+        {
+            get
+            {
+                return Capitao && Jogador != null && Jogador.foto512x512 != null ? Jogador.foto512x512
+                    : Equipe != null ? Equipe.escudoOuBandeira : null;
+            }
+        }
         private PartidaDiscos partida;
         private float proximoChute;
 
@@ -29,12 +48,15 @@ namespace FutebolDeDiscos
             var collider = gameObject.AddComponent<CircleCollider2D>();
             collider.radius = d * 0.5f; collider.sharedMaterial = fisica;
             Imagem("Disc Shadow", circulo, material, new Color(0f, 0f, 0f, .65f), d * 1.1f, 12);
+            bool destacar = Capitao && partida.Configuracao.mostrarMarcaCapitao;
+            Color ouro = new Color(1f, .81f, .2f);
+            if (destacar) Imagem("Captain Ring", circulo, material, ouro, d * 1.16f, 12);
             Imagem("Team Ring", circulo, material, cor, d, 13);
             Imagem("Inner Plate", circulo, material, new Color(.025f, .055f, .09f), d * .83f, 14);
-            if (equipe.escudoOuBandeira != null)
+            Sprite identidade = Capitao && partida.Configuracao.usarFotoNoDiscoCapitao ? ImagemDoGol : equipe.escudoOuBandeira;
+            if (identidade != null)
             {
-                Sprite logo = equipe.escudoOuBandeira;
-                Imagem("Team Identity", logo, material, Color.white, d * .68f, 15);
+                Imagem("Team Identity", identidade, material, Color.white, d * .68f, 15);
             }
             else if (fonte != null)
             {
@@ -45,7 +67,49 @@ namespace FutebolDeDiscos
                 text.color = Color.white; text.alignment = TextAlignmentOptions.Center;
                 text.rectTransform.sizeDelta = new Vector2(d, d);
             }
+            if (fonte != null)
+            {
+                if (destacar)
+                {
+                    var badge = new GameObject("Captain Badge"); badge.transform.SetParent(transform, false);
+                    badge.transform.localPosition = new Vector3(d * .36f, d * .36f, 0f);
+                    var image = badge.AddComponent<SpriteRenderer>(); image.sprite = circulo;
+                    image.sharedMaterial = material; image.color = ouro; image.sortingOrder = 24;
+                    float s = d * .34f / Mathf.Max(.0001f, Mathf.Max(circulo.bounds.size.x, circulo.bounds.size.y));
+                    badge.transform.localScale = new Vector3(s, s, 1f);
+                    TextoMundo("Captain C", "C", new Vector2(d * .36f, d * .36f), d * .3f, d * .3f,
+                        d * 3.2f, Color.black, fonte, 25);
+                }
+                if (partida.Configuracao.mostrarTagsJogadores)
+                {
+                    float largura = Mathf.Clamp(partida.Configuracao.larguraTags, 1f, 4f);
+                    float y = -d * .5f - .31f;
+                    var fundo = new GameObject("Player Tag Background"); fundo.transform.SetParent(transform, false);
+                    fundo.transform.localPosition = new Vector3(0f, y, 0f);
+                    var image = fundo.AddComponent<SpriteRenderer>(); image.sprite = circulo; image.sharedMaterial = material;
+                    image.color = new Color(.005f, .02f, .03f, .88f); image.sortingOrder = 21;
+                    fundo.transform.localScale = new Vector3(largura, .46f, 1f);
+                    TextoMundo("Player Name Tag", NomeExibicao, new Vector2(0f, y), largura * .92f, .43f,
+                        Mathf.Clamp(partida.Configuracao.tamanhoFonteTags, 2f, 8f), Color.white, fonte, 22);
+                }
+            }
             Corpo.simulated = false;
+        }
+
+        private void TextoMundo(string nome, string valor, Vector2 pos, float largura, float altura,
+            float tamanho, Color cor, TMP_FontAsset fonte, int ordem)
+        {
+            var go = new GameObject(nome, typeof(RectTransform)); go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
+            var text = go.AddComponent<TextMeshPro>(); text.font = fonte; text.text = valor;
+            text.fontSize = tamanho; text.fontStyle = FontStyles.Bold; text.color = cor;
+            text.enableAutoSizing = true; text.fontSizeMin = Mathf.Min(tamanho, 1.5f); text.fontSizeMax = tamanho;
+            text.textWrappingMode = TextWrappingModes.NoWrap; text.overflowMode = TextOverflowModes.Ellipsis;
+            text.richText = false; text.alignment = TextAlignmentOptions.Center;
+            text.rectTransform.sizeDelta = new Vector2(largura, altura);
+            var renderer = go.GetComponent<MeshRenderer>();
+            if (renderer == null) renderer = go.AddComponent<MeshRenderer>();
+            renderer.sortingOrder = ordem;
         }
 
         private void Imagem(string nome, Sprite sprite, Material material, Color cor, float tamanho, int ordem)
