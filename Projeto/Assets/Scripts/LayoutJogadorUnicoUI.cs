@@ -199,7 +199,7 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
             new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);
-        legenda.text = "PLAYER";
+        legenda.text = "CAPTAIN";
         legenda.characterSpacing = 2.4f;
         legenda.fontStyle = FontStyles.Normal;
         legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);

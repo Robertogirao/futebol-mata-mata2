@@ -1,12 +1,14 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.3)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.4.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.4)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
 Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade fixa de discos; não há lançamento contínuo de bolinhas nem goleiro do jogo anterior. A apresentação tem identidade própria, com arena em tons de verde-azulado e ciano. Os textos da transmissão estão em inglês; os controles do Inspector estão em português.
 
 **Já personalizou o projeto?** [Baixe a atualização de posturas e pressão](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.3/Atualizacoes/Atualizacao_Posturas_Pressao.zip) e siga [as instruções de atualização](Atualizacoes/COMO_APLICAR_TATICAS.md). Ela inclui dez scripts e o arquivo de importação da nova tática, preservando suas cenas e configurações.
+
+**Legenda da foto:** [atualização PLAYER → CAPTAIN, de um único script](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.4/Atualizacoes/Atualizacao_Legenda_CAPTAIN.zip).
 
 ## Abrir o projeto
 
