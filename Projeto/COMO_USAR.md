@@ -83,6 +83,16 @@ Em **Discos e bola**, ajuste:
 
 Após um gol, os objetos são reposicionados. O cronômetro regulamentar fica pausado durante a reposição. A duração padrão da partida é **45 segundos de jogo**. O relógio mostra os **90 minutos virtuais** do futebol distribuídos nessa duração; aberturas, fotos, reposições, tabelas e Golden Goal aumentam a duração da gravação.
 
+### Postura de cada time e pressão
+
+Selecione a ficha `TeamData` no Project e abra **Tática e IA > Postura tática**. As quatro opções são **Ultra defensivo** (0 jogadores podem avançar para pressionar), **Defensivo** (até 1), **Balanceado** (até 2) e **Ataque** (até 3), limitadas ao total disponível de discos.
+
+No **FutebolDiscos_Manager**, desmarque **Manter cada time em sua metade** para permitir o avanço. Se estiver marcado, o bloqueio geral prevalece para todas as posturas.
+
+O limite não mantém os jogadores permanentemente adiantados. A posição e a direção da bola abrem ou fecham a oportunidade: um jogador vai à bola e os apoios podem subir por faixas diferentes. Na ameaça defensiva eles retornam à formação, sem teleporte. Uma vaga só é liberada para outro jogador depois que o anterior regressa. O capitão também pode avançar.
+
+As escolhas das fichas antigas são preservadas: **Defesa** passa a aparecer como **Defensivo**, com o mesmo valor salvo. Altere as posturas fora do Play; elas afetam os próximos jogos, sem alterar os resultados concluídos. Para mudar o bloqueio geral da metade em uma temporada já salva, crie outra temporada, como nas regras anteriores.
+
 ## 6. Nome, fontes, logos, fundos e fotos
 
 No mesmo painel, abra **Identidade visual > Fontes, imagens e cores da transmissão**. O tema inicial é `Assets/FutebolDiscos/Tema_Discos.asset`.

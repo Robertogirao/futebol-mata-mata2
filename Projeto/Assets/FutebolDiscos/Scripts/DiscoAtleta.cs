@@ -11,6 +11,8 @@ namespace FutebolDeDiscos
         public int Indice { get; private set; }
         public JogadorDados Jogador { get; private set; }
         public Rigidbody2D Corpo { get; private set; }
+        public bool Pressionando { get; private set; }
+        public bool Recuando { get; private set; }
         public bool Capitao { get { return Indice == 0; } }
         public string NomeExibicao
         {
@@ -135,16 +137,41 @@ namespace FutebolDeDiscos
             foreach (DiscoAtleta outro in atletas)
                 if (outro != this && outro.TimeA == TimeA && Vector2.Distance(outro.Corpo.position, bola.Corpo.position) < distancia)
                     maisPerto++;
-            if (bolaNaMetade && maisPerto < (cfg.discosPorTime > 2 ? 2 : 1))
+            if (Pressionando && !cfg.limitarDiscosNaMetade)
+            {
+                int ordemPressao = 0;
+                foreach (DiscoAtleta outro in atletas)
+                {
+                    if (outro == this || outro.TimeA != TimeA || !outro.Pressionando) continue;
+                    float distanciaOutro = Vector2.Distance(outro.Corpo.position, bola.Corpo.position);
+                    if (distanciaOutro < distancia - .001f ||
+                        (Mathf.Abs(distanciaOutro - distancia) <= .001f && outro.Indice < Indice)) ordemPressao++;
+                }
+                float sinal = TimeA ? 1f : -1f;
+                if (ordemPressao == 0)
+                    alvo = bola.Corpo.position - new Vector2(sinal * .45f, 0f);
+                else
+                {
+                    // Support in different lanes rather than stacking every disc on the ball.
+                    float progresso = Mathf.Max(1f, sinal * bola.Corpo.position.x - ordemPressao * 1.8f);
+                    alvo = new Vector2(sinal * progresso, bola.Corpo.position.y + (ordemPressao == 1 ? 1.6f : -1.6f));
+                }
+            }
+            else if (!Recuando && bolaNaMetade && maisPerto < (cfg.discosPorTime > 2 ? 2 : 1))
                 alvo = bola.Corpo.position - new Vector2(TimeA ? .45f : -.45f, 0f);
-            else if (!cfg.limitarDiscosNaMetade && maisPerto == 0)
-                alvo = bola.Corpo.position - new Vector2(TimeA ? .5f : -.5f, 0f);
 
             float raio = cfg.tamanhoDisco * .5f;
             float limite = CampoDiscos.MeioComprimento - raio - .15f;
             float minX = -limite, maxX = limite;
-            if (cfg.limitarDiscosNaMetade) { if (TimeA) maxX = -raio; else minX = raio; }
-            alvo.x = Mathf.Clamp(alvo.x, minX, maxX);
+            bool sairDaMetade = !cfg.limitarDiscosNaMetade && (Pressionando || Recuando);
+            if (!sairDaMetade) { if (TimeA) maxX = -raio; else minX = raio; }
+            float alvoMinX = minX, alvoMaxX = maxX;
+            if (Recuando || !Pressionando)
+            {
+                if (TimeA) alvoMaxX = Mathf.Min(alvoMaxX, -raio - .15f);
+                else alvoMinX = Mathf.Max(alvoMinX, raio + .15f);
+            }
+            alvo.x = Mathf.Clamp(alvo.x, alvoMinX, alvoMaxX);
             alvo.y = Mathf.Clamp(alvo.y, -CampoDiscos.MeioLargura + raio + .1f, CampoDiscos.MeioLargura - raio - .1f);
             Vector2 corrigida = new Vector2(Mathf.Clamp(pos.x, minX, maxX),
                 Mathf.Clamp(pos.y, -CampoDiscos.MeioLargura + raio, CampoDiscos.MeioLargura - raio));
@@ -155,6 +182,18 @@ namespace FutebolDeDiscos
             Vector2 desejada = diferenca.magnitude > .18f ? diferenca.normalized * velocidade : Vector2.zero;
             Corpo.AddForce((desejada - Corpo.linearVelocity) * Corpo.mass * 4.3f);
             Corpo.linearVelocity = Vector2.ClampMagnitude(Corpo.linearVelocity, velocidade * 1.5f);
+            if (!sairDaMetade)
+            {
+                Vector2 v = Corpo.linearVelocity;
+                if ((TimeA && pos.x + v.x * dt > maxX) || (!TimeA && pos.x + v.x * dt < minX))
+                { v.x = 0f; Corpo.linearVelocity = v; }
+            }
+        }
+
+        internal void DefinirPressao(bool pressionando, bool recuando)
+        {
+            Pressionando = pressionando;
+            Recuando = recuando;
         }
 
         public bool PodeChutar(float tempo)
@@ -165,6 +204,7 @@ namespace FutebolDeDiscos
         }
         public void Repor(Vector2 pos, bool simular)
         {
+            DefinirPressao(false, false);
             RigidbodyInterpolation2D interpolacao = Corpo.interpolation;
             Corpo.interpolation = RigidbodyInterpolation2D.None;
             Corpo.simulated = false;

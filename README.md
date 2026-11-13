@@ -1,12 +1,12 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.2.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.2)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.3)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
 Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade fixa de discos; não há lançamento contínuo de bolinhas nem goleiro do jogo anterior. A apresentação tem identidade própria, com arena em tons de verde-azulado e ciano. Os textos da transmissão estão em inglês; os controles do Inspector estão em português.
 
-**Já personalizou o projeto?** [Baixe a atualização de capitão, tags e textos](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.2/Atualizacoes/Atualizacao_Capitao_Tags_Textos.zip) e siga [as instruções de atualização](Atualizacoes/COMO_APLICAR_CAPITAO_TAGS_TEXTOS.md). Ela substitui apenas oito scripts e preserva suas cenas e configurações.
+**Já personalizou o projeto?** [Baixe a atualização de posturas e pressão](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.3/Atualizacoes/Atualizacao_Posturas_Pressao.zip) e siga [as instruções de atualização](Atualizacoes/COMO_APLICAR_TATICAS.md). Ela inclui dez scripts e o arquivo de importação da nova tática, preservando suas cenas e configurações.
 
 ## Abrir o projeto
 
@@ -38,6 +38,12 @@ No **FutebolDiscos_Manager**, o grupo **Identificação dos jogadores** permite 
 Na comemoração, o capitão usa nome e foto; os demais usam nome e bandeira/escudo. Se faltarem jogadores no elenco, os discos restantes usam a sigla e seu número, sem repetir o capitão.
 
 Em **Textos da arena**, edite ou oculte o texto do campo, o título e o subtítulo do rodapé. Os detalhes de formato e número de discos têm um controle separado. Esses ajustes não exigem outra temporada.
+
+## Posturas e pressão
+
+Na ficha de cada `TeamData`, escolha **Tática e IA > Postura tática**: Ultra defensivo permite 0 jogadores pressionando além do meio-campo; Defensivo, até 1; Balanceado, até 2; Ataque, até 3. O total também fica limitado aos discos disponíveis.
+
+Para permitir esse avanço, desmarque **Manter cada time em sua metade** no `FutebolDiscos_Manager`. Marcado, o controle geral mantém todos no próprio campo. As posturas são limites: a posição e a direção da bola determinam quantos jogadores realmente sobem. Os apoios ocupam faixas diferentes, e os jogadores recuam quando a jogada pede defesa.
 
 ## Temporadas e salvamento
 

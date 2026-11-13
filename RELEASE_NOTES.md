@@ -1,13 +1,18 @@
-Capitães, tags dos jogadores e textos editáveis no Futebol de Discos.
+Quatro posturas com pressão por oportunidade no Futebol de Discos.
 
-- Tags de nome por disco, com tamanho e largura configuráveis.
-- Um capitão por time: o representante da foto, destacado com C e borda dourada. Foto no disco opcional.
-- Gol do capitão mostra nome e foto; gol dos demais mostra nome e bandeira/escudo do time.
-- Os textos do campo e do rodapé podem ser alterados ou ocultados no painel central.
-- Mantém a correção dos gols repetidos, os campeonatos e seus salvamentos.
+- **Ultra defensivo:** ninguém é liberado para pressionar além do meio-campo.
+- **Defensivo:** até um jogador.
+- **Balanceado:** até dois.
+- **Ataque:** até três, limitado ao total de discos da equipe.
 
-**Projeto já personalizado:** [baixe somente a atualização de oito scripts](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.2/Atualizacoes/Atualizacao_Capitao_Tags_Textos.zip). Pare o Play, extraia e copie a pasta Assets para seu projeto, aceitando as substituições. As cenas e configurações são preservadas. [Guia dos novos controles](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.2/Atualizacoes/COMO_APLICAR_CAPITAO_TAGS_TEXTOS.md).
+A quantidade é um limite, não uma ordem de permanecer adiantado. A posição e a direção da bola determinam a subida. Os apoios usam faixas diferentes; a equipe recua quando precisa defender. Os jogadores voltando conservam suas vagas até regressar, evitando excesso de liberações.
 
-**Projeto completo:** Source code (zip) abaixo contém a versão atualizada. Abra a pasta Projeto no Unity 6000.4.11f1.
+Configure a postura em **Ficha TeamData > Tática e IA > Postura tática**. Para permitir avanço, desmarque **Manter cada time em sua metade** no FutebolDiscos_Manager. O bloqueio geral prevalece sobre a postura.
 
-Testes de código passaram para capitães, nomes, fotos/bandeiras dos autores, fila de comemorações, textos editáveis, reposição após gol, liga e mata-mata. As APIs Unity foram representadas por fachadas; a renderização nativa ainda precisa ser conferida no Play.
+**Atualizar o projeto atual:** [baixe o ZIP de atualização](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.3/Atualizacoes/Atualizacao_Posturas_Pressao.zip). Pare o Play, extraia e copie a pasta Assets sobre a do projeto atual, aceitando as substituições. Inclui dez scripts e o .meta do novo script de tática, com as correções e recursos anteriores. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.3/Atualizacoes/COMO_APLICAR_TATICAS.md).
+
+**Projeto completo:** Source code (zip) abaixo. Abra a pasta Projeto no Unity 6000.4.11f1.
+
+Os valores antigos de Ataque, Balanceado e Defesa foram preservados. Cenas, fichas e resultados não são sobrescritos pelo pacote de atualização.
+
+572 verificações novas de tática e os testes anteriores de gols, capitão, liga e mata-mata passaram com fachadas das APIs Unity. A física nativa e o visual ainda precisam ser conferidos no Play.

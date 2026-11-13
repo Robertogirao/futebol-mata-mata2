@@ -141,6 +141,9 @@ namespace FutebolDeDiscos
                 Slider("forcaChute", "Força do chute", 1f, 15f);
                 Slider("pausaAposGol", "Pausa depois do gol", 0.2f, 5f);
                 Campo("limitarDiscosNaMetade", "Manter cada time em sua metade");
+                EditorGUILayout.HelpBox("Para liberar pressão no campo adversário, desmarque a opção acima e escolha a postura " +
+                    "na ficha de cada time: ultra defensivo (0), defensivo (até 1), balanceado (até 2) ou ataque (até 3). " +
+                    "A subida depende da posição e da direção da bola.", MessageType.Info);
                 Campo("usarForcaDosTimes", "Considerar o overall dos times");
                 Slider("limiarCores", "Diferença mínima entre as cores", 0f, 100f);
 

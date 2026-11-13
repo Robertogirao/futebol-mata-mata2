@@ -150,6 +150,7 @@ namespace FutebolDeDiscos
             if (EmReposicao) return;
             float dt = Time.fixedDeltaTime;
             tempoMovimento += dt;
+            TaticaDiscos.Atualizar(atletas, bola, config);
             for (int i = 0; i < atletas.Count; i++) atletas[i].Mover(tempoMovimento, dt, atletas, bola, ui.EmProrrogacao);
             bola.LimitarVelocidade(config.velocidadeMaximaBola);
             if (Vector2.Distance(bola.Corpo.position, centroBolaLenta) > 0.45f)

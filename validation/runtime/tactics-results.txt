@@ -1,0 +1,2 @@
+PASS 572 tactical quota, opportunity, retreat, role hand-off and reset assertions using actual game sources.
+Controlled actor/ball poses and Unity API facade; native collision responses and rendered movement were not executed.

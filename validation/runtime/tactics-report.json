@@ -1,0 +1,22 @@
+{
+  "version": "2026.11.13.3",
+  "tactical_assertions": 572,
+  "serialized_enum_ids": {
+    "Ataque": 0,
+    "Balanceado": 1,
+    "Defesa": 2,
+    "UltraDefensivo": 3
+  },
+  "pressing_limits": {
+    "Ultra defensivo": 0,
+    "Defensivo": 1,
+    "Balanceado": 2,
+    "Ataque": 3
+  },
+  "role_limits_are_conditional": true,
+  "native_unity_play_executed": false,
+  "patch_scripts": 10,
+  "patch_bytes": 35622,
+  "patch_sha256": "73382830fa860451ef8442f8aeea5185140eb98c7030ebd26a1cb7fd5f82283b",
+  "source_files": 1234
+}
