@@ -116,6 +116,7 @@ namespace FutebolDeDiscos
                 Campo("umaRodadaOuFasePorPlay", mataMata ? "Uma fase por Play" : "Uma rodada por Play");
 
                 Titulo("Tempos da transmissão (segundos)");
+                Campo("roteiroTransmissao", "Textos das aberturas e prévias", "Chamadas da identidade futurista. Ajustes visuais podem ser alterados entre sessões.");
                 Campo("duracaoPartida", "Duração da partida");
                 Campo("tempoAbertura", "Abertura dos confrontos");
                 Campo("tempoFotos", "Fotos ampliadas no centro");

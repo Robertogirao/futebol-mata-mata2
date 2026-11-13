@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using FutebolDeDiscos;
 
 public class ClassificacaoUI : MonoBehaviour
 {
@@ -67,6 +68,15 @@ public class ClassificacaoUI : MonoBehaviour
     private RectTransform painel;
     private CanvasGroup grupoPainel;
     private int versao;
+    private RoteiroTransmissaoDiscos roteiro = new RoteiroTransmissaoDiscos();
+    private readonly List<Image> segmentosHolograma = new List<Image>();
+    private RectTransform scanHolograma;
+    private Image luzScan;
+
+    public void ConfigurarRoteiro(RoteiroTransmissaoDiscos novo)
+    {
+        roteiro = novo ?? new RoteiroTransmissaoDiscos();
+    }
 
     public IEnumerator ExibirTabela(
         List<LigaCampeonato.Linha> tabela,
@@ -141,6 +151,7 @@ public class ClassificacaoUI : MonoBehaviour
             if (!Valida(exibicao))
                 yield break;
 
+            AtualizarPulso((float)tempo);
             yield return null;
             tempo += PassoTempo();
         }
@@ -221,20 +232,14 @@ public class ClassificacaoUI : MonoBehaviour
 
         foreach (ItemAnimado item in itens)
         {
-            float p = Mathf.Clamp01(
-                (progresso - item.atraso) / 0.3f);
-
-            float suave = Mathf.SmoothStep(
-                0f,
-                1f,
-                p);
-
+            float p = Mathf.Clamp01((progresso - item.atraso) / 0.3f);
+            float suave = Mathf.SmoothStep(0f, 1f, p);
             item.grupo.alpha = suave;
-
-            item.rect.anchoredPosition =
-                item.destino +
-                new Vector2(-35f * (1f - suave), 0f);
+            // Rows assemble vertically behind the scan, instead of sliding sideways.
+            item.rect.anchoredPosition = item.destino + new Vector2(0f, 16f * (1f - suave));
+            item.rect.localScale = new Vector3(1f, Mathf.Lerp(0.08f, 1f, suave), 1f);
         }
+        AtualizarScan(progresso, 0.13f * Mathf.Sin(Mathf.Clamp01(progresso) * Mathf.PI));
     }
 
     private IEnumerator AnimarSaida(
@@ -250,19 +255,46 @@ public class ClassificacaoUI : MonoBehaviour
 
             tempo += PassoTempo();
 
-            grupoPainel.alpha =
-                1f - Mathf.SmoothStep(
-                    0f,
-                    1f,
-                    Mathf.Clamp01((float)(tempo / duracao)));
+            AplicarSaida(Mathf.Clamp01((float)(tempo / duracao)));
 
             yield return null;
         }
 
-        if (Valida(exibicao))
+        if (Valida(exibicao)) AplicarSaida(1f);
+    }
+
+    private void AplicarSaida(float progresso)
+    {
+        float p = Mathf.Clamp01(progresso);
+        grupoPainel.alpha = 1f - Mathf.SmoothStep(0f, 1f, p);
+        foreach (ItemAnimado item in itens)
         {
-            grupoPainel.alpha = 0f;
+            float recolher = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((p - (0.62f - item.atraso) * 0.4f) / 0.65f));
+            item.grupo.alpha = 1f - recolher;
+            item.rect.localScale = new Vector3(1f, Mathf.Lerp(1f, 0.08f, recolher), 1f);
+            item.rect.anchoredPosition = item.destino - new Vector2(0f, recolher * 12f);
         }
+        AtualizarScan(1f - p, 0.16f * Mathf.Sin(p * Mathf.PI));
+    }
+
+    private void AtualizarScan(float progresso, float alpha)
+    {
+        if (scanHolograma != null)
+            scanHolograma.anchoredPosition = new Vector2(40f, -Mathf.Lerp(180f, 884f, Mathf.Clamp01(progresso)));
+        if (luzScan != null) luzScan.color = ComAlpha(verde, Mathf.Max(0f, alpha));
+    }
+
+    private void AtualizarPulso(float tempo)
+    {
+        float alpha = 0.55f + 0.22f * Mathf.Sin(tempo * 2.4f);
+        foreach (Image segmento in segmentosHolograma)
+            if (segmento != null) segmento.color = ComAlpha(verde, alpha);
+    }
+
+    private static Color ComAlpha(Color cor, float alpha)
+    {
+        cor.a = alpha;
+        return cor;
     }
 
     private static float PassoTempo()
@@ -311,6 +343,9 @@ public class ClassificacaoUI : MonoBehaviour
         }
 
         itens.Clear();
+        segmentosHolograma.Clear();
+        scanHolograma = null;
+        luzScan = null;
 
         raiz = new GameObject(
             "Standings - Canvas",
@@ -379,6 +414,7 @@ public class ClassificacaoUI : MonoBehaviour
         grupoPainel.alpha = 0f;
         grupoPainel.interactable = false;
         grupoPainel.blocksRaycasts = true;
+        ConstruirHolograma();
 
         ColocarEscudo(
             painel,
@@ -412,7 +448,7 @@ public class ClassificacaoUI : MonoBehaviour
         Texto(
             painel,
             "Title",
-            "STANDINGS",
+            RoteiroTransmissaoDiscos.Texto(roteiro.tituloClassificacao),
             150f,
             69f,
             1320f,
@@ -453,9 +489,7 @@ public class ClassificacaoUI : MonoBehaviour
         Texto(
             painel,
             "Fixtures Title",
-            encerramento
-                ? "RESULTS"
-                : "FIXTURES",
+            RoteiroTransmissaoDiscos.Texto(encerramento ? roteiro.resultados : roteiro.agenda),
             1140f,
             142f,
             540f,
@@ -647,9 +681,8 @@ public class ClassificacaoUI : MonoBehaviour
         Texto(
             painel,
             "Footer",
-            encerramento
-                ? $"AFTER MATCHDAY {rodada}"
-                : $"BEFORE MATCHDAY {rodada}",
+            RoteiroTransmissaoDiscos.Numero(roteiro.rodada, rodada) +
+                SeparadorTexto(encerramento ? roteiro.resultados : roteiro.agenda),
             40f,
             913f,
             1640f,
@@ -657,6 +690,37 @@ public class ClassificacaoUI : MonoBehaviour
             21f,
             textoDiscreto,
             fonteUsada);
+        // The transparent scan is created after the data, so its brief sweep
+        // remains visible above both columns without affecting the layout.
+        luzScan = Imagem(painel, "Hologram Scan", 40f, 180f, 1640f, 3f, ComAlpha(verde, 0f));
+        scanHolograma = luzScan.rectTransform;
+    }
+
+    private static string SeparadorTexto(string valor)
+    {
+        string texto = RoteiroTransmissaoDiscos.Texto(valor);
+        return texto.Length == 0 ? "" : "  ·  " + texto;
+    }
+
+    private void ConstruirHolograma()
+    {
+        // Segmented corners and circuit rails stay outside the existing data grid.
+        CantoHolograma("Top Left", 16f, 14f, false, false);
+        CantoHolograma("Top Right", 1704f, 14f, true, false);
+        CantoHolograma("Bottom Left", 16f, 946f, false, true);
+        CantoHolograma("Bottom Right", 1704f, 946f, true, true);
+        Imagem(painel, "Circuit Divider", 1124f, 142f, 1.5f, 738f, ComAlpha(verde, 0.18f));
+        for (int i = 0; i < 9; i++)
+            Imagem(painel, "Circuit Node " + i, 1118f, 198f + i * 78f, 13f, 3f,
+                ComAlpha(verde, i % 2 == 0 ? 0.48f : 0.24f));
+    }
+
+    private void CantoHolograma(string nome, float x, float y, bool direita, bool embaixo)
+    {
+        segmentosHolograma.Add(Imagem(painel, "Hologram " + nome + " H",
+            direita ? x - 76f : x, y, 76f, 3f, ComAlpha(verde, 0.7f)));
+        segmentosHolograma.Add(Imagem(painel, "Hologram " + nome + " V",
+            x, embaixo ? y - 42f : y, 3f, 42f, ComAlpha(verde, 0.7f)));
     }
 
     private void ConstruirJogos(
@@ -727,7 +791,7 @@ public class ClassificacaoUI : MonoBehaviour
                 Texto(
                     rt,
                     "Match Number",
-                    "MATCH " + (i + 1).ToString("D2"),
+                    RoteiroTransmissaoDiscos.Numero(roteiro.partida, i + 1),
                     12f,
                     0f,
                     500f,

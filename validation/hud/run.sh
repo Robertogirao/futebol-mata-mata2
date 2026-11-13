@@ -6,6 +6,7 @@ ${MCS:-mcs} -out:validation/hud/Harness.exe \
   validation/hud/Dependencies.cs \
   validation/hud/Harness.cs \
   Projeto/Assets/FutebolDiscos/Scripts/HudFutebolDiscos.cs \
+  Projeto/Assets/FutebolDiscos/Scripts/RoteiroTransmissaoDiscos.cs \
   Projeto/Assets/Scripts/LayoutJogadorUnicoUI.cs \
   Projeto/Assets/Scripts/GoalBannerUI.cs \
   Projeto/Assets/Scripts/TeamData.cs \

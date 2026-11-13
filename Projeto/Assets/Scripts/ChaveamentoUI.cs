@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using FutebolDeDiscos;
 
 /// <summary>Automatic, recording-safe presentation of a knockout bracket.</summary>
 public sealed class ChaveamentoUI : MonoBehaviour
@@ -64,6 +65,26 @@ public sealed class ChaveamentoUI : MonoBehaviour
         public RectTransform rect;
         public Vector2 origem;
         public float fase;
+    }
+
+    private sealed class Holograma
+    {
+        public RectTransform rect, scanner;
+        public CanvasGroup grupo;
+        public Image brilho;
+        public Vector2 origem;
+        public float atraso, sentido;
+    }
+
+    private RoteiroTransmissaoDiscos roteiro = new RoteiroTransmissaoDiscos();
+    private readonly List<Holograma> hologramas = new List<Holograma>();
+    private RectTransform painelSuperior, painelInferior, nucleoArena;
+    private CanvasGroup grupoNucleoCortina;
+    private Image imagemCortinaInferior, bordaCortinaInferior, luzNucleoArena;
+
+    public void ConfigurarRoteiro(RoteiroTransmissaoDiscos novo)
+    {
+        roteiro = novo ?? new RoteiroTransmissaoDiscos();
     }
 
     private Canvas canvas;
@@ -191,8 +212,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
             if (!encerramento && atual >= fimLeitura)
             {
                 cortina.gameObject.SetActive(true);
-                cortina.anchoredPosition = new Vector2(
-                    Mathf.Lerp(-LarguraCanvas(), 0f, Suavizar((atual - fimLeitura) / 0.72f)), 0f);
+                AplicarIris(1f - Mathf.Clamp01((atual - fimLeitura) / 0.72f));
             }
 
             if (tempo + 0.000001d >= duracao) break;
@@ -242,8 +262,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
         double tempo = 0d;
         while (SequenciaAtual(minhaVersao))
         {
-            cortina.anchoredPosition = new Vector2(
-                LarguraCanvas() * Suavizar((float)tempo / TempoRevelacao), 0f);
+            AplicarIris((float)tempo / TempoRevelacao);
             if (tempo + 0.000001d >= TempoRevelacao) break;
             yield return null;
             tempo += PassoTempo();
@@ -386,8 +405,9 @@ public sealed class ChaveamentoUI : MonoBehaviour
             ? tema.fonteTexto : TMP_Settings.defaultFontAsset;
         multiplicadorFonteTitulo = EscalaFonteValida(tema != null ? tema.escalaFonteTitulo : 1f);
         multiplicadorFonteTexto = EscalaFonteValida(tema != null ? tema.escalaFonteTexto : 1f);
-        imagemCortina.color = Color.Lerp(primaria, Color.black, 0.28f);
-        bordaCortina.color = acento;
+        imagemCortina.color = ComAlpha(Color.Lerp(primaria, Color.black, 0.28f), 1f);
+        imagemCortinaInferior.color = imagemCortina.color;
+        bordaCortina.color = bordaCortinaInferior.color = acento;
     }
 
     private void CriarCanvas()
@@ -412,12 +432,26 @@ public sealed class ChaveamentoUI : MonoBehaviour
         desenho = Caixa("Enquadramento1920x1080", canvasRect, Vector2.zero,
             new Vector2(Largura, Altura));
         cortina = TelaInteira("Cortina", canvasRect);
-        imagemCortina = Imagem(cortina, new Color(0.02f, 0.035f, 0.09f));
-        RectTransform borda = TelaInteira("Borda", cortina);
-        borda.anchorMin = new Vector2(1f, 0f);
-        borda.anchorMax = Vector2.one;
-        borda.sizeDelta = new Vector2(10f, 0f);
+        painelSuperior = TelaInteira("IrisSuperior", cortina);
+        painelSuperior.anchorMin = new Vector2(0f, .5f);
+        painelSuperior.sizeDelta = new Vector2(0f, 8f);
+        imagemCortina = Imagem(painelSuperior, new Color(0.02f, 0.035f, 0.09f, 1f));
+        painelInferior = TelaInteira("IrisInferior", cortina);
+        painelInferior.anchorMax = new Vector2(1f, .5f);
+        painelInferior.sizeDelta = new Vector2(0f, 8f);
+        imagemCortinaInferior = Imagem(painelInferior, imagemCortina.color);
+        RectTransform borda = TelaInteira("BordaInterna", painelSuperior);
+        borda.anchorMax = new Vector2(1f, 0f);
+        borda.sizeDelta = new Vector2(0f, 4f);
         bordaCortina = Imagem(borda, new Color(0.4f, 0.9f, 1f));
+        RectTransform bordaInferior = TelaInteira("BordaInterna", painelInferior);
+        bordaInferior.anchorMin = new Vector2(0f, 1f);
+        bordaInferior.sizeDelta = new Vector2(0f, 4f);
+        bordaCortinaInferior = Imagem(bordaInferior, bordaCortina.color);
+        RectTransform ativacao = Caixa("NucleoIris", cortina, Vector2.zero, new Vector2(620f, 6f));
+        grupoNucleoCortina = Grupo(ativacao);
+        Imagem(ativacao, new Color(.8f, 1f, 1f, .9f));
+        AplicarIris(0f);
     }
 
     private void ConstruirApresentacao(List<FaseVista> fases, JogoVista foco, JogoVista focoQuadro,
@@ -429,6 +463,9 @@ public sealed class ChaveamentoUI : MonoBehaviour
             Destroy(conteudo.gameObject);
         }
         fragmentos.Clear();
+        hologramas.Clear();
+        nucleoArena = null;
+        luzNucleoArena = null;
         bordaFoco = null;
         grupoHaloFoco = null;
         luzFoco = null;
@@ -452,6 +489,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
             Imagem(TelaInteira("Tonalidade", fundoDestaque),
                 ComAlpha(Color.Lerp(primaria, Color.black, 0.32f), 0.85f));
         }
+        ConstruirGradeDigital(conteudo);
         Imagem(Caixa("FaixaSuperior", conteudo, new Vector2(0f, 505f), new Vector2(1920f, 70f)),
             ComAlpha(secundaria, 0.6f));
         Imagem(Caixa("AcentoSuperior", conteudo, new Vector2(0f, 538f), new Vector2(1920f, 4f)), acento);
@@ -461,8 +499,8 @@ public sealed class ChaveamentoUI : MonoBehaviour
             texto, true, TextAlignmentOptions.Center, 26f);
         TextMeshProUGUI subtitulo = Texto("Subtitulo", conteudo, new Vector2(0f, 401f),
             new Vector2(1400f, 36f), encerramento
-                ? string.IsNullOrEmpty(campeao) ? "ROUND COMPLETE" : "THE ROAD TO THE TITLE"
-                : "TOURNAMENT BRACKET",
+                ? RoteiroTransmissaoDiscos.Texto(string.IsNullOrEmpty(campeao) ? roteiro.faseConcluida : roteiro.legendaCampeao)
+                : RoteiroTransmissaoDiscos.Texto(roteiro.tituloChaveamento),
             25f, acento, true);
         subtitulo.characterSpacing = 7f;
         SpriteNoQuadro("LogoCompeticao", conteudo, new Vector2(-829f, 450f), new Vector2(108f, 108f),
@@ -483,9 +521,9 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Imagem(Caixa("DivisorRodape", conteudo, new Vector2(0f, -433f), new Vector2(1760f, 1.5f)),
             ComAlpha(acento, 0.35f));
         string rodape = foco != null && faseFoco != null
-            ? "UP NEXT  |  " + NomeFase(faseFoco.vagas) + "  |  MATCH " + (foco.indice + 1)
-            : encerramento && !string.IsNullOrEmpty(campeao) ? "ONE CHAMPION. ONE UNFORGETTABLE JOURNEY."
-            : "WINNERS ADVANCE  |  TBD: TO BE DECIDED  |  BYE: AUTOMATIC ADVANCE";
+            ? RoteiroTransmissaoDiscos.Texto(roteiro.tituloPrevia) + "  |  " + NomeFase(faseFoco.vagas) + "  |  " + RoteiroTransmissaoDiscos.Numero(roteiro.partida, foco.indice + 1)
+            : encerramento && !string.IsNullOrEmpty(campeao) ? RoteiroTransmissaoDiscos.Texto(roteiro.legendaCampeao)
+            : RoteiroTransmissaoDiscos.Texto(roteiro.legendaQuadro) + "  |  TBD: TO BE DECIDED  |  BYE: AUTOMATIC ADVANCE";
         Texto("Rodape", conteudo, new Vector2(0f, -474f), new Vector2(1720f, 45f), rodape,
             21f, discreto, false, TextAlignmentOptions.Center, 15f);
         RectTransform trilho = Caixa("TrilhoTempo", conteudo, new Vector2(0f, -522f), new Vector2(1760f, 3f));
@@ -581,12 +619,12 @@ public sealed class ChaveamentoUI : MonoBehaviour
                     new Vector2(larguraCentro, 68f), colunas >= 3 ? vencedor.sigla : vencedor.nome,
                     28f, acento, true, TextAlignmentOptions.Center, 18f, true);
                 Texto("CampeaoLegenda", quadro, new Vector2(0f, colunas >= 4 ? -365f : -390f),
-                    new Vector2(larguraCentro, 30f), "CHAMPIONS", 15f, discreto, true);
+                    new Vector2(larguraCentro, 30f), RoteiroTransmissaoDiscos.Texto(roteiro.tituloCampeao), 15f, discreto, true);
             }
             else
             {
                 Texto("RumoAoTitulo", quadro, new Vector2(0f, -215f), new Vector2(larguraCentro, 100f),
-                    "ROAD TO\nTHE TITLE", colunas >= 4 ? 25f : 33f, ComAlpha(discreto, 0.62f), true,
+                    RoteiroTransmissaoDiscos.Texto(roteiro.legendaQuadro), colunas >= 4 ? 25f : 33f, ComAlpha(discreto, 0.62f), true,
                     TextAlignmentOptions.Center, 20f, true);
             }
         }
@@ -641,7 +679,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
                 new Vector2(larguraSelo, alturaSelo));
             Imagem(selo, acento);
             Texto("UpNext", selo, Vector2.zero, new Vector2(larguraSelo - 6f, alturaSelo),
-                "UP NEXT", alturaSelo - 3f, Color.Lerp(primaria, Color.black, 0.65f), true,
+                RoteiroTransmissaoDiscos.Texto(roteiro.tituloPrevia), alturaSelo - 3f, Color.Lerp(primaria, Color.black, 0.65f), true,
                 TextAlignmentOptions.Center, alturaSelo - 3f);
         }
     }
@@ -690,31 +728,60 @@ public sealed class ChaveamentoUI : MonoBehaviour
 
     private void ConstruirConfronto(JogoVista jogo, FaseVista fase)
     {
-        Texto("UpNext", destaque, new Vector2(0f, 310f), new Vector2(1300f, 60f), "UP NEXT", 48f, acento, true);
-        Texto("Etapa", destaque, new Vector2(0f, 246f), new Vector2(1400f, 50f),
-            (fase != null ? NomeFase(fase.vagas) : "KNOCKOUT STAGE") + "  |  MATCH " + (jogo.indice + 1),
-            29f, discreto, true);
-        Texto("Versus", destaque, new Vector2(0f, 5f), new Vector2(160f, 100f), "VS", 67f, acento, true);
-        Linha(destaque, new Vector2(-110f, -116f), new Vector2(110f, -116f), ComAlpha(acento, 0.5f));
+        Texto("UpNext", destaque, new Vector2(0f, 340f), new Vector2(1300f, 38f),
+            RoteiroTransmissaoDiscos.Texto(roteiro.tituloPrevia), 26f, acento, true).characterSpacing = 8f;
+        Texto("Challengers", destaque, new Vector2(0f, 278f), new Vector2(1400f, 58f),
+            RoteiroTransmissaoDiscos.Texto(roteiro.tituloDuelo), 43f, texto, true);
+        Texto("Etapa", destaque, new Vector2(0f, 220f), new Vector2(1400f, 32f),
+            (fase != null ? NomeFase(fase.vagas) : "KNOCKOUT STAGE") + "  |  " +
+            RoteiroTransmissaoDiscos.Numero(roteiro.partida, jogo.indice + 1), 21f, discreto, true);
+        nucleoArena = Caixa("NucleoArena", destaque, new Vector2(0f, -20f), new Vector2(150f, 150f));
+        nucleoArena.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        luzNucleoArena = Imagem(nucleoArena, ComAlpha(acento, .25f));
+        RectTransform centro = Caixa("NucleoInterior", nucleoArena, Vector2.zero, new Vector2(143f, 143f));
+        Imagem(centro, ComAlpha(Color.Lerp(primaria, Color.black, .32f), .96f));
+        Texto("Versus", destaque, new Vector2(0f, -20f), new Vector2(238f, 62f),
+            RoteiroTransmissaoDiscos.Texto(roteiro.separador), 29f, acento, true, TextAlignmentOptions.Center, 18f);
         ConstruirEquipeDestaque(ObterEquipe(jogo.a), jogo.resolvidaA, -445f);
         ConstruirEquipeDestaque(ObterEquipe(jogo.b), jogo.resolvidaB, 445f);
-        Texto("Avanco", destaque, new Vector2(0f, -343f), new Vector2(1500f, 55f),
-            fase != null && fase.vagas <= 2 ? "PLAYING FOR THE TITLE" : "WIN AND KEEP THE DREAM ALIVE",
-            25f, acento, true);
+        Texto("Start", destaque, new Vector2(0f, -340f), new Vector2(1500f, 55f),
+            RoteiroTransmissaoDiscos.Texto(roteiro.chamadaJogo), 39f, acento, true).characterSpacing = 9f;
+        Texto("Avanco", destaque, new Vector2(0f, -392f), new Vector2(1500f, 32f),
+            RoteiroTransmissaoDiscos.Texto(fase != null && fase.vagas <= 2 ? roteiro.chamadaFinal : roteiro.chamadaVitoria),
+            21f, discreto, true);
     }
 
     private void ConstruirEquipeDestaque(EquipeVista equipe, bool resolvida, float x)
     {
-        Imagem(Caixa("BaseEscudo", destaque, new Vector2(x, -6f), new Vector2(390f, 3f)),
-            ComAlpha(acento, 0.17f));
-        SpriteNoQuadro("EscudoDestaque", destaque, new Vector2(x, 58f), new Vector2(270f, 270f),
+        bool esquerda = x < 0f;
+        RectTransform placa = Caixa(esquerda ? "HologramaEsquerda" : "HologramaDireita", destaque,
+            new Vector2(x, -36f), new Vector2(630f, 440f));
+        CanvasGroup grupo = Grupo(placa);
+        grupo.alpha = 0f;
+        Imagem(placa, ComAlpha(acento, .8f));
+        Imagem(Caixa("VidroEscuro", placa, Vector2.zero, new Vector2(624f, 434f)),
+            ComAlpha(Color.Lerp(painel, primaria, .4f), .97f));
+        Imagem(Caixa("VidroLuminoso", placa, Vector2.zero, new Vector2(612f, 420f)), ComAlpha(acento, .035f));
+        for (int side = -1; side <= 1; side += 2)
+        {
+            Imagem(Caixa("CircuitoVertical", placa, new Vector2(side * 305f, side * 145f), new Vector2(4f, 118f)), acento);
+            Imagem(Caixa("CircuitoHorizontal", placa, new Vector2(side * 243f, side * 205f), new Vector2(126f, 4f)), acento);
+        }
+        RectTransform scanner = Caixa("ScannerHolograma", placa, new Vector2(0f, 190f), new Vector2(590f, 3f));
+        Image brilho = Imagem(scanner, ComAlpha(acento, .75f));
+        SpriteNoQuadro("EscudoDestaque", placa, new Vector2(0f, 36f), new Vector2(220f, 220f),
             equipe != null ? equipe.escudo : null);
-        Texto("NomeDestaque", destaque, new Vector2(x, -179f), new Vector2(670f, 144f),
-            equipe != null ? equipe.nome : resolvida ? "BYE" : "TBD", 62f, texto, true,
-            TextAlignmentOptions.Center, 28f, true);
+        Texto("NomeDestaque", placa, new Vector2(0f, -144f), new Vector2(590f, 100f),
+            equipe != null ? equipe.nome : resolvida ? "BYE" : "TBD", 53f, texto, true,
+            TextAlignmentOptions.Center, 26f, true);
         if (equipe != null && equipe.escudo == null)
-            Texto("SiglaDestaque", destaque, new Vector2(x, 58f), new Vector2(350f, 150f),
-                equipe.sigla, 88f, acento, true, TextAlignmentOptions.Center, 42f);
+            Texto("SiglaDestaque", placa, new Vector2(0f, 36f), new Vector2(350f, 150f),
+                equipe.sigla, 79f, acento, true, TextAlignmentOptions.Center, 39f);
+        hologramas.Add(new Holograma
+        {
+            rect = placa, scanner = scanner, grupo = grupo, brilho = brilho, origem = placa.anchoredPosition,
+            atraso = esquerda ? 0f : .13f, sentido = esquerda ? 1f : -1f
+        });
     }
 
     private void ConstruirCampeao(string id, Sprite trofeuCompeticao)
@@ -734,7 +801,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
         }
         Trofeu(destaque, new Vector2(0f, 299f), 0.68f, trofeuCompeticao);
         Texto("TituloCampeao", destaque, new Vector2(0f, 208f), new Vector2(1400f, 80f),
-            "CHAMPIONS", 66f, acento, true);
+            RoteiroTransmissaoDiscos.Texto(roteiro.tituloCampeao), 66f, acento, true);
         SpriteNoQuadro("EscudoCampeao", destaque, new Vector2(0f, 15f), new Vector2(260f, 260f), equipe.escudo);
         if (equipe.escudo == null)
             Texto("SiglaCampeao", destaque, new Vector2(0f, 15f), new Vector2(1000f, 180f),
@@ -742,34 +809,69 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Texto("NomeCampeao", destaque, new Vector2(0f, -194f), new Vector2(1580f, 140f),
             equipe.nome, 78f, texto, true, TextAlignmentOptions.Center, 32f, true);
         Texto("LegendaCampeao", destaque, new Vector2(0f, -321f), new Vector2(1400f, 55f),
-            "TOURNAMENT WINNER", 30f, acento, true);
+            RoteiroTransmissaoDiscos.Texto(roteiro.legendaCampeao), 30f, acento, true);
     }
 
     private void Animar(float tempo, float duracao, float inicioDestaque, bool temDestaque)
     {
-        grupoConteudo.alpha = Suavizar(tempo / 0.6f);
-        float troca = temDestaque ? Suavizar((tempo - inicioDestaque) / 0.65f) : 0f;
+        grupoConteudo.alpha = Suavizar(tempo / .36f);
+        float entradaGrade = Suavizar(tempo / .72f);
+        float troca = temDestaque ? Suavizar((tempo - inicioDestaque) / .72f) : 0f;
         if (grupoFundoDestaque != null) grupoFundoDestaque.alpha = troca;
-        grupoQuadro.alpha = 1f - troca;
-        quadro.anchoredPosition = new Vector2(0f, -20f * (1f - Suavizar(tempo / 0.8f)) - troca * 20f);
-        grupoDestaque.alpha = troca;
-        destaque.anchoredPosition = new Vector2(0f, 20f * (1f - troca));
-        float pulso = 0.5f + 0.5f * Mathf.Sin(tempo * 3f);
-        if (bordaFoco != null)
-            bordaFoco.color = Color.Lerp(acento, texto, 0.10f + 0.30f * pulso);
-        if (grupoHaloFoco != null) grupoHaloFoco.alpha = 0.5f + 0.5f * pulso;
-        if (luzFoco != null) luzFoco.color = ComAlpha(acento, 0.055f + 0.075f * pulso);
+        grupoQuadro.alpha = 1f - Suavizar(troca / .72f);
+        quadro.anchoredPosition = Vector2.zero;
+        quadro.localScale = new Vector3(1f, Mathf.Lerp(.06f, 1f, entradaGrade) * Mathf.Lerp(1f, .08f, troca), 1f);
+        grupoDestaque.alpha = Mathf.Clamp01(troca * 3f);
+        destaque.anchoredPosition = Vector2.zero;
+        float pulso = .5f + .5f * Mathf.Sin(tempo * 2.4f);
+        foreach (Holograma holograma in hologramas)
+        {
+            float ligar = Suavizar((tempo - inicioDestaque - holograma.atraso) / .58f);
+            holograma.grupo.alpha = Mathf.Clamp01(ligar * 3f);
+            holograma.rect.anchoredPosition = holograma.origem + new Vector2(0f, holograma.sentido * 165f * (1f - ligar));
+            holograma.rect.localScale = new Vector3(Mathf.Lerp(.82f, 1f, ligar), Mathf.Lerp(.04f, 1f, ligar), 1f);
+            holograma.scanner.anchoredPosition = new Vector2(0f, Mathf.Sin(tempo * 1.7f + holograma.atraso * 5f) * 190f);
+            holograma.brilho.color = ComAlpha(acento, .2f + .48f * pulso);
+        }
+        if (nucleoArena != null)
+        {
+            nucleoArena.localScale = Vector3.one * (1f + .065f * pulso);
+            luzNucleoArena.color = ComAlpha(acento, .22f + .4f * pulso);
+        }
+        if (bordaFoco != null) bordaFoco.color = Color.Lerp(acento, texto, .10f + .25f * pulso);
+        if (grupoHaloFoco != null) grupoHaloFoco.alpha = .45f + .4f * pulso;
+        if (luzFoco != null) luzFoco.color = ComAlpha(acento, .05f + .06f * pulso);
         progresso.sizeDelta = new Vector2(1760f * Mathf.Clamp01(tempo / duracao), 3f);
         foreach (Fragmento fragmento in fragmentos)
             fragmento.rect.anchoredPosition = fragmento.origem +
-                new Vector2(Mathf.Sin(tempo * 0.45f + fragmento.fase) * 12f,
-                    Mathf.Sin(tempo * 0.32f + fragmento.fase) * 21f);
+                new Vector2(Mathf.Sin(tempo * .45f + fragmento.fase) * 12f, Mathf.Sin(tempo * .32f + fragmento.fase) * 21f);
+    }
+
+    private void ConstruirGradeDigital(RectTransform pai)
+    {
+        for (int x = -900; x <= 900; x += 90)
+            Imagem(Caixa("GradeVertical", pai, new Vector2(x, -15f), new Vector2(1f, 800f)), ComAlpha(acento, .04f));
+        for (int y = -390; y <= 390; y += 78)
+            Imagem(Caixa("GradeHorizontal", pai, new Vector2(0f, y), new Vector2(1820f, 1f)), ComAlpha(acento, .04f));
+    }
+
+    // The two half-viewport panels overlap at the center while closed and move
+    // beyond the actual canvas edges, including non-16:9 letterbox areas.
+    private void AplicarIris(float abertura)
+    {
+        float altura = canvasRect != null && canvasRect.rect.height > 0f ? canvasRect.rect.height : Altura;
+        float p = Suavizar(abertura);
+        float deslocamento = (altura * .5f + 16f) * p;
+        painelSuperior.anchoredPosition = new Vector2(0f, deslocamento);
+        painelInferior.anchoredPosition = new Vector2(0f, -deslocamento);
+        grupoNucleoCortina.alpha = 1f - Suavizar(p / .3f);
     }
 
     private void MostrarCobertura()
     {
         fundoOpaco.enabled = true;
         cortina.anchoredPosition = Vector2.zero;
+        AplicarIris(0f);
         cortina.gameObject.SetActive(true);
         if (conteudo != null) conteudo.gameObject.SetActive(false);
         canvas.gameObject.SetActive(true);

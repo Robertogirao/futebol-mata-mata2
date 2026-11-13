@@ -20,6 +20,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         public TextMeshProUGUI equipe;
         public TextMeshProUGUI jogador;
         public TextMeshProUGUI semFoto;
+        public CanvasGroup grupo;
+        public RectTransform scanner;
+        public Image luzScanner;
     }
 
     private Ficha fichaA;
@@ -68,8 +71,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
             return false;
 
         apresentacaoPreparada = true;
-        PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), 0f);
-        PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), 0f);
+        MaterializarFicha(fichaA, new Vector2(0.31f, 0.5f), 0f, 0f);
+        MaterializarFicha(fichaB, new Vector2(0.69f, 0.5f), 0f, 0f);
         return true;
     }
 
@@ -87,17 +90,23 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 
         while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < leitura)
         {
+            float carga = Mathf.Clamp01((float)tempo / Mathf.Max(0.05f, Mathf.Min(0.6f, leitura)));
+            MaterializarFicha(fichaA, new Vector2(0.31f, 0.5f), carga, (float)tempo);
+            MaterializarFicha(fichaB, new Vector2(0.69f, 0.5f), carga, (float)tempo + 0.3f);
             yield return null;
             tempo += PassoTempo();
         }
 
         if (!SequenciaAtual(minhaVersao)) yield break;
+        fichaA.grupo.alpha = fichaB.grupo.alpha = 1f;
+        fichaA.scanner.gameObject.SetActive(false);
+        fichaB.scanner.gameObject.SetActive(false);
         tempo = 0d;
         while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < deslocamento)
         {
             float progresso = Mathf.SmoothStep(0f, 1f, (float)tempo / deslocamento);
-            PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), progresso);
-            PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), progresso);
+            PosicionarFicha(fichaA, new Vector2(0.31f, 0.5f), progresso);
+            PosicionarFicha(fichaB, new Vector2(0.69f, 0.5f), progresso);
             yield return null;
             tempo += PassoTempo();
         }
@@ -133,13 +142,30 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
     private static void PosicionarFicha(Ficha ficha, Vector2 centro, float progresso)
     {
         Vector2 metade = (ficha.maximoOriginal - ficha.minimoOriginal) * 0.5f;
-        ficha.retangulo.anchorMin = Vector2.Lerp(centro - metade, ficha.minimoOriginal, progresso);
-        ficha.retangulo.anchorMax = Vector2.Lerp(centro + metade, ficha.maximoOriginal, progresso);
+        float arco = Mathf.Sin(Mathf.Clamp01(progresso) * Mathf.PI);
+        Vector2 desvio = new Vector2((centro.x < .5f ? -.07f : .07f) * arco, .12f * arco);
+        ficha.retangulo.anchorMin = Vector2.Lerp(centro - metade, ficha.minimoOriginal, progresso) + desvio;
+        ficha.retangulo.anchorMax = Vector2.Lerp(centro + metade, ficha.maximoOriginal, progresso) + desvio;
         ficha.retangulo.offsetMin = Vector2.zero;
         ficha.retangulo.offsetMax = Vector2.zero;
         ficha.retangulo.localScale = Vector3.Lerp(
-            Vector3.Scale(ficha.escalaOriginal, new Vector3(1.75f, 1.75f, 1f)),
+            Vector3.Scale(ficha.escalaOriginal, new Vector3(1.65f, 1.65f, 1f)),
             ficha.escalaOriginal, progresso);
+    }
+
+    private static void MaterializarFicha(Ficha ficha, Vector2 centro, float progresso, float tempo)
+    {
+        float p = Mathf.SmoothStep(0f, 1f, progresso);
+        PosicionarFicha(ficha, centro - new Vector2(0f, .12f * (1f - p)), 0f);
+        ficha.retangulo.localScale *= Mathf.Lerp(.72f, 1f, p);
+        ficha.grupo.alpha = p;
+        float y = .24f + .55f * (.5f + .5f * Mathf.Sin(tempo * 4.2f));
+        ficha.scanner.anchorMin = new Vector2(.07f, y);
+        ficha.scanner.anchorMax = new Vector2(.93f, y + .008f);
+        ficha.scanner.gameObject.SetActive(true);
+        Color cor = ficha.luzScanner.color;
+        cor.a = .5f + .35f * (.5f + .5f * Mathf.Sin(tempo * 5f));
+        ficha.luzScanner.color = cor;
     }
 
     private static void RestaurarFicha(Ficha ficha)
@@ -150,6 +176,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.retangulo.offsetMin = Vector2.zero;
         ficha.retangulo.offsetMax = Vector2.zero;
         ficha.retangulo.localScale = ficha.escalaOriginal;
+        if (ficha.grupo != null) ficha.grupo.alpha = 1f;
+        if (ficha.scanner != null) ficha.scanner.gameObject.SetActive(false);
     }
 
     private static float DuracaoValida(float segundos)
@@ -172,6 +200,7 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 
         Ficha ficha = new Ficha();
         ficha.retangulo = bloco;
+        ficha.grupo = bloco.gameObject.AddComponent<CanvasGroup>();
         ficha.minimoOriginal = minimo;
         ficha.maximoOriginal = maximo;
         ficha.escalaOriginal = bloco.localScale;
@@ -196,6 +225,13 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.semFoto.color = new Color(0.58f, 0.66f, 0.80f, 1f);
         ficha.foto = CriarImagem("Foto_Jogador", bloco,
             new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
+        Image cantoA = CriarImagem("Holo_Corner_Left", bloco, new Vector2(.015f, .27f), new Vector2(.025f, .76f));
+        Image cantoB = CriarImagem("Holo_Corner_Right", bloco, new Vector2(.975f, .27f), new Vector2(.985f, .76f));
+        cantoA.color = cantoB.color = new Color(.25f, .93f, .92f, .55f);
+        ficha.luzScanner = CriarImagem("Holo_Scanner", bloco, new Vector2(.07f, .24f), new Vector2(.93f, .248f));
+        ficha.scanner = ficha.luzScanner.rectTransform;
+        ficha.luzScanner.color = new Color(.25f, .93f, .92f, .8f);
+        ficha.scanner.gameObject.SetActive(false);
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
             new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);

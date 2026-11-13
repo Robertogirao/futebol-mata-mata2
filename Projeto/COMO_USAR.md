@@ -122,6 +122,14 @@ Nos gols, o capitão mostra nome e foto; os demais mostram nome e bandeira/escud
 
 Abra **FutebolDiscos_Manager > Textos da arena** para mudar **Texto no campo**, **Título do rodapé** e **Subtítulo do rodapé**. Cada um pode ser desligado ou deixado vazio para ocultar. **Mostrar formato e quantidade de discos** controla a parte `LEAGUE/KNOCKOUT` e `3 v 3` separadamente. Você pode alterar esses textos e a identificação visual entre sessões, mantendo a mesma temporada.
 
+### Aberturas e prévias futuristas
+
+A liga e o mata-mata usam painéis holográficos, varredura luminosa e abertura vertical do centro para as bordas. As fichas dos capitães se materializam antes de seguir em arco para seus lugares; **CAPTAIN** continua sendo a legenda da foto. A classificação e o campeão também usam a nova apresentação.
+
+Para alterar as palavras, expanda **FutebolDiscos_Manager > Tempos da transmissão (segundos) > Textos das aberturas e prévias**. Ali ficam os títulos **ARENA** e **CHALLENGERS**, a chamada **START**, o separador **VERSUS** e os textos de quadro, rodada, classificação e campeão. Textos vazios ficam ocultos.
+
+Os controles de duração anteriores continuam valendo. Fontes, fundos, logos e cores são mantidos pelo tema. Essas alterações de apresentação não exigem outra temporada. Veja também [o guia desta atualização](../Atualizacoes/COMO_APLICAR_ABERTURAS_FUTURISTAS.md).
+
 ## 7. Gravar uma rodada, continuar e retomar
 
 Com **Uma rodada por Play** ou **Uma fase por Play** desmarcado, a competição segue automaticamente. Marcado, ela espera após concluir a rodada ou fase. Use **Continuar no Play**, no painel central, para avançar sem sair do Play; também pode dar Stop e Play para continuar depois.

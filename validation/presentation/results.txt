@@ -1,0 +1,2 @@
+PASS 1588 presentation assertions on actual opening, bracket and standings sources.
+Clock, iris geometry, coverage, copy, lifecycle and asset references use a Unity API facade; native rendering, text layout and physics were not executed.

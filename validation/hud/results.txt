@@ -2,4 +2,4 @@ PASS actual outside-UI layering and 2/8/10/15/20/26/28/30/32-team standings with
 PASS goal queue and standings timing at 30/60 fps Recorder and unscaled fallback, paused match and cancellation
 PASS editable footer heading/subtitle, independent format details, toggles and empty-field hiding
 PASS scoreboard bindings, fonts, logos, goal queue, pitch clearances, player opening, Recorder time, cancellation and rebuild cleanup
-PASS 2309 assertions using real HUD, LayoutJogadorUnicoUI, GoalBannerUI, ClassificacaoUI, TeamData and TemaCompeticao with Unity UI/TMP contract adapters
+PASS 2313 assertions using real HUD, LayoutJogadorUnicoUI, GoalBannerUI, ClassificacaoUI, TeamData and TemaCompeticao with Unity UI/TMP contract adapters

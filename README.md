@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.4.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.4)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.5.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.5)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -9,6 +9,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 **Já personalizou o projeto?** [Baixe a atualização de posturas e pressão](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.3/Atualizacoes/Atualizacao_Posturas_Pressao.zip) e siga [as instruções de atualização](Atualizacoes/COMO_APLICAR_TATICAS.md). Ela inclui dez scripts e o arquivo de importação da nova tática, preservando suas cenas e configurações.
 
 **Legenda da foto:** [atualização PLAYER → CAPTAIN, de um único script](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.4/Atualizacoes/Atualizacao_Legenda_CAPTAIN.zip).
+
+**Nova apresentação futurista:** [baixe a atualização das aberturas e prévias](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.5/Atualizacoes/Atualizacao_Aberturas_Futuristas.zip) · [guia dos novos controles](Atualizacoes/COMO_APLICAR_ABERTURAS_FUTURISTAS.md).
 
 ## Abrir o projeto
 
@@ -46,6 +48,12 @@ Em **Textos da arena**, edite ou oculte o texto do campo, o título e o subtítu
 Na ficha de cada `TeamData`, escolha **Tática e IA > Postura tática**: Ultra defensivo permite 0 jogadores pressionando além do meio-campo; Defensivo, até 1; Balanceado, até 2; Ataque, até 3. O total também fica limitado aos discos disponíveis.
 
 Para permitir esse avanço, desmarque **Manter cada time em sua metade** no `FutebolDiscos_Manager`. Marcado, o controle geral mantém todos no próprio campo. As posturas são limites: a posição e a direção da bola determinam quantos jogadores realmente sobem. Os apoios ocupam faixas diferentes, e os jogadores recuam quando a jogada pede defesa.
+
+## Aberturas e prévias futuristas
+
+A transmissão usa painéis holográficos, scanners, pulsos de energia e uma íris que abre do centro para as bordas superior e inferior. As fichas **CAPTAIN** se materializam e seguem em arco até seus lugares. Liga, prévia do mata-mata, classificação e campeão compartilham a nova identidade.
+
+No **FutebolDiscos_Manager > Tempos da transmissão (segundos) > Textos das aberturas e prévias**, edite **ARENA**, **CHALLENGERS**, **START** e as demais chamadas. Os tempos, fontes, cores, logos e fundos existentes continuam configuráveis. O roteiro visual não altera a temporada salva.
 
 ## Temporadas e salvamento
 

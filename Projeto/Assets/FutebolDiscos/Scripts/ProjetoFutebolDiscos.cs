@@ -36,6 +36,7 @@ namespace FutebolDeDiscos
         public float tamanhoFonteTags = 4.5f, larguraTags = 2.6f;
         public string textoNoCampo = "DISC FOOTBALL", tituloRodape = "DISC FOOTBALL", subtituloRodape = "AUTOMATIC DISC FOOTBALL";
         public bool mostrarTextoNoCampo = true, mostrarTituloRodape = true, mostrarSubtituloRodape = true, mostrarDetalhesFormato = true;
+        public RoteiroTransmissaoDiscos roteiroTransmissao = new RoteiroTransmissaoDiscos();
         [HideInInspector] public string situacao, ultimoErro;
 
         public bool Preparado { get; private set; }
@@ -130,6 +131,10 @@ namespace FutebolDeDiscos
 
         private void ConfigurarApresentacao()
         {
+            if (roteiroTransmissao == null) roteiroTransmissao = new RoteiroTransmissaoDiscos();
+            abertura.ConfigurarRoteiro(roteiroTransmissao);
+            tabela.ConfigurarRoteiro(roteiroTransmissao);
+            GetComponent<ChaveamentoUI>().ConfigurarRoteiro(roteiroTransmissao);
             manager.iniciarAutomaticamente = false;
             manager.simuladorDiscos = partida;
             manager.campeonato = liga;
@@ -158,6 +163,9 @@ namespace FutebolDeDiscos
             tabela.tempoSaida = 0.6f;
             tabela.manterTabelaFinalNaTela = true;
             abertura.fundo = temaEmUso.fundoAbertura;
+            abertura.corFundo = temaEmUso.corPrimaria;
+            abertura.corPainel = temaEmUso.corPainel;
+            abertura.corAcento = temaEmUso.corDestaque;
             abertura.logoCanal = temaEmUso.logoCanal;
             abertura.fonteTitulo = temaEmUso.fonteTitulo;
             abertura.fonteNomes = temaEmUso.fonteTexto;

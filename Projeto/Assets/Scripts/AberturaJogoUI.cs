@@ -1,815 +1,412 @@
 using System.Collections;
+using FutebolDeDiscos;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>Holographic league matchup with a vertically split, fully opaque handoff.</summary>
 public sealed class AberturaJogoUI : MonoBehaviour
 {
-    [Header("Imagens")]
-    public Sprite fundo;
+    [Header("Imagens")] public Sprite fundo;
     public Sprite logoCanal;
-
-    [Header("Fontes opcionais")]
-    public TMP_FontAsset fonteTitulo;
+    [Header("Fontes opcionais")] public TMP_FontAsset fonteTitulo;
     public TMP_FontAsset fonteNomes;
-
-    [Header("Duração da abertura")]
-    [Min(3f)]
-    public float tempoTotal = 10f;
-
-    [Header("Som opcional")]
-    public AudioClip somAbertura;
-
-    [Range(0f, 1f)]
-    public float volume = 0.7f;
+    [Header("Cores da transmissão")]
+    public Color corFundo = new Color(.025f, .12f, .13f);
+    public Color corPainel = new Color(.012f, .06f, .075f);
+    public Color corAcento = new Color(.25f, .93f, .92f);
+    [Header("Duração da abertura"), Min(3f)] public float tempoTotal = 10f;
+    [Header("Som opcional")] public AudioClip somAbertura;
+    [Range(0f, 1f)] public float volume = .7f;
 
     public bool EstaExibindo { get; private set; }
+    public bool UltimaExibicaoConcluida { get; private set; }
 
-    public bool UltimaExibicaoConcluida
-    {
-        get;
-        private set;
-    }
-
-    private const float DuracaoRevelacao = 0.6f;
-
+    private const float DuracaoRevelacao = .6f;
     private Canvas canvas;
-    private RectTransform canvasRect;
-    private RectTransform principal;
-    private RectTransform cortina;
-    private RectTransform blocoA;
-    private RectTransform blocoB;
-
-    private CanvasGroup conteudo;
-    private CanvasGroup grupoA;
-    private CanvasGroup grupoB;
-
-    private Image imagemFundo;
-    private Image escudoA;
-    private Image escudoB;
-    private Image imagemLiga;
-    private Image imagemCanal;
-
-    private TextMeshProUGUI textoRodada;
-    private TextMeshProUGUI textoJogo;
-    private TextMeshProUGUI nomeA;
-    private TextMeshProUGUI nomeB;
-
+    private RectTransform canvasRect, principal, cortina, painelSuperior, painelInferior;
+    private RectTransform blocoA, blocoB, scannerA, scannerB, eixoEnergia;
+    private CanvasGroup conteudo, grupoA, grupoB, grupoChamada;
+    private Image imagemFundo, escudoA, escudoB, imagemLiga, imagemCanal;
+    private Image linhaScannerA, linhaScannerB, luzEixo;
+    private TextMeshProUGUI textoRodada, textoJogo, nomeA, nomeB, tituloArena, tituloDuelo, versus, chamada;
     private AudioSource audioAbertura;
     private Texture2D texturaGerada;
     private Sprite spriteGerado;
-
     private Coroutine rotinaRevelacao;
     private int versao;
+    private RoteiroTransmissaoDiscos roteiro = new RoteiroTransmissaoDiscos();
+
+    public void ConfigurarRoteiro(RoteiroTransmissaoDiscos novo)
+    {
+        roteiro = novo ?? new RoteiroTransmissaoDiscos();
+        if (tituloArena != null) AtualizarPalavras();
+    }
 
     public void CobrirTela()
     {
         if (!isActiveAndEnabled) return;
-
         CancelarSequencia();
         CriarInterface();
         MostrarCobertura();
     }
 
-    public IEnumerator Exibir(
-        TeamData timeA,
-        TeamData timeB,
-        Sprite logoLiga,
-        int rodada,
-        int numeroJogo,
-        int totalJogos)
+    public IEnumerator Exibir(TeamData timeA, TeamData timeB, Sprite logoLiga,
+        int rodada, int numeroJogo, int totalJogos)
     {
         CancelarSequencia();
-
-        if (this == null ||
-            !isActiveAndEnabled ||
-            timeA == null ||
-            timeB == null)
-        {
-            yield break;
-        }
-
+        if (this == null || !isActiveAndEnabled || timeA == null || timeB == null) yield break;
         CriarInterface();
-
-        if (textoRodada.font == null ||
-            nomeA.font == null)
+        if (textoRodada.font == null || nomeA.font == null)
         {
-            Debug.LogError(
-                "AberturaJogoUI: atribua fontes TMP aos " +
-                "campos Fonte Titulo e Fonte Nomes.",
-                this);
-
+            Debug.LogError("AberturaJogoUI: atribua fontes TMP aos campos Fonte Titulo e Fonte Nomes.", this);
             MostrarCobertura();
             yield break;
         }
-
         int minhaVersao = versao;
-
-        float duracao =
-            float.IsNaN(tempoTotal) ||
-            float.IsInfinity(tempoTotal)
-                ? 10f
-                : Mathf.Max(3f, tempoTotal);
-
-        imagemFundo.sprite = fundo != null
-            ? fundo
-            : ObterFundoGerado();
-
-        DefinirSprite(
-            escudoA, timeA.escudoOuBandeira);
-
-        DefinirSprite(
-            escudoB, timeB.escudoOuBandeira);
-
+        float duracao = float.IsNaN(tempoTotal) || float.IsInfinity(tempoTotal) ? 10f : Mathf.Max(3f, tempoTotal);
+        imagemFundo.sprite = fundo != null ? fundo : ObterFundoGerado();
+        DefinirSprite(escudoA, timeA.escudoOuBandeira);
+        DefinirSprite(escudoB, timeB.escudoOuBandeira);
         DefinirSprite(imagemLiga, logoLiga);
         DefinirSprite(imagemCanal, logoCanal);
-
-        nomeA.text = NomeTime(
-            timeA.nomeEquipe, "HOME TEAM");
-
-        nomeB.text = NomeTime(
-            timeB.nomeEquipe, "AWAY TEAM");
-
-        textoRodada.text =
-            $"MATCHDAY {Mathf.Max(1, rodada)}";
-
-        textoJogo.text =
-            $"MATCH {Mathf.Max(1, numeroJogo)}";
-
+        nomeA.text = NomeTime(timeA.nomeEquipe, "HOME TEAM");
+        nomeB.text = NomeTime(timeB.nomeEquipe, "AWAY TEAM");
+        AtualizarPalavras();
+        textoRodada.text = RoteiroTransmissaoDiscos.Numero(roteiro.rodada, rodada);
+        textoJogo.text = RoteiroTransmissaoDiscos.Numero(roteiro.partida, numeroJogo);
         principal.gameObject.SetActive(true);
         cortina.gameObject.SetActive(false);
         canvas.gameObject.SetActive(true);
-
         EstaExibindo = true;
         AnimarEntrada(0f);
-
         Canvas.ForceUpdateCanvases();
-
-        float largura = LarguraCanvas();
-
         TocarAudio();
-
-        double tempo = 0;
-
+        double tempo = 0d;
         while (SequenciaAtual(minhaVersao))
         {
             float atual = (float)tempo;
-
             AnimarEntrada(atual);
-
-            // A cortina fecha no último segundo.
-            // O próximo jogo será preparado por trás dela.
+            // Both solid panels meet before the game can be prepared behind them.
             if (atual >= duracao - 1f)
             {
                 cortina.gameObject.SetActive(true);
-
-                float progresso = Suavizar(
-                    (atual - (duracao - 1f)) / 0.65f);
-
-                cortina.anchoredPosition = new Vector2(
-                    Mathf.Lerp(
-                        -largura, 0f, progresso),
-                    0f);
-
-                if (progresso >= 1f)
-                {
-                    cortina.anchoredPosition =
-                        Vector2.zero;
-
-                    principal.gameObject.SetActive(false);
-                }
+                float fechado = Suavizar((atual - (duracao - 1f)) / .65f);
+                AplicarAbertura(1f - fechado);
+                if (fechado >= 1f) principal.gameObject.SetActive(false);
             }
-
-            if (tempo + 0.000001 >= duracao)
-                break;
-
+            if (tempo + .000001d >= duracao) break;
             yield return null;
-
             tempo += PassoTempo();
         }
-
-        if (!SequenciaAtual(minhaVersao))
-            yield break;
-
+        if (!SequenciaAtual(minhaVersao)) yield break;
         MostrarCobertura();
         PararAudio();
-
         UltimaExibicaoConcluida = true;
     }
 
     public void RevelarArena()
     {
-        if (!isActiveAndEnabled)
-        {
-            Ocultar();
-            return;
-        }
-
-        if (rotinaRevelacao != null)
-            return;
-
-        if (canvas == null ||
-            !canvas.gameObject.activeSelf)
-        {
-            EstaExibindo = false;
-            return;
-        }
-
+        if (!isActiveAndEnabled) { Ocultar(); return; }
+        if (rotinaRevelacao != null) return;
+        if (canvas == null || !canvas.gameObject.activeSelf) { EstaExibindo = false; return; }
         CancelarSequencia(false);
         MostrarCobertura();
-
-        rotinaRevelacao = StartCoroutine(
-            Revelar(versao));
+        rotinaRevelacao = StartCoroutine(Revelar(versao));
     }
 
     public void Ocultar()
     {
         CancelarSequencia();
-
-        if (canvas != null)
-            canvas.gameObject.SetActive(false);
-
+        if (canvas != null) canvas.gameObject.SetActive(false);
         EstaExibindo = false;
     }
 
     private IEnumerator Revelar(int minhaVersao)
     {
         Canvas.ForceUpdateCanvases();
-
-        float largura = LarguraCanvas();
-        double tempo = 0;
-
+        double tempo = 0d;
         while (SequenciaAtual(minhaVersao))
         {
-            float progresso =
-                (float)(tempo / DuracaoRevelacao);
-
-            cortina.anchoredPosition = new Vector2(
-                largura * Suavizar(progresso),
-                0f);
-
-            if (tempo + 0.000001 >= DuracaoRevelacao)
-                break;
-
+            AplicarAbertura(Suavizar((float)(tempo / DuracaoRevelacao)));
+            if (tempo + .000001d >= DuracaoRevelacao) break;
             yield return null;
-
             tempo += PassoTempo();
         }
-
-        if (!SequenciaAtual(minhaVersao))
-            yield break;
-
+        if (!SequenciaAtual(minhaVersao)) yield break;
         canvas.gameObject.SetActive(false);
-
         EstaExibindo = false;
         rotinaRevelacao = null;
-
-        // Preserva o resultado de uma exibição concluída.
     }
 
-    private static float PassoTempo()
+    private void AplicarAbertura(float aberta)
     {
-        // No Recorder com tempo de captura fixo,
-        // acompanha a duração do vídeo gravado.
-        float captura = Time.captureDeltaTime;
-
-        return captura > 0f
-            ? captura
-            : Time.unscaledDeltaTime;
+        float altura = canvasRect.rect.height > 0f ? canvasRect.rect.height : 1080f;
+        float deslocamento = (altura * .55f + 4f) * Mathf.Clamp01(aberta);
+        painelSuperior.anchoredPosition = new Vector2(0f, deslocamento);
+        painelInferior.anchoredPosition = new Vector2(0f, -deslocamento);
     }
 
     private void AnimarEntrada(float tempo)
     {
-        conteudo.alpha = Suavizar(tempo / 0.55f);
-
-        float entradaA =
-            Suavizar(tempo / 0.9f);
-
-        float entradaB =
-            Suavizar((tempo - 0.12f) / 0.9f);
-
+        conteudo.alpha = Suavizar(tempo / .35f);
+        float entradaA = Suavizar((tempo - .12f) / .72f);
+        float entradaB = Suavizar((tempo - .3f) / .72f);
         grupoA.alpha = entradaA;
         grupoB.alpha = entradaB;
-
-        blocoA.anchoredPosition = new Vector2(
-            -90f * (1f - entradaA), 0f);
-
-        blocoB.anchoredPosition = new Vector2(
-            90f * (1f - entradaB), 0f);
-
-        blocoA.localScale = Vector3.one *
-            Mathf.Lerp(0.92f, 1f, entradaA);
-
-        blocoB.localScale = Vector3.one *
-            Mathf.Lerp(0.92f, 1f, entradaB);
-
-        // Movimento discreto do fundo durante a apresentação.
-        imagemFundo.rectTransform.localScale =
-            Vector3.one *
-            (1.03f + Mathf.Sin(tempo * 0.65f) * 0.006f);
-
-        imagemFundo.rectTransform.anchoredPosition =
-            new Vector2(
-                Mathf.Sin(tempo * 0.35f) * 7f,
-                Mathf.Cos(tempo * 0.4f) * 3f);
+        // Vertical projection assembly replaces lateral sliding and uniform zoom.
+        blocoA.anchoredPosition = new Vector2(0f, -110f * (1f - entradaA));
+        blocoB.anchoredPosition = new Vector2(0f, 110f * (1f - entradaB));
+        blocoA.localScale = new Vector3(1f, Mathf.Lerp(.18f, 1f, entradaA), 1f);
+        blocoB.localScale = new Vector3(1f, Mathf.Lerp(.18f, 1f, entradaB), 1f);
+        float pulso = .5f + .5f * Mathf.Sin(tempo * 2.8f);
+        scannerA.anchoredPosition = new Vector2(0f, Mathf.Sin(tempo * 1.8f) * 185f);
+        scannerB.anchoredPosition = new Vector2(0f, Mathf.Sin(tempo * 1.8f + 1.6f) * 185f);
+        linhaScannerA.color = Transparente(corAcento, .12f + .12f * pulso);
+        linhaScannerB.color = Transparente(corAcento, .24f - .12f * pulso);
+        eixoEnergia.localScale = new Vector3(.7f + .3f * pulso, 1f, 1f);
+        luzEixo.color = Transparente(corAcento, .035f + pulso * .045f);
+        grupoChamada.alpha = Suavizar((tempo - .7f) / .35f);
+        tituloArena.characterSpacing = Mathf.Lerp(15f, 7f, Suavizar(tempo / .7f));
     }
 
     private void MostrarCobertura()
     {
         cortina.anchoredPosition = Vector2.zero;
-
+        AplicarAbertura(0f);
         cortina.gameObject.SetActive(true);
         principal.gameObject.SetActive(false);
         canvas.gameObject.SetActive(true);
-
         EstaExibindo = true;
     }
 
-    private void CancelarSequencia(
-        bool limparResultado = true)
+    private void CancelarSequencia(bool limparResultado = true)
     {
-        unchecked
-        {
-            versao++;
-        }
-
-        if (rotinaRevelacao != null)
-        {
-            StopCoroutine(rotinaRevelacao);
-            rotinaRevelacao = null;
-        }
-
+        unchecked { versao++; }
+        if (rotinaRevelacao != null) { StopCoroutine(rotinaRevelacao); rotinaRevelacao = null; }
         PararAudio();
-
-        if (limparResultado)
-            UltimaExibicaoConcluida = false;
+        if (limparResultado) UltimaExibicaoConcluida = false;
     }
 
     private bool SequenciaAtual(int minhaVersao)
     {
-        return this != null &&
-            isActiveAndEnabled &&
-            minhaVersao == versao;
+        return this != null && isActiveAndEnabled && minhaVersao == versao;
     }
 
-    private float LarguraCanvas()
+    private static float PassoTempo()
     {
-        float largura = canvasRect.rect.width;
-
-        return largura > 0f ? largura : 1920f;
+        float passo = Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
+        return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
     }
 
     private static float Suavizar(float valor)
     {
         valor = Mathf.Clamp01(valor);
-
         return valor * valor * (3f - 2f * valor);
+    }
+
+    private void AtualizarPalavras()
+    {
+        tituloArena.text = RoteiroTransmissaoDiscos.Texto(roteiro.tituloPrevia);
+        tituloDuelo.text = RoteiroTransmissaoDiscos.Texto(roteiro.tituloDuelo);
+        versus.text = RoteiroTransmissaoDiscos.Texto(roteiro.separador);
+        chamada.text = RoteiroTransmissaoDiscos.Texto(roteiro.chamadaJogo);
     }
 
     private void CriarInterface()
     {
         if (canvas != null) return;
-
-        var objeto = new GameObject(
-            "AberturaJogoUI.Canvas",
-            typeof(RectTransform),
-            typeof(Canvas),
-            typeof(CanvasScaler));
-
+        var objeto = new GameObject("AberturaJogoUI.Canvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
         objeto.SetActive(false);
-
         canvas = objeto.GetComponent<Canvas>();
-        canvas.renderMode =
-            RenderMode.ScreenSpaceOverlay;
-
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 2000;
-
-        canvasRect =
-            objeto.GetComponent<RectTransform>();
-
-        var escala =
-            objeto.GetComponent<CanvasScaler>();
-
-        escala.uiScaleMode =
-            CanvasScaler.ScaleMode.ScaleWithScreenSize;
-
-        escala.referenceResolution =
-            new Vector2(1920f, 1080f);
-
-        escala.screenMatchMode =
-            CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-
-        escala.matchWidthOrHeight = 0.5f;
-
-        principal = TelaInteira(
-            "Apresentacao", canvasRect);
-
-        imagemFundo = Imagem(
-            TelaInteira("Fundo", principal),
-            Color.white);
-
-        Imagem(
-            TelaInteira("Tonalidade", principal),
-            new Color(0f, 0.03f, 0.12f, 0.40f));
-
-        Imagem(
-            Caixa(
-                "LinhaJogoEsquerda",
-                principal,
-                new Vector2(0.34f, 0.795f),
-                new Vector2(130f, 3f)),
-            new Color(0.65f, 0.88f, 1f, 0.7f));
-
-        Imagem(
-            Caixa(
-                "LinhaJogoDireita",
-                principal,
-                new Vector2(0.66f, 0.795f),
-                new Vector2(130f, 3f)),
-            new Color(0.65f, 0.88f, 1f, 0.7f));
-
-        Imagem(
-            Caixa(
-                "LinhaRodape",
-                principal,
-                new Vector2(0.5f, 0.085f),
-                new Vector2(900f, 2f)),
-            new Color(0.4f, 0.75f, 1f, 0.3f));
-
-        RectTransform areaConteudo =
-            TelaInteira("Conteudo", principal);
-
-        conteudo = Grupo(areaConteudo);
-
-        textoRodada = Texto(
-            "Rodada",
-            areaConteudo,
-            new Vector2(0.5f, 0.905f),
-            new Vector2(1340f, 120f),
-            66f,
-            fonteTitulo);
-
-        textoJogo = Texto(
-            "Jogo",
-            areaConteudo,
-            new Vector2(0.5f, 0.795f),
-            new Vector2(900f, 95f),
-            48f,
-            fonteTitulo);
-
-        textoRodada.characterSpacing = 3f;
-        textoJogo.characterSpacing = 3f;
-
-        textoJogo.color =
-            new Color(0.75f, 0.94f, 1f);
-
-        blocoA = CriarTime(
-            areaConteudo,
-            "TimeA",
-            0.235f,
-            out grupoA,
-            out escudoA,
-            out nomeA);
-
-        blocoB = CriarTime(
-            areaConteudo,
-            "TimeB",
-            0.765f,
-            out grupoB,
-            out escudoB,
-            out nomeB);
-
-        var versus = Texto(
-            "Versus",
-            areaConteudo,
-            new Vector2(0.5f, 0.56f),
-            new Vector2(280f, 180f),
-            130f,
-            fonteTitulo);
-
-        versus.text = "VS";
-        versus.characterSpacing = 8f;
-
-        imagemLiga = Imagem(
-            Caixa(
-                "LogoLiga",
-                areaConteudo,
-                new Vector2(0.5f, 0.175f),
-                new Vector2(200f, 160f)),
-            Color.white);
-
-        imagemLiga.preserveAspect = true;
-
-        RectTransform areaCanal = Caixa(
-            "LogoCanal",
-            areaConteudo,
-            Vector2.one,
-            new Vector2(180f, 180f));
-
-        areaCanal.pivot = Vector2.one;
-
-        areaCanal.anchoredPosition =
-            new Vector2(-40f, -28f);
-
-        imagemCanal =
-            Imagem(areaCanal, Color.white);
-
-        imagemCanal.preserveAspect = true;
-
-        var inscrever = Texto(
-            "Inscrever",
-            areaConteudo,
-            new Vector2(0.5f, 0.055f),
-            new Vector2(500f, 40f),
-            32f,
-            fonteTitulo);
-
-        inscrever.text = "SUBSCRIBE";
-        inscrever.characterSpacing = 6f;
-
-        inscrever.color = Color.red;
-
-        cortina = TelaInteira(
-            "Cortina", canvasRect);
-
-        Imagem(
-            cortina,
-            new Color(0.035f, 0.018f, 0.11f, 1f));
-
-        RectTransform borda =
-            TelaInteira("Borda", cortina);
-
-        borda.anchorMin =
-            new Vector2(1f, 0f);
-
-        borda.anchorMax = Vector2.one;
-
-        borda.sizeDelta =
-            new Vector2(12f, 0f);
-
-        Imagem(
-            borda,
-            new Color(0.2f, 0.95f, 1f, 1f));
+        canvasRect = objeto.GetComponent<RectTransform>();
+        var escala = objeto.GetComponent<CanvasScaler>();
+        escala.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        escala.referenceResolution = new Vector2(1920f, 1080f);
+        escala.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        escala.matchWidthOrHeight = .5f;
+        principal = TelaInteira("Apresentacao", canvasRect);
+        Imagem(TelaInteira("BaseOpaca", principal), Opaca(corFundo));
+        imagemFundo = Imagem(TelaInteira("Fundo", principal), Color.white);
+        Imagem(TelaInteira("Tonalidade", principal), Transparente(Color.Lerp(corFundo, Color.black, .4f), .68f));
+        for (int i = 1; i < 12; i++)
+            Imagem(Caixa("GradeVertical", principal, new Vector2(i / 12f, .5f), new Vector2(1f, 1080f)), Transparente(corAcento, .065f));
+        for (int i = 1; i < 8; i++)
+            Imagem(Caixa("GradeHorizontal", principal, new Vector2(.5f, i / 8f), new Vector2(1920f, 1f)), Transparente(corAcento, .065f));
+        eixoEnergia = Caixa("EixoEnergia", principal, new Vector2(.5f, .46f), new Vector2(84f, 610f));
+        luzEixo = Imagem(eixoEnergia, Transparente(corAcento, .06f));
+        Imagem(Caixa("NucleoEnergia", principal, new Vector2(.5f, .46f), new Vector2(2f, 610f)), Transparente(corAcento, .44f));
+        Imagem(Caixa("TrilhoSuperior", principal, new Vector2(.5f, .962f), new Vector2(1760f, 2f)), Transparente(corAcento, .8f));
+        Imagem(Caixa("TrilhoInferior", principal, new Vector2(.5f, .075f), new Vector2(1360f, 2f)), Transparente(corAcento, .55f));
+        RectTransform area = TelaInteira("Conteudo", principal);
+        conteudo = Grupo(area);
+        tituloArena = Texto("TituloArena", area, new Vector2(.5f, .901f), new Vector2(1340f, 80f), 53f, fonteTitulo);
+        textoRodada = Texto("Rodada", area, new Vector2(.5f, .838f), new Vector2(940f, 40f), 27f, fonteTitulo);
+        textoRodada.color = corAcento;
+        tituloDuelo = Texto("TituloDuelo", area, new Vector2(.5f, .768f), new Vector2(1340f, 46f), 30f, fonteTitulo);
+        tituloDuelo.characterSpacing = 8f;
+        textoJogo = Texto("Jogo", area, new Vector2(.5f, .712f), new Vector2(700f, 35f), 20f, fonteNomes);
+        textoJogo.color = Transparente(corAcento, .88f);
+        blocoA = CriarTime(area, "TimeA", .25f, out grupoA, out escudoA, out nomeA, out scannerA, out linhaScannerA);
+        blocoB = CriarTime(area, "TimeB", .75f, out grupoB, out escudoB, out nomeB, out scannerB, out linhaScannerB);
+        versus = Texto("Versus", area, new Vector2(.5f, .46f), new Vector2(270f, 85f), 44f, fonteTitulo);
+        versus.color = corAcento;
+        versus.characterSpacing = 3f;
+        RectTransform diamante = Caixa("NucleoDiamante", area, new Vector2(.5f, .46f), new Vector2(95f, 95f));
+        diamante.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        Imagem(diamante, Transparente(corAcento, .065f));
+        // Keep the separator above its translucent energy node.
+        versus.transform.SetAsLastSibling();
+        imagemLiga = Imagem(Caixa("LogoLiga", area, new Vector2(.065f, .886f), new Vector2(118f, 118f)), Color.white);
+        imagemCanal = Imagem(Caixa("LogoCanal", area, new Vector2(.935f, .886f), new Vector2(118f, 118f)), Color.white);
+        imagemLiga.preserveAspect = imagemCanal.preserveAspect = true;
+        RectTransform cta = Caixa("ChamadaEnergia", area, new Vector2(.5f, .131f), new Vector2(320f, 64f));
+        grupoChamada = Grupo(cta);
+        Imagem(cta, Opaca(corPainel));
+        Imagem(Caixa("AcentoChamada", cta, new Vector2(.5f, 0f), new Vector2(320f, 3f)), corAcento);
+        chamada = Texto("Inscrever", cta, new Vector2(.5f, .5f), new Vector2(300f, 54f), 30f, fonteTitulo);
+        chamada.color = corAcento;
+        chamada.characterSpacing = 5f;
+        AtualizarPalavras();
+        cortina = TelaInteira("Cortina", canvasRect);
+        painelSuperior = TelaInteira("PainelSuperior", cortina);
+        painelSuperior.anchorMin = new Vector2(0f, .5f);
+        painelSuperior.offsetMin = new Vector2(0f, -2f);
+        painelSuperior.offsetMax = Vector2.zero;
+        Imagem(painelSuperior, Opaca(corFundo));
+        painelInferior = TelaInteira("PainelInferior", cortina);
+        painelInferior.anchorMax = new Vector2(1f, .5f);
+        painelInferior.offsetMin = Vector2.zero;
+        painelInferior.offsetMax = new Vector2(0f, 2f);
+        Imagem(painelInferior, Opaca(corFundo));
+        Imagem(Caixa("LuzFechoSuperior", painelSuperior, new Vector2(.5f, 0f), new Vector2(3840f, 3f)), corAcento);
+        Imagem(Caixa("LuzFechoInferior", painelInferior, new Vector2(.5f, 1f), new Vector2(3840f, 3f)), corAcento);
     }
 
-    private RectTransform CriarTime(
-        Transform pai,
-        string identificacao,
-        float x,
-        out CanvasGroup grupo,
-        out Image escudo,
-        out TextMeshProUGUI nome)
+    private RectTransform CriarTime(Transform pai, string id, float x, out CanvasGroup grupo,
+        out Image escudo, out TextMeshProUGUI nome, out RectTransform scanner, out Image linha)
     {
-        RectTransform bloco = Caixa(
-            identificacao,
-            pai,
-            new Vector2(x, 0.5f),
-            new Vector2(680f, 660f));
-
+        RectTransform bloco = Caixa(id, pai, new Vector2(x, .465f), new Vector2(660f, 530f));
         grupo = Grupo(bloco);
-
-        escudo = Imagem(
-            Caixa(
-                "Escudo",
-                bloco,
-                new Vector2(0.5f, 0.63f),
-                new Vector2(360f, 360f)),
-            Color.white);
-
+        Imagem(TelaInteira("PlacaHolografica", bloco), Transparente(corPainel, .94f));
+        Imagem(Caixa("LuzTopo", bloco, new Vector2(.5f, 1f), new Vector2(660f, 3f)), Transparente(corAcento, .9f));
+        Imagem(Caixa("LuzBase", bloco, new Vector2(.5f, 0f), new Vector2(660f, 3f)), Transparente(corAcento, .45f));
+        for (int i = 0; i < 4; i++)
+        {
+            Vector2 canto = new Vector2(i % 2 == 0 ? 0f : 1f, i < 2 ? 0f : 1f);
+            Imagem(Caixa("TerminalHorizontal", bloco, canto, new Vector2(40f, 5f)), corAcento);
+            Imagem(Caixa("TerminalVertical", bloco, canto, new Vector2(5f, 40f)), corAcento);
+        }
+        escudo = Imagem(Caixa("Escudo", bloco, new Vector2(.5f, .59f), new Vector2(270f, 270f)), Color.white);
         escudo.preserveAspect = true;
-
-        nome = Texto(
-            "Nome",
-            bloco,
-            new Vector2(0.5f, 0.19f),
-            new Vector2(650f, 150f),
-            64f,
-            fonteNomes);
-
-        nome.enableAutoSizing = true;
-        nome.fontSizeMin = 30f;
-        nome.fontSizeMax = 64f;
+        nome = Texto("Nome", bloco, new Vector2(.5f, .18f), new Vector2(610f, 108f), 54f, fonteNomes);
+        nome.fontSizeMin = 27f;
         nome.textWrappingMode = TextWrappingModes.Normal;
         nome.maxVisibleLines = 2;
-        nome.overflowMode = TextOverflowModes.Ellipsis;
-
+        scanner = Caixa("Scanner", bloco, new Vector2(.5f, .5f), new Vector2(614f, 3f));
+        linha = Imagem(scanner, Transparente(corAcento, .2f));
         return bloco;
     }
 
-    private static RectTransform Caixa(
-        string nome,
-        Transform pai,
-        Vector2 ancora,
-        Vector2 tamanho)
+    private static Color Transparente(Color cor, float alpha) { cor.a = alpha; return cor; }
+    private static Color Opaca(Color cor) { cor.a = 1f; return cor; }
+    private static RectTransform Caixa(string nome, Transform pai, Vector2 ancora, Vector2 tamanho)
     {
-        var objeto = new GameObject(
-            nome, typeof(RectTransform));
-
-        var area =
-            objeto.GetComponent<RectTransform>();
-
+        var objeto = new GameObject(nome, typeof(RectTransform));
+        var area = objeto.GetComponent<RectTransform>();
         area.SetParent(pai, false);
-        area.anchorMin = ancora;
-        area.anchorMax = ancora;
-
-        area.pivot =
-            new Vector2(0.5f, 0.5f);
-
+        area.anchorMin = area.anchorMax = ancora;
+        area.pivot = new Vector2(.5f, .5f);
         area.sizeDelta = tamanho;
         area.anchoredPosition = Vector2.zero;
-
         return area;
     }
-
-    private static RectTransform TelaInteira(
-        string nome, Transform pai)
+    private static RectTransform TelaInteira(string nome, Transform pai)
     {
-        var area = Caixa(
-            nome,
-            pai,
-            Vector2.zero,
-            Vector2.zero);
-
+        var area = Caixa(nome, pai, Vector2.zero, Vector2.zero);
         area.anchorMin = Vector2.zero;
         area.anchorMax = Vector2.one;
-
+        area.offsetMin = area.offsetMax = Vector2.zero;
         return area;
     }
-
-    private static Image Imagem(
-        RectTransform area, Color cor)
+    private static Image Imagem(RectTransform area, Color cor)
     {
-        var imagem =
-            area.gameObject.AddComponent<Image>();
-
+        var imagem = area.gameObject.AddComponent<Image>();
         imagem.color = cor;
         imagem.raycastTarget = false;
-
         return imagem;
     }
-
-    private static CanvasGroup Grupo(
-        RectTransform area)
+    private static CanvasGroup Grupo(RectTransform area)
     {
-        var grupo =
-            area.gameObject.AddComponent<CanvasGroup>();
-
-        grupo.interactable = false;
-        grupo.blocksRaycasts = false;
-
+        var grupo = area.gameObject.AddComponent<CanvasGroup>();
+        grupo.interactable = grupo.blocksRaycasts = false;
         return grupo;
     }
-
-    private static TextMeshProUGUI Texto(
-        string nome,
-        Transform pai,
-        Vector2 ancora,
-        Vector2 tamanho,
-        float tamanhoFonte,
-        TMP_FontAsset fonte)
+    private static TextMeshProUGUI Texto(string nome, Transform pai, Vector2 ancora, Vector2 tamanho,
+        float tamanhoFonte, TMP_FontAsset fonte)
     {
-        var texto = Caixa(
-            nome, pai, ancora, tamanho)
-            .gameObject
-            .AddComponent<TextMeshProUGUI>();
-
-        TMP_FontAsset escolhida =
-            fonte != null
-                ? fonte
-                : TMP_Settings.defaultFontAsset;
-
-        if (escolhida != null)
-            texto.font = escolhida;
-
+        var texto = Caixa(nome, pai, ancora, tamanho).gameObject.AddComponent<TextMeshProUGUI>();
+        TMP_FontAsset escolhida = fonte != null ? fonte : TMP_Settings.defaultFontAsset;
+        if (escolhida != null) texto.font = escolhida;
         texto.fontSize = tamanhoFonte;
+        texto.enableAutoSizing = true;
+        texto.fontSizeMin = Mathf.Min(tamanhoFonte, 15f);
+        texto.fontSizeMax = tamanhoFonte;
         texto.fontStyle = FontStyles.Bold;
         texto.alignment = TextAlignmentOptions.Center;
         texto.color = Color.white;
         texto.richText = false;
         texto.textWrappingMode = TextWrappingModes.NoWrap;
+        texto.overflowMode = TextOverflowModes.Ellipsis;
         texto.raycastTarget = false;
-
         return texto;
     }
-
-    private static void DefinirSprite(
-        Image imagem, Sprite sprite)
+    private static void DefinirSprite(Image imagem, Sprite sprite) { imagem.sprite = sprite; imagem.enabled = sprite != null; }
+    private static string NomeTime(string valor, string alternativa)
     {
-        imagem.sprite = sprite;
-        imagem.enabled = sprite != null;
+        return string.IsNullOrWhiteSpace(valor) ? alternativa : valor.Replace("\r", " ").Replace("\n", " ").Trim().ToUpperInvariant();
     }
-
-    private static string NomeTime(
-        string valor, string alternativa)
-    {
-        return string.IsNullOrWhiteSpace(valor)
-            ? alternativa
-            : valor.Replace("\r", " ")
-                .Replace("\n", " ")
-                .Trim()
-                .ToUpperInvariant();
-    }
-
     private Sprite ObterFundoGerado()
     {
-        if (spriteGerado != null)
-            return spriteGerado;
-
-        const int largura = 256;
-        const int altura = 128;
-
-        var pixels =
-            new Color32[largura * altura];
-
-        Color azul =
-            new Color(0.015f, 0.25f, 0.38f);
-
-        Color roxo =
-            new Color(0.25f, 0.035f, 0.36f);
-
+        if (spriteGerado != null) return spriteGerado;
+        const int largura = 256, altura = 128;
+        var pixels = new Color32[largura * altura];
         for (int y = 0; y < altura; y++)
-        {
             for (int x = 0; x < largura; x++)
-            {
-                float t =
-                    0.85f * x / (largura - 1f) +
-                    0.15f * y / (altura - 1f);
-
-                pixels[y * largura + x] =
-                    Color.Lerp(azul, roxo, t);
-            }
-        }
-
-        texturaGerada = new Texture2D(
-            largura,
-            altura,
-            TextureFormat.RGBA32,
-            false);
-
-        texturaGerada.name = "FundoAbertura";
+                pixels[y * largura + x] = Color.Lerp(Opaca(corFundo), Opaca(corPainel), .72f * x / (largura - 1f) + .28f * y / (altura - 1f));
+        texturaGerada = new Texture2D(largura, altura, TextureFormat.RGBA32, false);
+        texturaGerada.name = "FundoAberturaHolografica";
         texturaGerada.hideFlags = HideFlags.DontSave;
         texturaGerada.wrapMode = TextureWrapMode.Clamp;
         texturaGerada.filterMode = FilterMode.Bilinear;
-
         texturaGerada.SetPixels32(pixels);
         texturaGerada.Apply(false, true);
-
-        spriteGerado = Sprite.Create(
-            texturaGerada,
-            new UnityEngine.Rect(
-                0f, 0f, largura, altura),
-            new Vector2(0.5f, 0.5f));
-
+        spriteGerado = Sprite.Create(texturaGerada, new Rect(0f, 0f, largura, altura), new Vector2(.5f, .5f));
         spriteGerado.hideFlags = HideFlags.DontSave;
-
         return spriteGerado;
     }
-
     private void TocarAudio()
     {
         if (somAbertura == null) return;
-
         if (audioAbertura == null)
         {
-            audioAbertura =
-                gameObject.AddComponent<AudioSource>();
-
-            audioAbertura.playOnAwake = false;
-            audioAbertura.loop = false;
+            audioAbertura = gameObject.AddComponent<AudioSource>();
+            audioAbertura.playOnAwake = audioAbertura.loop = false;
             audioAbertura.spatialBlend = 0f;
             audioAbertura.ignoreListenerPause = true;
         }
-
-        audioAbertura.PlayOneShot(
-            somAbertura,
-            Mathf.Clamp01(volume));
+        audioAbertura.PlayOneShot(somAbertura, Mathf.Clamp01(volume));
     }
-
-    private void PararAudio()
-    {
-        if (audioAbertura != null)
-            audioAbertura.Stop();
-    }
-
-    private void OnDisable()
-    {
-        Ocultar();
-    }
-
+    private void PararAudio() { if (audioAbertura != null) audioAbertura.Stop(); }
+    private void OnDisable() { Ocultar(); }
     private void OnDestroy()
     {
         Ocultar();
-
-        if (canvas != null)
-            Destroy(canvas.gameObject);
-
-        if (spriteGerado != null)
-            Destroy(spriteGerado);
-
-        if (texturaGerada != null)
-            Destroy(texturaGerada);
-
-        if (audioAbertura != null)
-            Destroy(audioAbertura);
+        if (canvas != null) Destroy(canvas.gameObject);
+        if (spriteGerado != null) Destroy(spriteGerado);
+        if (texturaGerada != null) Destroy(texturaGerada);
+        if (audioAbertura != null) Destroy(audioAbertura);
     }
 }
