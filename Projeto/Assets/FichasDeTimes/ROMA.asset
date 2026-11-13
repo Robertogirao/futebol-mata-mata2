@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: ROMA
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: ROMA
+  sigla: ROM
+  escudoOuBandeira: {fileID: 477525931307775733, guid: 3252efb6e9ca57c4baafd0e66b9ea897, type: 3}
+  overall: 88
+  corPrincipal: {r: 0.5686275, g: 0, b: 0.10588236, a: 1}
+  corSecundaria: {r: 1, g: 0.70980394, b: 0, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Donyell Malen
+    numeroCamisa: 8
+    foto512x512: {fileID: -3841616573954244367, guid: 6d7156057e8ac6c43806a2e2f9af0d97, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Manu Kon\xE9"
+    numeroCamisa: 10
+    foto512x512: {fileID: 4352883880756222530, guid: b9180c785f6061f498a58bae251b63ed, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Paulo Dybala
+    numeroCamisa: 19
+    foto512x512: {fileID: -2977190391174167053, guid: 06216fc359137fd459b19768e58daece, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

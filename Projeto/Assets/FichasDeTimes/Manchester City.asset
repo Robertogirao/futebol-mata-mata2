@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Manchester City
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Manchester City
+  sigla: CIT
+  escudoOuBandeira: {fileID: -1324463699858713578, guid: edd57295ff54c3a4d8c9d437503106d6, type: 3}
+  overall: 90
+  corPrincipal: {r: 0.43137258, g: 0.68235296, b: 0.8745099, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: "Enzo Fern\xE1ndez"
+    numeroCamisa: 16
+    foto512x512: {fileID: -7774244224069211199, guid: 7f0696d95884ee44da5316400b8a30ce, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Erling Haaland
+    numeroCamisa: 17
+    foto512x512: {fileID: -710731960626042704, guid: 978633e4caf982142b3b53f53c756b55, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "J\xE9r\xE9my Doku"
+    numeroCamisa: 19
+    foto512x512: {fileID: 9107788243637124538, guid: bbaa59f6e0c49734bbd3b6a48edf551e, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

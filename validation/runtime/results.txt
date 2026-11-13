@@ -1,0 +1,2 @@
+PASS 45 runtime integration assertions: scoring, complete crossing, retriggers, kickoff, draw/golden goal, physical bounds, resource ownership and lifecycle.
+All runtime project sources compiled together against Unity/TMP API facade. No Unity contacts or rendering were simulated.

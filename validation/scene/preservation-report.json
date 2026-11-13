@@ -1,0 +1,20 @@
+{
+  "scope": "Static file preservation and scene contract assertions; no Unity import/Play",
+  "errors": [],
+  "FichasDeTimes": {
+    "files": 137,
+    "different_from_source": []
+  },
+  "Flags": {
+    "files": 230,
+    "different_from_source": []
+  },
+  "FONTES": {
+    "files": 14,
+    "different_from_source": []
+  },
+  "Jogadores": {
+    "files": 187,
+    "different_from_source": []
+  }
+}

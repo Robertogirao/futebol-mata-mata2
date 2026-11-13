@@ -1,0 +1,2 @@
+PASS 39 real controller + original tournament/UI/physics/filesystem integration assertions.
+PASS automatic round progression, single-round continuation, real golden goals, KO save retry, resume, final tables, seed identity, configuration guards and lifecycle.

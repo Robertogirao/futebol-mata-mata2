@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: LAZIO
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: LAZIO
+  sigla: LAZ
+  escudoOuBandeira: {fileID: 3236227024685739138, guid: 297c331c349d95b4ca2bf5c7d2e6afba, type: 3}
+  overall: 85
+  corPrincipal: {r: 0.45098042, g: 0.8235295, b: 0.9176471, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Davide Frattesi
+    numeroCamisa: 7
+    foto512x512: {fileID: 8130515032373019696, guid: a200d9d5a229c3440af930391abff833, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: Mattia Zaccagni
+    numeroCamisa: 9
+    foto512x512: {fileID: -4047644054488072595, guid: 2d05d30420fd2cd44b373555955aad63, type: 3}
+    estrelasSkill: 3
+  - nomeJogador: Tijjani Noslin
+    numeroCamisa: 14
+    foto512x512: {fileID: 6126808837522012851, guid: 54420a9b37494554283e33758f98b4df, type: 3}
+    estrelasSkill: 3
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

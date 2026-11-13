@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Wales
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Wales
+  sigla: WAL
+  escudoOuBandeira: {fileID: 6444312653775730018, guid: b957980ecaad9bc4099ca732e7b9b048, type: 3}
+  overall: 80
+  corPrincipal: {r: 0.85098046, g: 0, b: 0.14901961, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Lewis Koumas
+    numeroCamisa: 16
+    foto512x512: {fileID: 3882453945532758428, guid: 8c5431e56c498734092cb038819a1e07, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

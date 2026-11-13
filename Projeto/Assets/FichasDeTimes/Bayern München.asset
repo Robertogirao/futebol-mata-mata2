@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: "Bayern M\xFCnchen"
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: "Bayern M\xFCnchen"
+  sigla: BAY
+  escudoOuBandeira: {fileID: -492086602881141230, guid: 6a8f1cded4026144f8d7af777c2c41a7, type: 3}
+  overall: 89
+  corPrincipal: {r: 0.86274517, g: 0.019607844, b: 0.1764706, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Harry Kane
+    numeroCamisa: 16
+    foto512x512: {fileID: 6127551703001658635, guid: 159c78dea1ea1d3459dce9029be99451, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Ismael Saibari
+    numeroCamisa: 17
+    foto512x512: {fileID: -1803317508772594463, guid: 428ddb4c5aa65414b970c0cfc844a7fa, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Michael Olise
+    numeroCamisa: 19
+    foto512x512: {fileID: 6430613269127726516, guid: 66edd7a64e8c0ae4aa021011b6c30205, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

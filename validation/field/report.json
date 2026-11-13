@@ -1,0 +1,1 @@
+{"passed":true,"assertions":736,"actualSource":"Assets/FutebolDiscos/Scripts/CampoDiscos.cs","nativeUnity":false,"limits":"Contract facade checks geometry and lifecycle; no rendering or collision solver."}

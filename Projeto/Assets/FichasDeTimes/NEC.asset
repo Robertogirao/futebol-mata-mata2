@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: NEC
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: NEC
+  sigla: NEC
+  escudoOuBandeira: {fileID: 634543136666040103, guid: 7e0c393acd8d9e84ba834f6cb33e7416, type: 3}
+  overall: 73
+  corPrincipal: {r: 0.92549026, g: 0.10980393, b: 0.14117648, a: 1}
+  corSecundaria: {r: 0, g: 0, b: 0, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Tjaronn Chery
+    numeroCamisa: 16
+    foto512x512: {fileID: 679775497396094764, guid: 7ed1ff588e403b147b029beab2602a22, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

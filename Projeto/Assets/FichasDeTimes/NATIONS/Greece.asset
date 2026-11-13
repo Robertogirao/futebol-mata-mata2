@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Greece
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Greece
+  sigla: GRE
+  escudoOuBandeira: {fileID: -5171240025506481938, guid: 3d78fa8dd7241ce4ca7c8c393ea95d28, type: 3}
+  overall: 79
+  corPrincipal: {r: 0.050980397, g: 0.36862746, b: 0.6901961, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Christos Tzolis
+    numeroCamisa: 16
+    foto512x512: {fileID: -9054670667696288391, guid: f5f2e832fce710249978a7371fdbc1a4, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

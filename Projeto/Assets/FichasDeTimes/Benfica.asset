@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Benfica
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Benfica
+  sigla: BEN
+  escudoOuBandeira: {fileID: -7789655872123524238, guid: 63ff77710a465b747a0949cb06199cb9, type: 3}
+  overall: 82
+  corPrincipal: {r: 0.8941177, g: 0.027450982, b: 0.08235294, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 0.9960785, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Gianluca Prestianni
+    numeroCamisa: 16
+    foto512x512: {fileID: 736128352580585064, guid: 65a4a945ed5b61a46b75d9cf8db01dc8, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

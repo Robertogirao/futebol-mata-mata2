@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: BOLOGNA
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: BOLOGNA
+  sigla: BOL
+  escudoOuBandeira: {fileID: 1042641750725501403, guid: 25e9dca0d9456fe448715d45b79a8c33, type: 3}
+  overall: 76
+  corPrincipal: {r: 0.5372549, g: 0.15294118, b: 0.22352943, a: 1}
+  corSecundaria: {r: 0.08627451, g: 0.16862746, b: 0.23529413, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Federico Bernardeschi
+    numeroCamisa: 6
+    foto512x512: {fileID: -2632710409760845436, guid: 6d240be46ce4b1541aa0e3e72d907780, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Lewis Ferguson
+    numeroCamisa: 18
+    foto512x512: {fileID: -6227283084404069745, guid: 24031a10cea8715459989de97e1c86cf, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Samuel Mbangula
+    numeroCamisa: 19
+    foto512x512: {fileID: 3956479763259187706, guid: 58841265d4eed4c45906d86a6a19517f, type: 3}
+    estrelasSkill: 4
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

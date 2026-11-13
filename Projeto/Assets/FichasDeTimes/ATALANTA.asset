@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: ATALANTA
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: ATALANTA
+  sigla: ATA
+  escudoOuBandeira: {fileID: 1416865518616737463, guid: a6b2fc6c2217a8543869df3bcb342267, type: 3}
+  overall: 80
+  corPrincipal: {r: 0.050980397, g: 0.40784317, b: 0.69411767, a: 1}
+  corSecundaria: {r: 0, g: 0, b: 0, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Charles De Ketelaere
+    numeroCamisa: 7
+    foto512x512: {fileID: -8707759093776648455, guid: a247dbad22305fa40be75cab6011e418, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "\xC9derson"
+    numeroCamisa: 8
+    foto512x512: {fileID: 531261184668840810, guid: 9b3cc9e5f324fe84bbe0136ec88a81c4, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Jonathan Rowe
+    numeroCamisa: 41
+    foto512x512: {fileID: -6865600627610465215, guid: 4f5511c8ec3cd8c4f9255c8d426006f1, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

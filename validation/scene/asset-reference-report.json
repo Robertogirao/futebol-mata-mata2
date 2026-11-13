@@ -1,0 +1,90 @@
+{
+  "scope": "Static YAML validation; not Unity import or Play Mode",
+  "asset_count": 6,
+  "assets": [
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Prefabs/Canvas.prefab",
+      "documents": 134,
+      "gameobjects": 34,
+      "local_nonzero_references": 290,
+      "source_guid_count": 5,
+      "external_package_or_builtin_guids": [
+        "0cd44c1031e13a943bb63640046fad76",
+        "dc42784cf147c0c48a680349fa168899",
+        "f4688fdb7df04437aeb418b961361dc5",
+        "fe87c0e1cc204ed48ad3b37840f39efc"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Prefabs/Card_Confronto.prefab",
+      "documents": 30,
+      "gameobjects": 7,
+      "local_nonzero_references": 66,
+      "source_guid_count": 2,
+      "external_package_or_builtin_guids": [
+        "4e29b1a8efbd4b44bb3f3716e73f07ff",
+        "f4688fdb7df04437aeb418b961361dc5",
+        "fe87c0e1cc204ed48ad3b37840f39efc"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Prefabs/Linha_Tabela.prefab",
+      "documents": 27,
+      "gameobjects": 6,
+      "local_nonzero_references": 57,
+      "source_guid_count": 2,
+      "external_package_or_builtin_guids": [
+        "30649d3a9faa99c48a7b1166b86bf2a0",
+        "306cc8c2b49d7114eaa3623786fc2126",
+        "f4688fdb7df04437aeb418b961361dc5",
+        "fe87c0e1cc204ed48ad3b37840f39efc"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Scenes/FutebolDiscos/Liga_Discos.unity",
+      "documents": 29,
+      "gameobjects": 4,
+      "local_nonzero_references": 50,
+      "source_guid_count": 81,
+      "external_package_or_builtin_guids": [
+        "01614664b831546d2ae94a42149d80ac",
+        "073797afb82c5a1438f328866b10b3f0",
+        "76c392e42b5098c458856cdf6ecaaaa1",
+        "a79441f348de89743a2939f4d699eac1",
+        "ca9f5fa95ffab41fb9a615ab714db018"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Scenes/FutebolDiscos/MataMata_Discos.unity",
+      "documents": 29,
+      "gameobjects": 4,
+      "local_nonzero_references": 50,
+      "source_guid_count": 81,
+      "external_package_or_builtin_guids": [
+        "01614664b831546d2ae94a42149d80ac",
+        "073797afb82c5a1438f328866b10b3f0",
+        "76c392e42b5098c458856cdf6ecaaaa1",
+        "a79441f348de89743a2939f4d699eac1",
+        "ca9f5fa95ffab41fb9a615ab714db018"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Settings/Scenes/URP2DSceneTemplate.unity",
+      "documents": 12,
+      "gameobjects": 2,
+      "local_nonzero_references": 12,
+      "source_guid_count": 0,
+      "external_package_or_builtin_guids": [
+        "073797afb82c5a1438f328866b10b3f0",
+        "a79441f348de89743a2939f4d699eac1"
+      ],
+      "errors": []
+    }
+  ],
+  "error_count": 0
+}

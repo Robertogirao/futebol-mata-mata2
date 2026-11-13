@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Netherlands
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Netherlands
+  sigla: NET
+  escudoOuBandeira: {fileID: 7684716667281092455, guid: f16d266399afc9c42be4ae739c2e8081, type: 3}
+  overall: 89
+  corPrincipal: {r: 1, g: 0.3548839, b: 0, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Ryan Gravenberch
+    numeroCamisa: 16
+    foto512x512: {fileID: 5693774934996220463, guid: f80cb3d3970f51f4d81e9acdf6a9b453, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

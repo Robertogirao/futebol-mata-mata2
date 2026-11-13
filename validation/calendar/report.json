@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "assertions": 37629,
+  "command": "bash validation/calendar/run.sh",
+  "runtime": "Mono C# standalone",
+  "actual_project_parser": true,
+  "real_json_and_filesystem": true,
+  "unity_editor_available": false,
+  "sources_sha256": {
+    "Projeto/Assets/FutebolDiscos/Scripts/CalendarioDiscos.cs": "9e86ecd4595d707bfe424ed27abfb3a248c4094efa1c9f21b57371198c797607",
+    "Projeto/Assets/FutebolDiscos/Scripts/ConfiguracaoTemporadaDiscos.cs": "59ce7e877133be5f49ff61db5f78cb2ca7d573fc6715e8d6566c6bebe4eb27ae",
+    "Projeto/Assets/Scripts/CalendarioCsvParser.cs": "795bb9017084cc897361aef3d8db9ec5e4482f537a80fd38fc3ed2d6a59b6df1",
+    "validation/calendar/CalendarTests.cs": "9cb8c44f4fd962b0e2925603ebc256ce1574e30d05993176d5e5bc9814eec02f"
+  }
+}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: AZ Alkmaar
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: AZ Alkmaar
+  sigla: AZ
+  escudoOuBandeira: {fileID: -4670949311641767251, guid: 32a71c32b715ab24cabf0f39a2f4882f, type: 3}
+  overall: 74
+  corPrincipal: {r: 0.8588236, g: 0, b: 0.12941177, a: 1}
+  corSecundaria: {r: 0.10588236, g: 0.09411766, b: 0.10588236, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Ro-Zangelo Daal
+    numeroCamisa: 16
+    foto512x512: {fileID: -1552430589869347726, guid: 345b805be94455445a25ccc22c6c8109, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

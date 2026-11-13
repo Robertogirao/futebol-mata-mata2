@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: COMO
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: COMO
+  sigla: COM
+  escudoOuBandeira: {fileID: 2577094628114667903, guid: 901279c0daa944f489bfe76ced49f9d8, type: 3}
+  overall: 84
+  corPrincipal: {r: 0.078431375, g: 0.23137257, b: 0.40000004, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Lucas da Cunha
+    numeroCamisa: 9
+    foto512x512: {fileID: 2204023420469283073, guid: 4ac0084b21ba77646b56c519de048e5f, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Nico Paz
+    numeroCamisa: 13
+    foto512x512: {fileID: 7793315596378033021, guid: af100bf7b7d034c47bf8db93bf9a1dc1, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Tasos Douvikas
+    numeroCamisa: 33
+    foto512x512: {fileID: 659459386218239839, guid: 1a85ded1fef0b454d8b08b37bc567b7d, type: 3}
+    estrelasSkill: 4
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

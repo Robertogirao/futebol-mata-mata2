@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Rennes
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Rennes
+  sigla: REN
+  escudoOuBandeira: {fileID: 5045426634105682008, guid: 0707226fc0b7b9f4583042e8cc358ad0, type: 3}
+  overall: 81
+  corPrincipal: {r: 0, g: 0, b: 0, a: 1}
+  corSecundaria: {r: 0.882353, g: 0.20000002, b: 0.14901961, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: "Est\xE9ban Lepaul"
+    numeroCamisa: 16
+    foto512x512: {fileID: -1310777418415020103, guid: 3c97deb596faa4549b31084fa7d3f90e, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

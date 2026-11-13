@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb732d7cfa3c4b5ca7e77c3f17805f22, type: 3}
+  m_Name: Tema_WorldCup
+  m_EditorClassIdentifier: Assembly-CSharp::TemaCompeticao
+  competicaoId: world_cup
+  nomeCompeticao: WORLD CUP
+  corPrimaria: {r: 0.01, g: 0.075, b: 0.055, a: 1}
+  corSecundaria: {r: 0.015, g: 0.2, b: 0.12, a: 1}
+  corDestaque: {r: 0.98, g: 0.8, b: 0.24, a: 1}
+  corTexto: {r: 1, g: 1, b: 1, a: 1}
+  corPainel: {r: 0.01, g: 0.055, b: 0.04, a: 0.97}
+  fundoAbertura: {fileID: 21300000, guid: 293a7463c7a4471f8b93dc3a35b3c1f0, type: 3}
+  fundoChaveamento: {fileID: 21300000, guid: 293a7463c7a4471f8b93dc3a35b3c1f0, type: 3}
+  logoCompeticao: {fileID: 21300000, guid: 7e23ee5edb8d4af388c06359ea70a643, type: 3}
+  logoCanal: {fileID: 4855796935591688104, guid: ad156cc26f25ca747a789d97728ab529, type: 3}
+  fonteTitulo: {fileID: 11400000, guid: e389b8f1955c2e44d9e6be7eae700c5b, type: 2}
+  fonteTexto: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  escalaFonteTitulo: 0.8
+  escalaFonteTexto: 1
+  somAbertura: {fileID: 0}
+  fundoArena: {fileID: 0}
+  campo: {fileID: -4329228532589240902, guid: ae9e80fa5abd4973800225f8c10c2d77, type: 3}
+  gol: {fileID: 0}
+  helice2: {fileID: 0}
+  goleiro: {fileID: 0}
+  tintFundoArena: {r: 0.01, g: 0.075, b: 0.055, a: 1}
+  tintCampo: {r: 1, g: 1, b: 1, a: 1}
+  tintGol: {r: 1, g: 1, b: 1, a: 1}
+  tintHelice: {r: 1, g: 1, b: 1, a: 1}
+  tintGoleiro: {r: 1, g: 1, b: 1, a: 1}
+  materialGol: {fileID: 2100000, guid: 2b106a47dda2478a89ed48e4376b3d00, type: 2}
+  materialHelice: {fileID: 2100000, guid: 2b106a47dda2478a89ed48e4376b3d00, type: 2}
+  materialGoleiro: {fileID: 2100000, guid: 2b106a47dda2478a89ed48e4376b3d00, type: 2}

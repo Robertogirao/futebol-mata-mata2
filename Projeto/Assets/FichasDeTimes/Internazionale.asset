@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Internazionale
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Internazionale
+  sigla: INT
+  escudoOuBandeira: {fileID: 4710697705345501645, guid: 7a3772cad580ebf4483e716896d3b506, type: 3}
+  overall: 87
+  corPrincipal: {r: 0, g: 0, b: 0, a: 1}
+  corSecundaria: {r: 1, g: 0.41176474, b: 0, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: "Lautaro Mart\xEDnez"
+    numeroCamisa: 16
+    foto512x512: {fileID: -2681858015923208252, guid: 5849c62a4b737364eb6c84b77fd8ed6c, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Nicol\xF2 Barella"
+    numeroCamisa: 17
+    foto512x512: {fileID: -5397436635310542514, guid: beffe800eef111348b76e5ec508186ba, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: Petar Sucic
+    numeroCamisa: 19
+    foto512x512: {fileID: 609511446010470682, guid: 394979a33d808ac47b78e447a3c00a6e, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

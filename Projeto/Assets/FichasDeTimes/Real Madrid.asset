@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Real Madrid
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Real Madrid
+  sigla: REA
+  escudoOuBandeira: {fileID: -4326419499870053282, guid: f426ee712a45a734e90eab4b4643505f, type: 3}
+  overall: 92
+  corPrincipal: {r: 1, g: 1, b: 1, a: 1}
+  corSecundaria: {r: 0, g: 0.28627452, b: 0.5882353, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Jude Bellingham
+    numeroCamisa: 16
+    foto512x512: {fileID: 2053691175961657406, guid: 03006635f01777f4aa60cf733ea516f3, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Vin\xEDcius J\xFAnior"
+    numeroCamisa: 17
+    foto512x512: {fileID: 5383397659515996342, guid: f50c7b497b8926f4cbdd28aed67747f0, type: 3}
+    estrelasSkill: 5
+  - nomeJogador: "Kylian Mbapp\xE9"
+    numeroCamisa: 19
+    foto512x512: {fileID: -1214127786933807327, guid: dc430a0f8b299ac439fb6908bef65a76, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

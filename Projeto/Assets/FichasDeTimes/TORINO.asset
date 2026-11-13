@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: TORINO
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: TORINO
+  sigla: TOR
+  escudoOuBandeira: {fileID: 3579405725431931369, guid: aa527570c10a65148a3902018a2999d6, type: 3}
+  overall: 74
+  corPrincipal: {r: 0.54901963, g: 0.16862746, b: 0.12941177, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 1
+  elenco:
+  - nomeJogador: Che Adams
+    numeroCamisa: 10
+    foto512x512: {fileID: -8835317214969076020, guid: 94d7a004b6cc2cc42b0d6022586bb552, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Giovanni Simeone
+    numeroCamisa: 14
+    foto512x512: {fileID: 6495498813253150661, guid: 586c764d0c3dc1944a00cd38064dd5db, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Sandro Kulenovic
+    numeroCamisa: 19
+    foto512x512: {fileID: -7802844000650562895, guid: 6be82fc81cb74a54480cfae3161b58d3, type: 3}
+    estrelasSkill: 4
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

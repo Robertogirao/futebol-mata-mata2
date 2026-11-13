@@ -1,0 +1,292 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>Compact representative cards below the pitch, enlarged for the match introduction.</summary>
+[DisallowMultipleComponent]
+public sealed class LayoutJogadorUnicoUI : MonoBehaviour
+{
+    private sealed class Ficha
+    {
+        public RectTransform retangulo;
+        public Vector2 minimoOriginal;
+        public Vector2 maximoOriginal;
+        public Vector3 escalaOriginal;
+        public Image faixa;
+        public Image escudo;
+        public Image foto;
+        public TextMeshProUGUI equipe;
+        public TextMeshProUGUI jogador;
+        public TextMeshProUGUI semFoto;
+    }
+
+    private Ficha fichaA;
+    private Ficha fichaB;
+    private TMP_FontAsset fonte;
+    private int versaoApresentacao;
+    private bool apresentacaoPreparada;
+
+    public bool ApresentacaoConcluida { get; private set; }
+
+    public static LayoutJogadorUnicoUI Criar(Canvas canvas, TMP_FontAsset fonte)
+    {
+        if (canvas == null) return null;
+
+        RectTransform raiz = CriarRetangulo(
+            "Escalacao_JogadorUnico", canvas.transform,
+            Vector2.zero, Vector2.one);
+        // Existing score, goals and other overlays keep their original order.
+        raiz.SetAsFirstSibling();
+        LayoutJogadorUnicoUI layout =
+            raiz.gameObject.AddComponent<LayoutJogadorUnicoUI>();
+        layout.fonte = fonte != null ? fonte : TMP_Settings.defaultFontAsset;
+        layout.fichaA = layout.CriarFicha(
+            "Time_A", new Vector2(0.015f, 0.012f), new Vector2(0.151f, 0.175f));
+        layout.fichaB = layout.CriarFicha(
+            "Time_B", new Vector2(0.849f, 0.012f), new Vector2(0.985f, 0.175f));
+        raiz.gameObject.SetActive(false);
+        return layout;
+    }
+
+    public void Configurar(
+        TeamData timeA, TeamData timeB,
+        List<JogadorDados> titularesA, List<JogadorDados> titularesB)
+    {
+        CancelarApresentacao();
+        Preencher(fichaA, timeA, PrimeiroValido(titularesA), "TEAM A");
+        Preencher(fichaB, timeB, PrimeiroValido(titularesB), "TEAM B");
+        gameObject.SetActive(true);
+    }
+
+    public bool PrepararApresentacao()
+    {
+        CancelarApresentacao();
+        if (!isActiveAndEnabled || fichaA == null || fichaB == null ||
+            fichaA.retangulo == null || fichaB.retangulo == null)
+            return false;
+
+        apresentacaoPreparada = true;
+        PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), 0f);
+        PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), 0f);
+        return true;
+    }
+
+    public IEnumerator ExibirApresentacao(float tempoLeitura, float tempoDeslocamento)
+    {
+        if (!apresentacaoPreparada || !isActiveAndEnabled)
+            yield break;
+
+        int minhaVersao;
+        unchecked { minhaVersao = ++versaoApresentacao; }
+        ApresentacaoConcluida = false;
+        float leitura = DuracaoValida(tempoLeitura);
+        float deslocamento = DuracaoValida(tempoDeslocamento);
+        double tempo = 0d;
+
+        while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < leitura)
+        {
+            yield return null;
+            tempo += PassoTempo();
+        }
+
+        if (!SequenciaAtual(minhaVersao)) yield break;
+        tempo = 0d;
+        while (SequenciaAtual(minhaVersao) && tempo + 0.000001d < deslocamento)
+        {
+            float progresso = Mathf.SmoothStep(0f, 1f, (float)tempo / deslocamento);
+            PosicionarFicha(fichaA, new Vector2(0.33f, 0.5f), progresso);
+            PosicionarFicha(fichaB, new Vector2(0.67f, 0.5f), progresso);
+            yield return null;
+            tempo += PassoTempo();
+        }
+
+        if (!SequenciaAtual(minhaVersao)) yield break;
+        RestaurarFicha(fichaA);
+        RestaurarFicha(fichaB);
+        apresentacaoPreparada = false;
+        ApresentacaoConcluida = true;
+    }
+
+    public void CancelarApresentacao()
+    {
+        unchecked { versaoApresentacao++; }
+        apresentacaoPreparada = false;
+        ApresentacaoConcluida = false;
+        RestaurarFicha(fichaA);
+        RestaurarFicha(fichaB);
+    }
+
+    private void OnDisable()
+    {
+        CancelarApresentacao();
+    }
+
+    private bool SequenciaAtual(int minhaVersao)
+    {
+        return this != null && isActiveAndEnabled && apresentacaoPreparada &&
+            minhaVersao == versaoApresentacao && fichaA != null && fichaB != null &&
+            fichaA.retangulo != null && fichaB.retangulo != null;
+    }
+
+    private static void PosicionarFicha(Ficha ficha, Vector2 centro, float progresso)
+    {
+        Vector2 metade = (ficha.maximoOriginal - ficha.minimoOriginal) * 0.5f;
+        ficha.retangulo.anchorMin = Vector2.Lerp(centro - metade, ficha.minimoOriginal, progresso);
+        ficha.retangulo.anchorMax = Vector2.Lerp(centro + metade, ficha.maximoOriginal, progresso);
+        ficha.retangulo.offsetMin = Vector2.zero;
+        ficha.retangulo.offsetMax = Vector2.zero;
+        ficha.retangulo.localScale = Vector3.Lerp(
+            Vector3.Scale(ficha.escalaOriginal, new Vector3(1.75f, 1.75f, 1f)),
+            ficha.escalaOriginal, progresso);
+    }
+
+    private static void RestaurarFicha(Ficha ficha)
+    {
+        if (ficha == null || ficha.retangulo == null) return;
+        ficha.retangulo.anchorMin = ficha.minimoOriginal;
+        ficha.retangulo.anchorMax = ficha.maximoOriginal;
+        ficha.retangulo.offsetMin = Vector2.zero;
+        ficha.retangulo.offsetMax = Vector2.zero;
+        ficha.retangulo.localScale = ficha.escalaOriginal;
+    }
+
+    private static float DuracaoValida(float segundos)
+    {
+        return float.IsNaN(segundos) || float.IsInfinity(segundos) ? 0f : Mathf.Max(0f, segundos);
+    }
+
+    private static float PassoTempo()
+    {
+        float passo = Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
+        return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
+    }
+
+    private Ficha CriarFicha(string nome, Vector2 minimo, Vector2 maximo)
+    {
+        RectTransform bloco = CriarRetangulo(nome, transform, minimo, maximo);
+        Image fundo = bloco.gameObject.AddComponent<Image>();
+        fundo.color = new Color(0.025f, 0.045f, 0.09f, 0.94f);
+        fundo.raycastTarget = false;
+
+        Ficha ficha = new Ficha();
+        ficha.retangulo = bloco;
+        ficha.minimoOriginal = minimo;
+        ficha.maximoOriginal = maximo;
+        ficha.escalaOriginal = bloco.localScale;
+        ficha.faixa = CriarImagem("Cor_Time", bloco,
+            new Vector2(0f, 0.985f), Vector2.one);
+        Image linha = CriarImagem("Divisor", bloco,
+            new Vector2(0.07f, 0.83f), new Vector2(0.93f, 0.833f));
+        linha.color = new Color(1f, 1f, 1f, 0.14f);
+
+        ficha.escudo = CriarImagem("Escudo", bloco,
+            new Vector2(0.07f, 0.855f), new Vector2(0.25f, 0.965f));
+        ficha.equipe = CriarTexto("Equipe", bloco,
+            new Vector2(0.30f, 0.85f), new Vector2(0.93f, 0.97f), 20.8f);
+        ficha.equipe.alignment = TextAlignmentOptions.MidlineLeft;
+
+        Image moldura = CriarImagem("Fundo_Foto", bloco,
+            new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
+        moldura.color = new Color(0.07f, 0.105f, 0.17f, 1f);
+        ficha.semFoto = CriarTexto("Sem_Foto", bloco,
+            new Vector2(0.09f, 0.28f), new Vector2(0.91f, 0.77f), 46.4f);
+        ficha.semFoto.richText = true;
+        ficha.semFoto.color = new Color(0.58f, 0.66f, 0.80f, 1f);
+        ficha.foto = CriarImagem("Foto_Jogador", bloco,
+            new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
+
+        TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
+            new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);
+        legenda.text = "PLAYER";
+        legenda.characterSpacing = 2.4f;
+        legenda.fontStyle = FontStyles.Normal;
+        legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);
+        ficha.jogador = CriarTexto("Nome_Jogador", bloco,
+            new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 27.2f);
+        return ficha;
+    }
+
+    private void Preencher(Ficha ficha, TeamData time, JogadorDados jogador, string padrao)
+    {
+        if (ficha == null) return;
+
+        string sigla = time != null && !string.IsNullOrWhiteSpace(time.sigla)
+            ? time.sigla.Trim() : padrao;
+        ficha.equipe.text = time != null && !string.IsNullOrWhiteSpace(time.nomeEquipe)
+            ? time.nomeEquipe.Trim() : sigla;
+        ficha.faixa.color = time != null ? CorVisivel(time.corPrincipal) : Color.white;
+
+        ficha.escudo.sprite = time != null ? time.escudoOuBandeira : null;
+        ficha.escudo.enabled = ficha.escudo.sprite != null;
+        ficha.foto.sprite = jogador != null ? jogador.foto512x512 : null;
+        ficha.foto.enabled = ficha.foto.sprite != null;
+        ficha.semFoto.text = sigla.Replace("<", "‹").Replace(">", "›")
+            + "\n<size=28%>NO PHOTO</size>";
+        ficha.semFoto.enabled = ficha.foto.sprite == null;
+        ficha.jogador.text = jogador != null && !string.IsNullOrWhiteSpace(jogador.nomeJogador)
+            ? jogador.nomeJogador.Trim() : "PLAYER NOT SET";
+    }
+
+    private static Color CorVisivel(Color cor)
+    {
+        cor.a = 1f;
+        // A black kit still needs a visible accent on the dark card.
+        return cor.maxColorComponent < 0.2f
+            ? Color.Lerp(cor, Color.white, 0.45f) : cor;
+    }
+
+    private static JogadorDados PrimeiroValido(List<JogadorDados> jogadores)
+    {
+        if (jogadores == null) return null;
+        foreach (JogadorDados jogador in jogadores)
+            if (jogador != null) return jogador;
+        return null;
+    }
+
+    private static RectTransform CriarRetangulo(
+        string nome, Transform pai, Vector2 minimo, Vector2 maximo)
+    {
+        GameObject objeto = new GameObject(nome, typeof(RectTransform));
+        objeto.layer = pai.gameObject.layer;
+        RectTransform retangulo = objeto.GetComponent<RectTransform>();
+        retangulo.SetParent(pai, false);
+        retangulo.anchorMin = minimo;
+        retangulo.anchorMax = maximo;
+        retangulo.offsetMin = Vector2.zero;
+        retangulo.offsetMax = Vector2.zero;
+        return retangulo;
+    }
+
+    private static Image CriarImagem(
+        string nome, Transform pai, Vector2 minimo, Vector2 maximo)
+    {
+        Image imagem = CriarRetangulo(nome, pai, minimo, maximo)
+            .gameObject.AddComponent<Image>();
+        imagem.raycastTarget = false;
+        imagem.preserveAspect = true;
+        return imagem;
+    }
+
+    private TextMeshProUGUI CriarTexto(
+        string nome, Transform pai, Vector2 minimo, Vector2 maximo, float tamanho)
+    {
+        TextMeshProUGUI texto = CriarRetangulo(nome, pai, minimo, maximo)
+            .gameObject.AddComponent<TextMeshProUGUI>();
+        if (fonte != null) texto.font = fonte;
+        texto.fontSize = tamanho;
+        texto.enableAutoSizing = true;
+        texto.fontSizeMin = 8f;
+        texto.fontSizeMax = tamanho;
+        texto.fontStyle = FontStyles.Bold;
+        texto.alignment = TextAlignmentOptions.Center;
+        texto.overflowMode = TextOverflowModes.Ellipsis;
+        texto.textWrappingMode = TextWrappingModes.Normal;
+        texto.richText = false;
+        texto.color = Color.white;
+        texto.raycastTarget = false;
+        texto.margin = Vector4.zero;
+        return texto;
+    }
+}

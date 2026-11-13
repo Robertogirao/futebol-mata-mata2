@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: Bournemouth
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: Bournemouth
+  sigla: BOU
+  escudoOuBandeira: {fileID: -5183069658094365942, guid: 7c6deb020c061424197a1534b2f1da36, type: 3}
+  overall: 79
+  corPrincipal: {r: 0, g: 0, b: 0, a: 1}
+  corSecundaria: {r: 0.82745105, g: 0.09019608, b: 0.10588236, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Rayan
+    numeroCamisa: 17
+    foto512x512: {fileID: -8833109576682693844, guid: b7330f378a425374daaa99d1237e537e, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

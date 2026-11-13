@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: CAGLIARI
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: CAGLIARI
+  sigla: CAG
+  escudoOuBandeira: {fileID: -7733322895769201014, guid: 45aa447424581e6489828859cb3d0459, type: 3}
+  overall: 75
+  corPrincipal: {r: 0.6901961, g: 0.0627451, b: 0.16078432, a: 1}
+  corSecundaria: {r: 0.03137255, g: 0.13725491, b: 0.25882354, a: 1}
+  posturaTatica: 2
+  elenco:
+  - nomeJogador: Harry Winks
+    numeroCamisa: 8
+    foto512x512: {fileID: -4232446438485408804, guid: d1da1d9459d1f6141b536dfc138dba25, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Michel Adopo
+    numeroCamisa: 22
+    foto512x512: {fileID: -7555080078879778940, guid: 461458c7df6a6734788065d2d738b9ba, type: 3}
+    estrelasSkill: 4
+  - nomeJogador: Paul Mendy
+    numeroCamisa: 37
+    foto512x512: {fileID: -2291316484126486096, guid: 90c5ca56f07d9f4458494f7d3a9e8d06, type: 3}
+    estrelasSkill: 4
+  sortearTitularesAleatorios: 1
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

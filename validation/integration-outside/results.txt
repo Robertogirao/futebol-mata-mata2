@@ -1,0 +1,6 @@
+PASS storage resumes pending rounds and confirmed next-round selection
+PASS game persistence, standings, draws, idempotence and corrupt-save guards
+PASS manager manual start, completion gates and pending save recovery
+PASS recording clock, reposicao, league draw, real golden goal, and child Canvas
+PASS knockout preparation order, representative reuse, state copy, champion persistence and resume
+PASS 68 assertions on real TM/Liga/UniversalUI/Mata/Modelo/CSV sources with Unity stubs
