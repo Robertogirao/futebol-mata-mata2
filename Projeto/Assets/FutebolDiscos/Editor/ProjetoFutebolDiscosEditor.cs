@@ -43,25 +43,9 @@ namespace FutebolDeDiscos
                         AlterarQuantidade(ProximasVagas(P("quantidadeTimes").intValue));
                 }
 
-                Titulo("Identidade visual");
-                Campo("tema", "Tema da competição");
-                Campo("fundoCampo", "Imagem do campo (opcional)", "Vazio: campo original desenhado pelo sistema.");
-                mostrarTema = EditorGUILayout.Foldout(mostrarTema, "Fontes, imagens e cores da transmissão", true);
-                if (mostrarTema) DesenharTema(P("tema").objectReferenceValue as TemaCompeticao);
-                Campo("corGramado", "Cor do gramado");
-                Campo("corLinhas", "Cor das linhas");
-
-                Titulo("Textos da arena");
-                Campo("mostrarTextoNoCampo", "Mostrar texto no campo");
-                Campo("textoNoCampo", "Texto no campo", "Deixe vazio para ocultar a assinatura no gramado.");
-                Campo("mostrarTituloRodape", "Mostrar título do rodapé");
-                Campo("tituloRodape", "Título do rodapé", "Texto maior abaixo do campo. Vazio: oculto.");
-                Campo("mostrarSubtituloRodape", "Mostrar subtítulo do rodapé");
-                Campo("subtituloRodape", "Subtítulo do rodapé", "Substitui Automatic Disc Football. Vazio: oculto.");
-                Campo("mostrarDetalhesFormato", "Mostrar formato e quantidade de discos", "Controla os detalhes Liga/Mata-mata e 3 v 3 separadamente do subtítulo.");
-
-                Titulo("Participantes");
                 bool mataMata = formato.enumValueIndex == 1;
+                Titulo(mataMata ? "Configurações do Mata-mata" : "Configurações da Liga");
+                Titulo("Participantes");
                 int quantidade = P("quantidadeTimes").intValue;
                 int novaQuantidade;
                 if (mataMata)
@@ -117,12 +101,33 @@ namespace FutebolDeDiscos
 
                 Titulo("Tempos da transmissão (segundos)");
                 Campo("roteiroTransmissao", "Textos das aberturas e prévias", "Chamadas da identidade futurista. Ajustes visuais podem ser alterados entre sessões.");
-                Campo("duracaoPartida", "Duração da partida");
-                Campo("tempoAbertura", "Abertura dos confrontos");
-                Campo("tempoFotos", "Fotos ampliadas no centro");
-                Campo("tempoTransicaoFotos", "Retorno das fotos aos cantos");
-                Campo("tempoTabela", mataMata ? "Leitura do chaveamento" : "Leitura da classificação");
-                Campo("intervaloEntrePartidas", "Intervalo entre partidas");
+                Campo("duracaoPartida", "Tempo real de jogo (s)", "Duração regulamentar real. O relógio distribui os 90 minutos virtuais neste tempo.");
+                Campo("tempoAbertura", mataMata ? "Abertura e prévia dos confrontos (s)" : "Abertura do confronto (s)", "As apresentações usam um mínimo de três segundos.");
+                Campo("tempoFotos", "Fotos dos capitães ampliadas (s)");
+                Campo("tempoTransicaoFotos", "Retorno das fichas ao jogo (s)");
+                Campo("tempoTabela", mataMata ? "Leitura do quadro final (s)" : "Leitura da classificação (s)");
+                Campo("intervaloEntrePartidas", "Pausa após a partida (s)", "Aplicada uma única vez. Se houver comemorações pendentes, aguarda o fim delas.");
+                EditorGUILayout.HelpBox("Os tempos desta seção são os únicos usados pelo modo escolhido. O jogo real é contado em segundos; as aberturas e prévias têm mínimo de três segundos.", MessageType.Info);
+
+                Titulo("Identidade visual");
+                Campo("tema", "Tema da competição");
+                Campo("fundoCampo", "Imagem do campo (opcional)", "Vazio: campo original desenhado pelo sistema.");
+                Campo("fundoExternoArena", "Fundo externo da arena", "Arraste uma imagem importada como Sprite. Ela aparece atrás do campo e dos gols.");
+                Slider("opacidadeFundoExterno", "Opacidade do fundo externo", 0f, 1f);
+                Campo("sobreporDecoracaoExterna", "Manter arquibancadas sobre a imagem", "Sem imagem, a decoração original continua visível.");
+                mostrarTema = EditorGUILayout.Foldout(mostrarTema, "Fontes, imagens e cores da transmissão", true);
+                if (mostrarTema) DesenharTema(P("tema").objectReferenceValue as TemaCompeticao);
+                Campo("corGramado", "Cor do gramado");
+                Campo("corLinhas", "Cor das linhas");
+
+                Titulo("Textos da arena");
+                Campo("mostrarTextoNoCampo", "Mostrar texto no campo");
+                Campo("textoNoCampo", "Texto no campo", "Deixe vazio para ocultar a assinatura no gramado.");
+                Campo("mostrarTituloRodape", "Mostrar título do rodapé");
+                Campo("tituloRodape", "Título do rodapé", "Texto maior abaixo do campo. Vazio: oculto.");
+                Campo("mostrarSubtituloRodape", "Mostrar subtítulo do rodapé");
+                Campo("subtituloRodape", "Subtítulo do rodapé", "Substitui Automatic Disc Football. Vazio: oculto.");
+                Campo("mostrarDetalhesFormato", "Mostrar formato e quantidade de discos", "Controla os detalhes Liga/Mata-mata e 3 v 3 separadamente do subtítulo.");
 
                 Titulo("Identificação dos jogadores");
                 EditorGUILayout.HelpBox("Os nomes vêm do Elenco de cada ficha de time. O capitão é o representante da foto. " +
@@ -132,6 +137,8 @@ namespace FutebolDeDiscos
                 Slider("larguraTags", "Largura das tags", 1f, 4f);
                 Campo("mostrarMarcaCapitao", "Destacar o capitão");
                 Campo("usarFotoNoDiscoCapitao", "Foto no disco do capitão", "O capitão é o representante da foto na abertura e na ficha da partida.");
+                Campo("mostrarScannerFotos", "Mostrar leitura luminosa atrás da foto");
+                Slider("velocidadeScannerFotos", "Velocidade da leitura luminosa", 0.1f, 3f);
 
                 Titulo("Discos e bola");
                 IntSlider("discosPorTime", "Discos por time", 1, 5);
@@ -147,6 +154,8 @@ namespace FutebolDeDiscos
                     "A subida depende da posição e da direção da bola.", MessageType.Info);
                 Campo("usarForcaDosTimes", "Considerar o overall dos times");
                 Slider("limiarCores", "Diferença mínima entre as cores", 0f, 100f);
+
+                DesenharSonsEComemoracao(projeto);
 
                 serializedObject.ApplyModifiedProperties();
                 Titulo("Preparar a gravação");
@@ -178,6 +187,37 @@ namespace FutebolDeDiscos
             }
             if (!string.IsNullOrWhiteSpace(projeto.ultimoErro))
                 EditorGUILayout.HelpBox(projeto.ultimoErro, MessageType.Error);
+        }
+
+        private static void DesenharSonsEComemoracao(ProjetoFutebolDiscos projeto)
+        {
+            Titulo("Sons e comemoração de gol");
+            UniversalUI interfacePartida = projeto.GetComponent<UniversalUI>();
+            if (interfacePartida != null)
+            {
+                var dados = new SerializedObject(interfacePartida);
+                dados.Update();
+                CampoInterno(dados, "somGol", "Som do gol");
+                CampoInterno(dados, "somApitoInicial", "Apito de início");
+                CampoInterno(dados, "somApitoFinal", "Apito de encerramento");
+                CampoInterno(dados, "volumeSons", "Volume dos efeitos");
+                CampoInterno(dados, "fonteDeAudio", "Fonte de áudio dos efeitos (opcional)");
+                dados.ApplyModifiedProperties();
+            }
+            GoalBannerUI banner = projeto.GetComponent<GoalBannerUI>();
+            if (banner != null)
+            {
+                var dados = new SerializedObject(banner);
+                dados.Update();
+                CampoInterno(dados, "tempoDeExibicao", "Exibição do autor do gol (s)");
+                CampoInterno(dados, "intervaloEntreBanners", "Intervalo entre comemorações (s)");
+                dados.ApplyModifiedProperties();
+            }
+        }
+
+        private static void CampoInterno(SerializedObject dados, string nome, string rotulo)
+        {
+            EditorGUILayout.PropertyField(dados.FindProperty(nome), new GUIContent(rotulo), true);
         }
 
         private SerializedProperty P(string nome) { return serializedObject.FindProperty(nome); }

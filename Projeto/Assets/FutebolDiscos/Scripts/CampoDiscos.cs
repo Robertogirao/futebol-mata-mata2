@@ -49,7 +49,7 @@ namespace FutebolDeDiscos
             Color gramado = config.corGramado;
             gramado.a = 1f;
 
-            DesenharArena();
+            DesenharArena(config);
             Retangulo("Field Shadow", Vector2.zero, new Vector2(22.85f, 11.25f), new Color(0.005f, 0.02f, 0.035f, 0.85f), -80);
             Retangulo("Field Glow", Vector2.zero, new Vector2(22.5f, 10.9f), new Color(corLinha.r, corLinha.g, corLinha.b, 0.22f), -78);
             Retangulo("Playing Surface", Vector2.zero, new Vector2(MeioComprimento * 2f, MeioLargura * 2f), gramado, -75);
@@ -81,9 +81,28 @@ namespace FutebolDeDiscos
             return new Material(shader);
         }
 
-        private void DesenharArena()
+        private void DesenharArena(ProjetoFutebolDiscos config)
         {
             Retangulo("Stadium Backdrop", Vector2.zero, new Vector2(32f, 18f), new Color(0.013f, 0.025f, 0.055f), -100);
+            if (config.fundoExternoArena != null)
+            {
+                float largura = 32f, altura = 18f;
+                Camera camera = Camera.main;
+                if (camera != null && camera.orthographic)
+                {
+                    altura = Mathf.Max(altura, camera.orthographicSize * 2f);
+                    largura = Mathf.Max(largura, camera.orthographicSize * 2f * camera.aspect);
+                }
+                Sprite imagem = config.fundoExternoArena;
+                var fundo = DesenharSprite("Custom Exterior Image", imagem, Vector2.zero,
+                    new Vector2(largura, altura), new Color(1f, 1f, 1f, Mathf.Clamp01(config.opacidadeFundoExterno)), -99, false);
+                // Cover the exterior without stretching the supplied picture.
+                // The opaque pitch and recessed goal floors stay above this layer.
+                float escala = Mathf.Max(largura / Mathf.Max(.0001f, imagem.bounds.size.x),
+                    altura / Mathf.Max(.0001f, imagem.bounds.size.y));
+                fundo.transform.localScale = new Vector3(escala, escala, 1f);
+                if (!config.sobreporDecoracaoExterna) return;
+            }
             for (int side = -1; side <= 1; side += 2)
             {
                 Retangulo("Stand Panel", new Vector2(0f, side * 6.15f), new Vector2(26f, 0.82f), new Color(0.025f, 0.07f, 0.12f), -96);

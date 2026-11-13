@@ -237,6 +237,17 @@ public class UniversalUI : MonoBehaviour
         if (layoutJogadorUnico != null) layoutJogadorUnico.CancelarApresentacao();
     }
 
+    private bool mostrarScannerFotos = true;
+    private float velocidadeScannerFotos = 1f;
+
+    public void ConfigurarEfeitoFotos(bool mostrar, float velocidade)
+    {
+        mostrarScannerFotos = mostrar;
+        velocidadeScannerFotos = Mathf.Clamp(velocidade, .1f, 3f);
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
+    }
+
     private void PrepararEscalacao()
     {
         // Keep serialized bindings from existing scenes, but clear every old slot.
@@ -266,6 +277,8 @@ public class UniversalUI : MonoBehaviour
                 fonte = textoCronometro.font;
             layoutJogadorUnico = LayoutJogadorUnicoUI.Criar(canvas, fonte);
         }
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
     }
 
     private static TMP_FontAsset FonteDosNomes(TextMeshProUGUI[] nomes)

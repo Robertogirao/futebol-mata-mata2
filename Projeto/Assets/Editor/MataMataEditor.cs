@@ -14,6 +14,7 @@ public sealed class MataMataEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        if (FutebolDeDiscos.PainelCentralDiscosEditor.MostrarAviso(target as Component)) return;
         DrawDefaultInspector();
 
         MataMataCampeonato campeonato = (MataMataCampeonato)target;

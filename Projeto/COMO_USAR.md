@@ -9,7 +9,7 @@ No Editor, use:
 - **Tools > Futebol de Discos > Abrir Liga**: cena `Assets/Scenes/FutebolDiscos/Liga_Discos.unity`, com 8 seleções e 7 rodadas inicialmente.
 - **Tools > Futebol de Discos > Abrir Mata-mata**: cena `Assets/Scenes/FutebolDiscos/MataMata_Discos.unity`, com 16 clubes inicialmente.
 
-Selecione **FutebolDiscos_Manager** na Hierarchy. O componente **Projeto Futebol Discos** reúne as configurações. Não é necessário marcar e desmarcar os modos nos scripts `TournamentManager`, `LigaCampeonato` ou `MataMataCampeonato`: o controlador configura o formato escolhido. Mantenha os componentes do manager habilitados.
+Selecione **FutebolDiscos_Manager** na Hierarchy. O componente **Projeto Futebol Discos** reúne as configurações e mostra **Configurações da Liga** ou **Configurações do Mata-mata**, conforme a cena. Os componentes internos exibem apenas um atalho para esse painel no Inspector normal, evitando controles duplicados. Não é necessário marcar e desmarcar os modos nos scripts `TournamentManager`, `LigaCampeonato` ou `MataMataCampeonato`: o controlador configura o formato escolhido. Mantenha os componentes do manager habilitados.
 
 O campo, os discos e o placar aparecem quando o Play começa. Salve a cena depois de alterar as configurações fora do Play.
 
@@ -110,7 +110,7 @@ Em **Tempos da transmissão (segundos)**:
 - **Fotos ampliadas no centro**: tempo de destaque dos representantes antes do jogo.
 - **Retorno das fotos aos cantos**: duração do deslocamento das fichas para suas posições de jogo.
 - **Leitura da classificação / do chaveamento**: tempo de apresentação da competição.
-- **Intervalo entre partidas**: pausa entre os jogos.
+- **Pausa após a partida**: intervalo mínimo aplicado uma vez após o jogo, aguardando o fim das comemorações.
 
 ### Tags dos jogadores e capitão
 
@@ -129,6 +129,14 @@ A liga e o mata-mata usam painéis holográficos, varredura luminosa e abertura 
 Para alterar as palavras, expanda **FutebolDiscos_Manager > Tempos da transmissão (segundos) > Textos das aberturas e prévias**. Ali ficam os títulos **ARENA** e **CHALLENGERS**, a chamada **START**, o separador **VERSUS** e os textos de quadro, rodada, classificação e campeão. Textos vazios ficam ocultos.
 
 Os controles de duração anteriores continuam valendo. Fontes, fundos, logos e cores são mantidos pelo tema. Essas alterações de apresentação não exigem outra temporada. Veja também [o guia desta atualização](../Atualizacoes/COMO_APLICAR_ABERTURAS_FUTURISTAS.md).
+
+### Fundo externo, linha da foto e sons no painel central
+
+Em **Identidade visual > Fundo externo da arena**, arraste um Sprite para preencher a área externa ao campo. Ajuste a opacidade e a opção de sobrepor a decoração. A proporção é preservada, com corte das bordas quando necessário para preencher a tela; campo e gols continuam acima da imagem. Importe arquivos novos como **Sprite (2D and UI)** e aplique a mudança no Inspector.
+
+Em **Identificação dos jogadores**, a opção **Mostrar leitura luminosa atrás da foto** liga ou desliga o scanner do capitão. A linha está atrás do retrato e do texto, com brilho menor. **Velocidade da leitura luminosa** permite ajustar o movimento sem mudar a duração das fotos.
+
+Em **Sons e comemoração de gol**, configure sons, volume, duração da exibição do autor e intervalo das comemorações. Os valores antigos são preservados. O intervalo entre partidas da liga é aplicado só uma vez; uma comemoração pendente ainda pode adiar a próxima apresentação para terminar sua exibição.
 
 ## 7. Gravar uma rodada, continuar e retomar
 

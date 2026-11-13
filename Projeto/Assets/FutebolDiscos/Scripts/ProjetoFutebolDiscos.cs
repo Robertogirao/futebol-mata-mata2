@@ -20,6 +20,9 @@ namespace FutebolDeDiscos
         public FormatoDiscos formato = FormatoDiscos.Liga;
         public TemaCompeticao tema;
         public Sprite fundoCampo;
+        public Sprite fundoExternoArena;
+        public float opacidadeFundoExterno = 1f;
+        public bool sobreporDecoracaoExterna;
         public int quantidadeTimes = 8, quantidadeRodadas = 7, semente;
         public List<TeamData> participantes = new List<TeamData>();
         public bool sortearConfrontos = true, permitirFolgas, umaRodadaOuFasePorPlay;
@@ -33,6 +36,8 @@ namespace FutebolDeDiscos
         public float limiarCores = 45f;
         public Color corGramado = new Color(0.035f, 0.22f, 0.22f), corLinhas = new Color(0.25f, 0.93f, 0.92f);
         public bool mostrarTagsJogadores = true, mostrarMarcaCapitao = true, usarFotoNoDiscoCapitao = true;
+        public bool mostrarScannerFotos = true;
+        public float velocidadeScannerFotos = 1f;
         public float tamanhoFonteTags = 4.5f, larguraTags = 2.6f;
         public string textoNoCampo = "DISC FOOTBALL", tituloRodape = "DISC FOOTBALL", subtituloRodape = "AUTOMATIC DISC FOOTBALL";
         public bool mostrarTextoNoCampo = true, mostrarTituloRodape = true, mostrarSubtituloRodape = true, mostrarDetalhesFormato = true;
@@ -145,11 +150,14 @@ namespace FutebolDeDiscos
             manager.logoCampeonato = temaEmUso.logoCompeticao;
             manager.tempoApresentacaoJogadores = tempoFotos;
             manager.tempoDeslocamentoFichas = tempoTransicaoFotos;
-            manager.intervaloEntreJogos = intervaloEntrePartidas;
+            // UniversalUI already owns the post-game pause and waits for goal banners.
+            // Scheduling the same pause again doubled the interval in league mode.
+            manager.intervaloEntreJogos = 0f;
             manager.limiarCoresParecidas = limiarCores;
             manager.jogandoFaseDeGrupos = false;
             ui.duracaoRealEmSegundos = duracaoPartida;
             ui.tempoCongeladoPosJogo = intervaloEntrePartidas;
+            ui.ConfigurarEfeitoFotos(mostrarScannerFotos, velocidadeScannerFotos);
             tabela.nomeDaLiga = nomeCampeonato;
             tabela.logo = temaEmUso.logoCompeticao;
             tabela.logoCanal = temaEmUso.logoCanal;
@@ -280,7 +288,8 @@ namespace FutebolDeDiscos
             if (!rodadaEncerrada)
             {
                 rodadaEncerrada = true;
-                espera = intervaloEntrePartidas;
+                // The preceding game has already completed its configured pause.
+                espera = 0f;
                 aguardandoContinuar = umaRodadaOuFasePorPlay;
                 if (aguardandoContinuar)
                     situacao = "Rodada salva. Use Continuar no Play ou o próximo Play para seguir.";
@@ -329,6 +338,8 @@ namespace FutebolDeDiscos
                 if (!Faixa(limiarCores, 0f, 100f)) throw new InvalidOperationException("O contraste de cores deve ficar entre 0 e 100.");
                 if (!Faixa(tamanhoFonteTags, 2f, 8f) || !Faixa(larguraTags, 1f, 4f))
                     throw new InvalidOperationException("Confira o tamanho da fonte e a largura das tags dos jogadores.");
+                if (!Faixa(opacidadeFundoExterno, 0f, 1f) || !Faixa(velocidadeScannerFotos, .1f, 3f))
+                    throw new InvalidOperationException("Confira a opacidade do fundo externo e a velocidade da linha das fotos.");
                 ultimoErro = "";
                 return true;
             }

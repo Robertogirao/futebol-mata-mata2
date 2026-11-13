@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.5.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.5)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.6.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.6)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -11,6 +11,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 **Legenda da foto:** [atualização PLAYER → CAPTAIN, de um único script](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.4/Atualizacoes/Atualizacao_Legenda_CAPTAIN.zip).
 
 **Nova apresentação futurista:** [baixe a atualização das aberturas e prévias](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.5/Atualizacoes/Atualizacao_Aberturas_Futuristas.zip) · [guia dos novos controles](Atualizacoes/COMO_APLICAR_ABERTURAS_FUTURISTAS.md).
+
+**Painel único e fundo externo:** [baixe a atualização](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.6/Atualizacoes/Atualizacao_Painel_Central_Fundo_Fotos.zip) · [instruções dos controles](Atualizacoes/COMO_APLICAR_PAINEL_CENTRAL.md).
 
 ## Abrir o projeto
 
@@ -54,6 +56,12 @@ Para permitir esse avanço, desmarque **Manter cada time em sua metade** no `Fut
 A transmissão usa painéis holográficos, scanners, pulsos de energia e uma íris que abre do centro para as bordas superior e inferior. As fichas **CAPTAIN** se materializam e seguem em arco até seus lugares. Liga, prévia do mata-mata, classificação e campeão compartilham a nova identidade.
 
 No **FutebolDiscos_Manager > Tempos da transmissão (segundos) > Textos das aberturas e prévias**, edite **ARENA**, **CHALLENGERS**, **START** e as demais chamadas. Os tempos, fontes, cores, logos e fundos existentes continuam configuráveis. O roteiro visual não altera a temporada salva.
+
+## Painel central e imagem externa
+
+Os ajustes ficam em **FutebolDiscos_Manager > Projeto Futebol Discos**, com a seção **Configurações da Liga** ou **Configurações do Mata-mata**, conforme a cena. Os Inspectors internos exibem um atalho para esse painel. Os tempos de jogo, abertura, fotos, intervalo e leitura ficam ali, junto de sons e comemoração. O intervalo não é mais aplicado duas vezes na liga.
+
+Em **Identidade visual > Fundo externo da arena**, escolha uma imagem importada como Sprite. A imagem mantém a proporção e fica atrás do campo e dos gols, com opacidade e decoração opcionais. Em **Identificação dos jogadores**, a leitura luminosa da foto pode ser desligada ou ter sua velocidade ajustada; agora ela fica atrás do retrato e é mais lenta e discreta.
 
 ## Temporadas e salvamento
 

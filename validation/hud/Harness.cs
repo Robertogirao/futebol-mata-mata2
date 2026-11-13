@@ -27,6 +27,31 @@ public static class Harness
     private static void ExpectError(Action operation, string message)
     { bool failed = false; try { operation(); } catch (InvalidOperationException) { failed = true; } Check(failed, message); }
 
+    private static void ValidatePhotoScanner(LayoutJogadorUnicoUI cards, RectTransform card)
+    {
+        RectTransform scan = Rect(card,"Holo_Scanner");
+        Time.captureDeltaTime = .1f;
+        cards.ConfigurarScanner(true, 1f);
+        cards.PrepararApresentacao();
+        var normal = cards.ExibirApresentacao(3f, .4f);
+        for (int i = 0; i <= 10; i++) Check(normal.MoveNext(), "normal scanner frame " + i);
+        float normalY = scan.anchorMin.y;
+        Near(normalY, .24f + .55f * (.5f + .5f * (float)Math.Sin(1f)), "new default scan is one radian per video second");
+        Check(scan.GetComponent<Image>().color.a <= .3f, "scan brightness remains subtle");
+        cards.CancelarApresentacao();
+        cards.ConfigurarScanner(true, .5f);
+        cards.PrepararApresentacao();
+        var slow = cards.ExibirApresentacao(3f, .4f);
+        for (int i = 0; i <= 10; i++) Check(slow.MoveNext(), "slow scanner frame " + i);
+        Near(scan.anchorMin.y, .24f + .55f * (.5f + .5f * (float)Math.Sin(.5f)), "central speed control slows the scanner");
+        Check(scan.anchorMin.y < normalY, "slower scan travels less in the first second");
+        cards.ConfigurarScanner(false, .5f);
+        Check(slow.MoveNext() && !scan.gameObject.activeSelf, "disabled scanner never reappears on next animation frame");
+        cards.CancelarApresentacao();
+        Check(!scan.gameObject.activeSelf && card.GetComponent<CanvasGroup>().alpha == 1f, "cancel restores static card without scan");
+        cards.ConfigurarScanner(true, 1f);
+    }
+
     public static void Main()
     {
         Scheduler.Reset();
@@ -115,6 +140,10 @@ public static class Harness
         Check(Text(a,"Nome_Jogador").text == "Goal Scorer", "representative name");
         Check(Text(b,"Sem_Foto").enabled && Text(b,"Sem_Foto").text.Contains("NO PHOTO"), "missing portrait fallback in English");
         Check(Text(b,"Nome_Jogador").text == "PLAYER NOT SET", "missing player fallback in English");
+        Check(Rect(a,"Holo_Scanner").GetSiblingIndex() < Rect(a,"Foto_Jogador").GetSiblingIndex() &&
+              Rect(a,"Holo_Scanner").GetSiblingIndex() < Rect(a,"Sem_Foto").GetSiblingIndex(),
+              "scanner renders behind portrait and fallback text");
+        ValidatePhotoScanner(cards, a);
         Check(cards.PrepararApresentacao(), "player introduction prepares");
         Near((a.anchorMin.x + a.anchorMax.x) / 2, .31f, "intro left center");
         Near((b.anchorMin.x + b.anchorMax.x) / 2, .69f, "intro right center");

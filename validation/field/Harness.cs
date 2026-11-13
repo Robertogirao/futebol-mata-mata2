@@ -107,6 +107,41 @@ public static class Harness
         string geometry="["+string.Join(",",allBoxes.Select(x=>string.Format(CultureInfo.InvariantCulture,"{{\"name\":\"{0}\",\"trigger\":{1},\"x\":{2},\"y\":{3},\"w\":{4},\"h\":{5}}}",x.gameObject.name,x.isTrigger.ToString().ToLowerInvariant(),x.bounds.center.x,x.bounds.center.y,x.bounds.size.x,x.bounds.size.y)).ToArray())+"]";
         File.WriteAllText(Path.Combine(DirectoryPath,"geometry.json"),geometry);
     }
+    private static void ValidateExterior(CampoDiscos campo, ProjetoFutebolDiscos config)
+    {
+        var textures = new List<Texture2D>();
+        var pictures = new List<Sprite>();
+        var cameraObject = new GameObject("Wide exterior camera");
+        var camera = cameraObject.AddComponent<Camera>(); camera.orthographic = true;
+        camera.orthographicSize = 10f; camera.aspect = 2.5f;
+        foreach (int[] dimensions in new[] { new[] { 400, 100 }, new[] { 100, 400 }, new[] { 200, 200 } })
+        {
+            var texture = new Texture2D(dimensions[0], dimensions[1]); textures.Add(texture);
+            var picture = Sprite.Create(texture, new Rect(0, 0, dimensions[0], dimensions[1]), Vector2.one * .5f, 10f); pictures.Add(picture);
+            config.fundoExternoArena = picture; config.opacidadeFundoExterno = .42f;
+            config.sobreporDecoracaoExterna = false; campo.Construir(config);
+            var sprites = campo.GetComponentsInChildren<SpriteRenderer>(true).Where(Active).ToArray();
+            var image = sprites.Single(x => x.gameObject.name == "Custom Exterior Image");
+            Check(image.sprite == picture && Near(image.color.a, .42f), "custom exterior uses supplied picture and opacity");
+            Check(Near(image.transform.localScale.x, image.transform.localScale.y), "exterior cover scale is uniform");
+            Check(Near(image.bounds.size.x / image.bounds.size.y, (float)dimensions[0] / dimensions[1]), "portrait landscape and square exterior aspect preserved");
+            Check(image.bounds.size.x >= 50f - .001f && image.bounds.size.y >= 20f - .001f, "exterior covers an expanded orthographic viewport");
+            Check(!sprites.Any(x => x.gameObject.name == "Crowd Light" || x.gameObject.name == "Stand Panel"), "custom picture visible without procedural stands");
+            Check(image.sortingOrder < sprites.Single(x => x.gameObject.name == "Playing Surface").sortingOrder &&
+                image.sortingOrder < sprites.Single(x => x.gameObject.name == "Left Goal Floor").sortingOrder &&
+                image.sortingOrder < sprites.Single(x => x.gameObject.name == "Right Goal Floor").sortingOrder, "picture remains below pitch and both goals");
+            Check(image.GetComponent<Collider2D>() == null && campo.GetComponentsInChildren<BoxCollider2D>(true).Count(Active) == 14, "exterior adds no collisions and preserves goal sensors and walls");
+            Check(!Owned(campo).Contains(picture) && !Owned(campo).Contains(texture), "supplied exterior assets never become owned resources");
+            config.sobreporDecoracaoExterna = true; campo.Construir(config);
+            sprites = campo.GetComponentsInChildren<SpriteRenderer>(true).Where(Active).ToArray();
+            Check(sprites.Count(x => x.gameObject.name == "Crowd Light") == 112 && sprites.Any(x => x.gameObject.name == "Custom Exterior Image"), "procedural decoration can overlay custom exterior optionally");
+            campo.Limpar(); Check(!picture.destroyed && !texture.destroyed, "rebuild and cleanup preserve exterior sprite and texture");
+        }
+        config.fundoExternoArena = null; config.sobreporDecoracaoExterna = false; campo.Construir(config);
+        Check(campo.GetComponentsInChildren<SpriteRenderer>(true).Where(Active).Count(x => x.gameObject.name == "Crowd Light") == 112, "clearing exterior picture restores original decorations");
+        Check(!campo.GetComponentsInChildren<SpriteRenderer>(true).Where(Active).Any(x => x.gameObject.name == "Custom Exterior Image"), "clearing picture removes retired custom exterior");
+        UnityEngine.Object.DestroyImmediate(cameraObject);
+    }
     public static void Main()
     {
         Application.isPlaying=true;
@@ -136,6 +171,7 @@ public static class Harness
             config.textoNoCampo=empty;campo.Construir(config);
             Check(!campo.GetComponentsInChildren<TextMeshPro>(true).Any(Active),"empty field branding never restores fixed DISC FOOTBALL text");
         }
+        ValidateExterior(campo, config);
         var resources=Owned(campo);campo.Limpar();
         Check(resources.All(x=>x.destroyed)&&Owned(campo).Count==0&&campo.transform.childCount==0,"cleanup disposes owned resources and hierarchy");
         Check(campo.SpriteCirculo==null&&campo.MaterialSprites==null&&campo.MaterialFisica==null,"cleanup clears public resource API");

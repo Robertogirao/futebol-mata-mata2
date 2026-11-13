@@ -271,6 +271,8 @@ namespace UnityEngine
         public bool IsChildOf(Transform t) { for(Transform p=this;p!=null;p=p.parent)if(p==t)return true;return false; }
         public Transform GetChild(int index) { return Children[index]; }
         public Transform Find(string name) { return Children.FirstOrDefault(c => c.gameObject.name == name); }
+        public int GetSiblingIndex() { return parentValue == null ? 0 : parentValue.Children.IndexOf(this); }
+        public void SetSiblingIndex(int index) { if (parentValue != null) { parentValue.Children.Remove(this); parentValue.Children.Insert(Math.Max(0, Math.Min(index, parentValue.Children.Count)), this); } }
         public void SetAsFirstSibling() { if (parentValue != null) { parentValue.Children.Remove(this); parentValue.Children.Insert(0, this); } }
         public void SetAsLastSibling() { if (parentValue != null) { parentValue.Children.Remove(this); parentValue.Children.Add(this); } }
         public Vector3 TransformPoint(Vector3 point) { return position + rotation * Vector3.Scale(point, lossyScale); }

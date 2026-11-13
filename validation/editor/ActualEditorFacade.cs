@@ -6,7 +6,7 @@ namespace UnityEngine {
 namespace UnityEditor {
  [AttributeUsage(AttributeTargets.Class)]public class CustomEditor:Attribute {public CustomEditor(Type t){} }
  [AttributeUsage(AttributeTargets.Method)]public class MenuItem:Attribute {public MenuItem(string s){} public MenuItem(string s,bool validate){} }
- public class Editor {public UnityEngine.Object target;public SerializedObject serializedObject;public virtual void OnInspectorGUI(){} public void DrawDefaultInspector(){} public void Repaint(){} }
+ public class Editor {public static int defaultDrawCount;public UnityEngine.Object target;public SerializedObject serializedObject;public virtual void OnInspectorGUI(){} public void DrawDefaultInspector(){defaultDrawCount++;} public void Repaint(){} }
  public class SerializedObject {private object target;public SerializedObject(object o){target=o;}public void Update(){}public void ApplyModifiedProperties(){}public SerializedProperty FindProperty(string n){FieldInfo f=target.GetType().GetField(n);if(f==null)throw new Exception("Missing actual property "+n);return new SerializedProperty(target,f);}}
  public class SerializedProperty {
   object target;FieldInfo field;int index=-1; public SerializedProperty(object t,FieldInfo f){target=t;field=f;}
@@ -23,10 +23,10 @@ namespace UnityEditor {
  public static class EditorGUI {public static int disabledCount,indentLevel;public class DisabledScope:IDisposable {bool disabled;public DisabledScope(bool b){disabled=b;if(b)disabledCount++;}public void Dispose(){if(disabled)disabledCount--;}}}
  public enum MessageType{None,Info,Warning,Error}
  public static class EditorGUILayout {
-  public static Dictionary<string,int> ints=new Dictionary<string,int>();public static Dictionary<string,float> floats=new Dictionary<string,float>();public static Dictionary<string,int> popups=new Dictionary<string,int>();public static List<string> properties=new List<string>();
+  public static Dictionary<string,int> ints=new Dictionary<string,int>();public static Dictionary<string,float> floats=new Dictionary<string,float>();public static Dictionary<string,int> popups=new Dictionary<string,int>();public static List<string> properties=new List<string>();public static List<string> labels=new List<string>();
   public class HorizontalScope:IDisposable {public void Dispose(){}}
-  public static void HelpBox(string s,MessageType t){}public static void Space(float f=0){}public static void LabelField(string s,object o){}
-  public static void PropertyField(SerializedProperty p,UnityEngine.GUIContent c,bool child=false){properties.Add(p.name);}
+  public static void HelpBox(string s,MessageType t){}public static void Space(float f=0){}public static void LabelField(string s,object o){labels.Add(s);}
+  public static void PropertyField(SerializedProperty p,UnityEngine.GUIContent c,bool child=false){properties.Add(p.name);if(EditorGUI.disabledCount==0&&floats.ContainsKey(c.text))p.floatValue=floats[c.text];}
   public static int Popup(string s,int v,string[] opts){return EditorGUI.disabledCount==0&&popups.ContainsKey(s)?popups[s]:v;}
   public static int IntField(string s,int v){return EditorGUI.disabledCount==0&&ints.ContainsKey(s)?ints[s]:v;}
   public static bool Foldout(bool b,string s,bool toggle){return b;}

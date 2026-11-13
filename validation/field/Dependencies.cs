@@ -7,6 +7,9 @@ namespace FutebolDeDiscos
     {
         public TemaCompeticao tema;
         public Sprite fundoCampo;
+        public Sprite fundoExternoArena;
+        public float opacidadeFundoExterno = 1f;
+        public bool sobreporDecoracaoExterna;
         public Color corGramado = new Color(.035f,.22f,.22f);
         public Color corLinhas = new Color(.25f,.93f,.92f);
         public string textoNoCampo = "DISC FOOTBALL";

@@ -30,8 +30,21 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
     private TMP_FontAsset fonte;
     private int versaoApresentacao;
     private bool apresentacaoPreparada;
+    private bool mostrarScanner = true;
+    private float velocidadeScanner = 1f;
 
     public bool ApresentacaoConcluida { get; private set; }
+
+    public void ConfigurarScanner(bool mostrar, float velocidade)
+    {
+        mostrarScanner = mostrar;
+        velocidadeScanner = Mathf.Clamp(velocidade, .1f, 3f);
+        if (!mostrar)
+        {
+            if (fichaA != null && fichaA.scanner != null) fichaA.scanner.gameObject.SetActive(false);
+            if (fichaB != null && fichaB.scanner != null) fichaB.scanner.gameObject.SetActive(false);
+        }
+    }
 
     public static LayoutJogadorUnicoUI Criar(Canvas canvas, TMP_FontAsset fonte)
     {
@@ -153,18 +166,18 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
             ficha.escalaOriginal, progresso);
     }
 
-    private static void MaterializarFicha(Ficha ficha, Vector2 centro, float progresso, float tempo)
+    private void MaterializarFicha(Ficha ficha, Vector2 centro, float progresso, float tempo)
     {
         float p = Mathf.SmoothStep(0f, 1f, progresso);
         PosicionarFicha(ficha, centro - new Vector2(0f, .12f * (1f - p)), 0f);
         ficha.retangulo.localScale *= Mathf.Lerp(.72f, 1f, p);
         ficha.grupo.alpha = p;
-        float y = .24f + .55f * (.5f + .5f * Mathf.Sin(tempo * 4.2f));
+        float y = .24f + .55f * (.5f + .5f * Mathf.Sin(tempo * velocidadeScanner));
         ficha.scanner.anchorMin = new Vector2(.07f, y);
         ficha.scanner.anchorMax = new Vector2(.93f, y + .008f);
-        ficha.scanner.gameObject.SetActive(true);
+        ficha.scanner.gameObject.SetActive(mostrarScanner);
         Color cor = ficha.luzScanner.color;
-        cor.a = .5f + .35f * (.5f + .5f * Mathf.Sin(tempo * 5f));
+        cor.a = .18f + .12f * (.5f + .5f * Mathf.Sin(tempo * velocidadeScanner * 1.2f));
         ficha.luzScanner.color = cor;
     }
 
@@ -230,7 +243,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         cantoA.color = cantoB.color = new Color(.25f, .93f, .92f, .55f);
         ficha.luzScanner = CriarImagem("Holo_Scanner", bloco, new Vector2(.07f, .24f), new Vector2(.93f, .248f));
         ficha.scanner = ficha.luzScanner.rectTransform;
-        ficha.luzScanner.color = new Color(.25f, .93f, .92f, .8f);
+        ficha.luzScanner.color = new Color(.25f, .93f, .92f, .24f);
+        // Keep the scan above the photo frame but behind the portrait/fallback text.
+        ficha.scanner.SetSiblingIndex(ficha.semFoto.transform.GetSiblingIndex());
         ficha.scanner.gameObject.SetActive(false);
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,

@@ -18,11 +18,64 @@ public static class ActualHarness
         go.SetActive(false);
         var manager = go.AddComponent<ProjetoFutebolDiscos>();
         manager.participantes = Enumerable.Range(1, 8).Select(Team).ToList();
+        go.AddComponent<UniversalUI>();
+        go.AddComponent<GoalBannerUI>();
         return manager;
     }
     static ProjetoFutebolDiscosEditor EditorFor(ProjetoFutebolDiscos manager)
     {
         return new ProjetoFutebolDiscosEditor { target = manager, serializedObject = new SerializedObject(manager) };
+    }
+    static void CheckSinglePanel(ProjetoFutebolDiscos manager, ProjetoFutebolDiscosEditor editor)
+    {
+        var ui = manager.GetComponent<UniversalUI>();
+        var banner = manager.GetComponent<GoalBannerUI>();
+        banner.tempoDeExibicao = 1.75f;
+        banner.intervaloEntreBanners = .37f;
+        ui.volumeSons = .42f;
+        var sound = new AudioClip(); ui.somGol = sound;
+        manager.duracaoPartida = 57f; manager.tempoAbertura = 8f; manager.tempoFotos = 6f;
+        manager.formato = FormatoDiscos.Liga;
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
+        editor.OnInspectorGUI();
+        Check(EditorGUILayout.labels.Contains("Configurações da Liga") && !EditorGUILayout.labels.Contains("Configurações do Mata-mata"), "league settings have a separate selected-mode section");
+        Check(EditorGUILayout.properties.Contains("quantidadeRodadas") && !EditorGUILayout.properties.Contains("permitirFolgas"), "league panel shows rounds and omits knockout-only byes");
+        foreach (string field in new[] { "duracaoPartida", "tempoAbertura", "tempoFotos", "tempoTransicaoFotos", "tempoTabela", "intervaloEntrePartidas", "tempoDeExibicao", "intervaloEntreBanners", "volumeSons", "somGol", "somApitoInicial", "somApitoFinal", "fundoExternoArena", "mostrarScannerFotos" })
+            Check(EditorGUILayout.properties.Count(p => p == field) == 1, "central property is displayed exactly once: " + field);
+        Check(!EditorGUILayout.properties.Contains("duracaoRealEmSegundos") && !EditorGUILayout.properties.Contains("tempoCongeladoPosJogo"), "runtime aliases do not duplicate the real-game or interval controls");
+        Check(manager.duracaoPartida == 57f && manager.tempoAbertura == 8f && manager.tempoFotos == 6f, "existing serialized root times are preserved");
+        Check(banner.tempoDeExibicao == 1.75f && banner.intervaloEntreBanners == .37f && ui.volumeSons == .42f && ui.somGol == sound, "existing internal sound/banner values are preserved in central view");
+        EditorGUILayout.floats["Exibição do autor do gol (s)"] = 2.25f;
+        EditorGUILayout.floats["Volume dos efeitos"] = .63f;
+        editor.OnInspectorGUI(); EditorGUILayout.floats.Clear();
+        Check(banner.tempoDeExibicao == 2.25f && ui.volumeSons == .63f, "central controls edit the existing component backing values");
+        manager.formato = FormatoDiscos.MataMata; manager.quantidadeTimes = 8;
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
+        editor.OnInspectorGUI();
+        Check(EditorGUILayout.labels.Contains("Configurações do Mata-mata") && !EditorGUILayout.labels.Contains("Configurações da Liga"), "knockout settings have a separate selected-mode section");
+        Check(!EditorGUILayout.properties.Contains("quantidadeRodadas") && EditorGUILayout.properties.Contains("permitirFolgas"), "knockout panel shows byes and omits league-only rounds");
+        manager.formato = FormatoDiscos.Liga;
+        manager.duracaoPartida = 45f; manager.tempoAbertura = 5f; manager.tempoFotos = 4f;
+
+        Type[] components = { typeof(TournamentManager), typeof(LigaCampeonato), typeof(UniversalUI), typeof(AberturaJogoUI), typeof(ClassificacaoUI), typeof(ChaveamentoUI), typeof(GoalBannerUI), typeof(MataMataCampeonato) };
+        Type[] editors = { typeof(TournamentManagerDiscosEditor), typeof(LigaCampeonatoDiscosEditor), typeof(UniversalUIDiscosEditor), typeof(AberturaJogoUIDiscosEditor), typeof(ClassificacaoUIDiscosEditor), typeof(ChaveamentoUIDiscosEditor), typeof(GoalBannerUIDiscosEditor), typeof(MataMataEditor) };
+        for (int i = 0; i < components.Length; i++)
+        {
+            var component = manager.gameObject.GetComponent(components[i]) ?? manager.gameObject.AddComponent(components[i]);
+            var legacyEditor = (Editor)Activator.CreateInstance(editors[i]); legacyEditor.target = component;
+            int before = Editor.defaultDrawCount;
+            EditorGUILayout.properties.Clear(); legacyEditor.OnInspectorGUI();
+            Check(Editor.defaultDrawCount == before && EditorGUILayout.properties.Count == 0, "internal inspector has no duplicate controls: " + components[i].Name);
+            Check(((Behaviour)component).enabled, "inspector routing never disables component: " + components[i].Name);
+            var standalone = new GameObject("Standalone " + components[i].Name); standalone.SetActive(false);
+            legacyEditor.target = standalone.AddComponent(components[i]);
+            legacyEditor.OnInspectorGUI();
+            Check(Editor.defaultDrawCount == before + 1, "standalone component retains normal inspector: " + components[i].Name);
+            UnityEngine.Object.Destroy(standalone);
+        }
+        GUILayout.buttons.Add("Selecionar painel central");
+        Check(PainelCentralDiscosEditor.MostrarAviso(ui) && Selection.activeGameObject == manager.gameObject, "legacy redirect selects central manager without mutating settings");
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
     }
     public static void Main()
     {
@@ -31,6 +84,7 @@ public static class ActualHarness
         if (Directory.Exists(Application.persistentDataPath)) Directory.Delete(Application.persistentDataPath, true);
         var manager = Manager();
         var editor = EditorFor(manager);
+        CheckSinglePanel(manager, editor);
         Check(manager.ValidarConfiguracao(), "actual root validates scene default count/rounds/physics: " + manager.ultimoErro);
         editor.OnInspectorGUI();
         Check(manager.quantidadeTimes == 8 && manager.participantes.Count == 8, "actual default remains eight");
