@@ -31,7 +31,24 @@ namespace FutebolDeDiscos
         }
         public void Repor(Vector2 pos, Vector2 velocidade)
         {
-            Corpo.position = pos; Corpo.linearVelocity = velocidade; Corpo.angularVelocity = 0f; UltimoToque = null;
+            Repor(pos, velocidade, Corpo.simulated);
+        }
+        public void Repor(Vector2 pos, Vector2 velocidade, bool simular)
+        {
+            // A frozen/interpolated body can retain its old Transform pose.
+            // Teleport both representations before restoring simulation, then set velocity.
+            RigidbodyInterpolation2D interpolacao = Corpo.interpolation;
+            Corpo.interpolation = RigidbodyInterpolation2D.None;
+            Corpo.simulated = false;
+            transform.position = new Vector3(pos.x, pos.y, transform.position.z);
+            Corpo.position = pos;
+            Corpo.simulated = simular;
+            Corpo.position = pos;
+            Corpo.linearVelocity = velocidade;
+            Corpo.angularVelocity = 0f;
+            Corpo.interpolation = interpolacao;
+            if (simular) Corpo.WakeUp();
+            UltimoToque = null;
             if (rastro != null) rastro.Clear();
         }
         public void RegistrarToque(DiscoAtleta atleta) { UltimoToque = atleta; }

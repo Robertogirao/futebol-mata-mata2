@@ -1,0 +1,2 @@
+PASS 299 goal-reset regression assertions using actual game sources.
+Adversarial frozen-body/Transform lifecycle and injected callbacks; native Unity physics and rendering were not executed.

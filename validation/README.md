@@ -9,6 +9,7 @@ Os testes C# usam os arquivos reais do projeto e fachadas das APIs Unity/TMP/Edi
 | Campo | 736 | Geometria, limites, sensores, escalas e descarte de recursos |
 | Torneios existentes | 68 | Liga, classificação, mata-mata, persistência e recuperação de resultado pendente |
 | Partida | 45 | Cruzamento completo da bola, gols repetidos, reposição, limites e ciclo dos componentes |
+| Regressão da reposição | 299 | Corpo congelado com Transform desatualizado, centenas de callbacks, saída confirmada na física e novos gols legítimos |
 | Controlador completo | 39 | Rodadas automáticas, continuar, retomada, tabela final, Golden Goal e falha de escrita |
 | Editor real | 37 | Painel central e editor de mata-mata compilados com todos os scripts de runtime |
 
@@ -17,3 +18,5 @@ Para executar em um sistema com Bash, Mono (`mcs` e `mono`), Python 3 e `rg`, us
 As auditorias YAML validam referências locais, componentes duplicados e GUIDs dos scripts/arquivos. Referências aos pacotes do Unity são identificadas separadamente e precisam ser resolvidas pela importação real no Editor.
 
 Abra as duas cenas no Unity 6000.4.11f1 para verificar o resultado visual e os contatos físicos antes de gravar vídeos.
+
+Na versão 2026.11.13.1, a fachada de runtime foi reforçada para permitir divergência entre a posição física de um corpo congelado e seu Transform. Reativar o corpo restaura a posição visual nesse modelo adversarial. Isso expõe a reposição antiga que atualizava apenas Rigidbody2D.position e verifica que o código novo sincroniza as duas posições. Esse modelo não pretende reproduzir todos os detalhes da física nativa do Unity.

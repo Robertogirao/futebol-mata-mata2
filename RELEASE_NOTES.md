@@ -1,12 +1,9 @@
-Projeto completo **Futebol de Discos**, usando o catálogo, as aberturas, a classificação e o chaveamento da base de futebol.
+Correção da reposição após o gol no Futebol de Discos.
 
-- Partida automática vista de cima, dois gols, uma bola branca e três discos por equipe como padrão.
-- Cenas independentes de liga (8 seleções/7 rodadas) e mata-mata (16 clubes), com configurações editáveis no `FutebolDiscos_Manager`.
-- Resultados salvos a cada partida, confirmação automática de rodada e retomada da mesma temporada.
-- Sorteios, tempo das fotos, duração, fontes, logos, tamanhos e velocidades configuráveis.
+A bola e os discos sincronizam as posições visual e física antes de reativar a simulação. A contagem fica bloqueada após um gol e só é liberada depois de confirmar a nova saída no centro durante etapas posteriores da física. Eventos repetidos do sensor não geram gols adicionais.
 
-**Baixar:** clique em **Source code (zip)** abaixo, extraia e abra a pasta **Projeto** no Unity Hub com Unity **6000.4.11f1**. Use **Tools > Futebol de Discos > Abrir Liga** ou **Abrir Mata-mata**. O guia está em `Projeto/COMO_USAR.md`.
+**Para atualizar seu projeto personalizado:** [baixe o ZIP somente com os três scripts corrigidos](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.1/Atualizacoes/Correcao_Gols_Infinitos.zip). Pare o Play, extraia e copie a pasta Assets sobre a do projeto atual, substituindo os arquivos. Suas cenas e configurações são preservadas. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.1/Atualizacoes/COMO_APLICAR_GOLS.md).
 
-Compilação de todos os scripts de runtime e testes de calendário, salvamento, continuidade e interface aprovados com fachadas das APIs Unity. **O Unity Editor não está disponível neste ambiente; renderização, importação e contatos físicos ainda precisam de teste no Play.**
+**Projeto completo:** o link Source code (zip) abaixo contém a versão atualizada, para abrir a pasta Projeto no Unity 6000.4.11f1.
 
-Esta versão foi publicada em uma branch própria; os projetos anteriores continuam disponíveis.
+Verificações de código, regressão dos gols, liga, mata-mata e retomada executadas com fachadas das APIs Unity. A física nativa do Unity Editor não foi executada neste ambiente. Resultados incorretos já salvos não são alterados pela atualização.

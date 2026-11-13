@@ -29,6 +29,8 @@ namespace FutebolDeDiscos
         private float reposicaoRestante, tempoMovimento, tempoBolaLenta;
         private Vector2 centroBolaLenta;
         private bool saidaA;
+        private bool golLiberado, aguardandoConfirmacaoSaida;
+        private int passosConfirmacaoSaida;
 
         private void Awake()
         {
@@ -100,6 +102,7 @@ namespace FutebolDeDiscos
         {
             EmAndamento = false;
             EmReposicao = false;
+            golLiberado = aguardandoConfirmacaoSaida = false;
             Congelar(true);
         }
 
@@ -108,23 +111,40 @@ namespace FutebolDeDiscos
             if (!EmAndamento) return;
             UniversalUI ui = UniversalUI.Instance;
             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
-            if (EmReposicao)
+            if (EmReposicao && !aguardandoConfirmacaoSaida)
             {
                 reposicaoRestante -= PassoVideo();
                 if (reposicaoRestante <= 0f)
                 {
-                    EmReposicao = false;
                     Reposicionar(true);
-                    if (hud != null) hud.MostrarEstado(ui.EmProrrogacao ? "GOLDEN GOAL" : "BACK IN PLAY");
                 }
             }
         }
 
         private void FixedUpdate()
         {
-            if (!EmAndamento || EmReposicao || bola == null) return;
+            if (!EmAndamento || bola == null) return;
             UniversalUI ui = UniversalUI.Instance;
             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
+            if (aguardandoConfirmacaoSaida)
+            {
+                // A timer cannot rearm a goal. Confirm the physical AND rendered
+                // kickoff poses across a simulation step before accepting another one.
+                float tolerancia = Mathf.Max(0.25f, config.tamanhoBola);
+                if (!bola.Corpo.simulated ||
+                    Vector2.Distance(bola.Corpo.position, Vector2.zero) > tolerancia ||
+                    Vector2.Distance((Vector2)bola.transform.position, Vector2.zero) > tolerancia)
+                {
+                    Reposicionar(true);
+                    return;
+                }
+                if (passosConfirmacaoSaida++ == 0) return;
+                aguardandoConfirmacaoSaida = false;
+                golLiberado = true;
+                EmReposicao = false;
+                if (hud != null) hud.MostrarEstado(ui.EmProrrogacao ? "GOLDEN GOAL" : "BACK IN PLAY");
+            }
+            if (EmReposicao) return;
             float dt = Time.fixedDeltaTime;
             tempoMovimento += dt;
             for (int i = 0; i < atletas.Count; i++) atletas[i].Mover(tempoMovimento, dt, atletas, bola, ui.EmProrrogacao);
@@ -154,7 +174,7 @@ namespace FutebolDeDiscos
         public void NotificarGol(bool golEsquerdo)
         {
             UniversalUI ui = UniversalUI.Instance;
-            if (!EmAndamento || EmReposicao || bola == null || ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) return;
+            if (!EmAndamento || !golLiberado || EmReposicao || bola == null || ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) return;
             float crossed = golEsquerdo ? -bola.Corpo.position.x : bola.Corpo.position.x;
             if (crossed < CampoDiscos.MeioComprimento + config.tamanhoBola * 0.5f) return;
             if (Mathf.Abs(bola.Corpo.position.y) + config.tamanhoBola * 0.5f > CampoDiscos.MeioGol) return;
@@ -162,6 +182,7 @@ namespace FutebolDeDiscos
             DiscoAtleta ultimo = bola.UltimoToque;
             TeamData equipe = pontoA ? timeA : timeB;
             JogadorDados jogador = ultimo != null && ultimo.TimeA == pontoA ? ultimo.Jogador : equipe.elenco.FirstOrDefault(j => j != null);
+            golLiberado = false;
             EmReposicao = true;
             Congelar(true);
             saidaA = !pontoA;
@@ -176,7 +197,7 @@ namespace FutebolDeDiscos
 
         public void TentarChute(DiscoAtleta atleta)
         {
-            if (!EmAndamento || EmReposicao || bola == null || atleta == null || !atleta.PodeChutar(tempoMovimento)) return;
+            if (!EmAndamento || !golLiberado || EmReposicao || bola == null || atleta == null || !atleta.PodeChutar(tempoMovimento)) return;
             bool ataqueA = atleta.TimeA;
             float objetivoX = ataqueA ? CampoDiscos.MeioComprimento + 0.4f : -CampoDiscos.MeioComprimento - 0.4f;
             float mira = ((float)random.NextDouble() * 2f - 1f) * CampoDiscos.MeioGol * 0.86f;
@@ -200,10 +221,13 @@ namespace FutebolDeDiscos
 
         private void Reposicionar(bool simular)
         {
+            golLiberado = false;
+            aguardandoConfirmacaoSaida = simular;
+            passosConfirmacaoSaida = 0;
             foreach (DiscoAtleta atleta in atletas) atleta.Repor(Formacao(atleta.TimeA, atleta.Indice), simular);
             Vector2 launch = new Vector2(saidaA ? -1.6f : 1.6f, (float)random.NextDouble() * 1.2f - 0.6f);
-            bola.Repor(Vector2.zero, simular ? launch : Vector2.zero);
-            bola.Corpo.simulated = simular;
+            bola.Repor(Vector2.zero, simular ? launch : Vector2.zero, simular);
+            Physics2D.SyncTransforms();
             centroBolaLenta = Vector2.zero;
             tempoBolaLenta = 0f;
         }

@@ -448,8 +448,33 @@ namespace UnityEngine
     public class Rigidbody2D : Component
     {
         public Vector2 linearVelocity; public float angularVelocity, gravityScale, linearDamping, angularDamping, mass = 1;
-        public bool simulated = true; public RigidbodyType2D bodyType; public RigidbodyInterpolation2D interpolation; public RigidbodySleepMode2D sleepMode; public CollisionDetectionMode2D collisionDetectionMode; public RigidbodyConstraints2D constraints; public PhysicsMaterial2D sharedMaterial;
-        public Vector2 position { get { return transform.position; } set { transform.position = new Vector3(value.x, value.y, transform.position.z); } }
+        // Adversarial lifecycle model: an unsimulated body's physics pose can
+        // diverge from its Transform. Reenabling restores the Transform pose.
+        // This deliberately catches a body.position-only reset; it is not a
+        // claim that this facade reproduces every native Unity physics detail.
+        private bool simulatedValue = true;
+        private Vector2 frozenPosition;
+        public bool simulated
+        {
+            get { return simulatedValue; }
+            set
+            {
+                if (value == simulatedValue) return;
+                frozenPosition = transform.position;
+                simulatedValue = value;
+            }
+        }
+        public RigidbodyType2D bodyType; public RigidbodyInterpolation2D interpolation; public RigidbodySleepMode2D sleepMode; public CollisionDetectionMode2D collisionDetectionMode; public RigidbodyConstraints2D constraints; public PhysicsMaterial2D sharedMaterial;
+        public Vector2 position
+        {
+            get { return simulatedValue ? (Vector2)transform.position : frozenPosition; }
+            set
+            {
+                frozenPosition = value;
+                if (simulatedValue) transform.position = new Vector3(value.x, value.y, transform.position.z);
+            }
+        }
+        internal void SyncTransformForFacade() { frozenPosition = transform.position; }
         public float rotation { get { return transform.rotation.eulerAngles.z; } set { transform.rotation = Quaternion.Euler(0, 0, value); } }
         public void MovePosition(Vector2 position) { this.position = position; } public void MoveRotation(float rotation) { this.rotation = rotation; }
         public void AddForce(Vector2 force, ForceMode2D mode = ForceMode2D.Force) { linearVelocity += force / mass * (mode == ForceMode2D.Impulse ? 1 : Time.fixedDeltaTime); }
@@ -473,7 +498,10 @@ namespace UnityEngine
         public static Vector2 gravity;
         public static void IgnoreCollision(Collider2D first, Collider2D second, bool ignore = true) { }
         public static void IgnoreLayerCollision(int first, int second, bool ignore = true) { }
-        public static void SyncTransforms() { }
+        public static void SyncTransforms()
+        {
+            foreach (Rigidbody2D body in Object.FindObjectsByType<Rigidbody2D>()) body.SyncTransformForFacade();
+        }
         public static void Simulate(float dt)
         {
             foreach (Rigidbody2D body in Object.FindObjectsByType<Rigidbody2D>()) if (body.simulated && body.bodyType == RigidbodyType2D.Dynamic)

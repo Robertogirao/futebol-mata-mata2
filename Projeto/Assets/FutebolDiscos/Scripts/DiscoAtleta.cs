@@ -99,7 +99,21 @@ namespace FutebolDeDiscos
             proximoChute = tempo + .42f;
             return true;
         }
-        public void Repor(Vector2 pos, bool simular) { Corpo.position = pos; Corpo.linearVelocity = Vector2.zero; Corpo.angularVelocity = 0f; Corpo.simulated = simular; proximoChute = 0f; }
+        public void Repor(Vector2 pos, bool simular)
+        {
+            RigidbodyInterpolation2D interpolacao = Corpo.interpolation;
+            Corpo.interpolation = RigidbodyInterpolation2D.None;
+            Corpo.simulated = false;
+            transform.position = new Vector3(pos.x, pos.y, transform.position.z);
+            Corpo.position = pos;
+            Corpo.simulated = simular;
+            Corpo.position = pos;
+            Corpo.linearVelocity = Vector2.zero;
+            Corpo.angularVelocity = 0f;
+            Corpo.interpolation = interpolacao;
+            if (simular) Corpo.WakeUp();
+            proximoChute = 0f;
+        }
         public void Congelar(bool parar) { if (Corpo != null) { Corpo.linearVelocity = Vector2.zero; Corpo.angularVelocity = 0f; Corpo.simulated = !parar; } }
         private void OnCollisionEnter2D(Collision2D collision) { Contato(collision); }
         private void OnCollisionStay2D(Collision2D collision) { Contato(collision); }

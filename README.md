@@ -1,10 +1,12 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.1.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.1)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
 Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade fixa de discos; não há lançamento contínuo de bolinhas nem goleiro do jogo anterior. A apresentação tem identidade própria, com arena em tons de verde-azulado e ciano. Os textos da transmissão estão em inglês; os controles do Inspector estão em português.
+
+**Já personalizou o projeto?** [Baixe somente a correção dos gols repetidos](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.1/Atualizacoes/Correcao_Gols_Infinitos.zip) e siga [as instruções de atualização](Atualizacoes/COMO_APLICAR_GOLS.md). Ela substitui apenas três scripts.
 
 ## Abrir o projeto
 
