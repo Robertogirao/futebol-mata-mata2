@@ -1,0 +1,2 @@
+PASS 654 trapped-corner restart regression assertions using actual game sources.
+Injected contact/pose/clock lifecycle; native Unity collisions and rendering were not executed.

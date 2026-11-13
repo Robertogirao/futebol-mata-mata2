@@ -33,6 +33,8 @@ namespace FutebolDeDiscos
         public float velocidadeDiscos = 3f, velocidadeMaximaBola = 15f, forcaChute = 7f,
             tamanhoDisco = 1f, tamanhoBola = 0.42f, pausaAposGol = 1.1f;
         public bool limitarDiscosNaMetade = true, usarForcaDosTimes = true;
+        public bool reporBolaPresaNoCanto = true;
+        public float tempoBolaPresaNoCanto = 3f, alcanceCantoBolaPresa = 1.6f, pausaReposicaoBolaPresa = .8f;
         public float limiarCores = 45f;
         public Color corGramado = new Color(0.035f, 0.22f, 0.22f), corLinhas = new Color(0.25f, 0.93f, 0.92f);
         public bool mostrarTagsJogadores = true, mostrarMarcaCapitao = true, usarFotoNoDiscoCapitao = true;
@@ -340,6 +342,9 @@ namespace FutebolDeDiscos
                     throw new InvalidOperationException("Confira o tamanho da fonte e a largura das tags dos jogadores.");
                 if (!Faixa(opacidadeFundoExterno, 0f, 1f) || !Faixa(velocidadeScannerFotos, .1f, 3f))
                     throw new InvalidOperationException("Confira a opacidade do fundo externo e a velocidade da linha das fotos.");
+                if (!Faixa(tempoBolaPresaNoCanto, 1f, 10f) || !Faixa(alcanceCantoBolaPresa, .8f, 3f) ||
+                    !Faixa(pausaReposicaoBolaPresa, .2f, 3f))
+                    throw new InvalidOperationException("Confira o tempo de bola presa, a área dos cantos e a pausa da reposição.");
                 ultimoErro = "";
                 return true;
             }

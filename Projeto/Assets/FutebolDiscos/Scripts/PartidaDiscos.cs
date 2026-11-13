@@ -31,6 +31,12 @@ namespace FutebolDeDiscos
         private bool saidaA;
         private bool golLiberado, aguardandoConfirmacaoSaida;
         private int passosConfirmacaoSaida;
+        private int cantoMonitorado = -1;
+        private float tempoCantoPreso;
+        private Vector2 ancoraCanto;
+        private bool cobrancaBolaPresa;
+        private Vector2 posicaoCobranca, velocidadeCobranca;
+        private DiscoAtleta cobradorReposicao;
 
         private void Awake()
         {
@@ -106,6 +112,9 @@ namespace FutebolDeDiscos
             EmAndamento = false;
             EmReposicao = false;
             golLiberado = aguardandoConfirmacaoSaida = false;
+            cobrancaBolaPresa = false;
+            cobradorReposicao = null;
+            ReiniciarMonitorCanto();
             Congelar(true);
         }
 
@@ -119,7 +128,8 @@ namespace FutebolDeDiscos
                 reposicaoRestante -= PassoVideo();
                 if (reposicaoRestante <= 0f)
                 {
-                    Reposicionar(true);
+                    if (cobrancaBolaPresa) ColocarCobranca(true);
+                    else Reposicionar(true);
                 }
             }
         }
@@ -132,19 +142,29 @@ namespace FutebolDeDiscos
             if (aguardandoConfirmacaoSaida)
             {
                 // A timer cannot rearm a goal. Confirm the physical AND rendered
-                // kickoff poses across a simulation step before accepting another one.
+                // restart poses across a simulation step before accepting another one.
+                Vector2 destino = cobrancaBolaPresa ? posicaoCobranca : Vector2.zero;
                 float tolerancia = Mathf.Max(0.25f, config.tamanhoBola);
                 if (!bola.Corpo.simulated ||
-                    Vector2.Distance(bola.Corpo.position, Vector2.zero) > tolerancia ||
-                    Vector2.Distance((Vector2)bola.transform.position, Vector2.zero) > tolerancia)
+                    Vector2.Distance(bola.Corpo.position, destino) > tolerancia ||
+                    Vector2.Distance((Vector2)bola.transform.position, destino) > tolerancia)
                 {
-                    Reposicionar(true);
+                    if (cobrancaBolaPresa) ColocarCobranca(true);
+                    else Reposicionar(true);
                     return;
                 }
                 if (passosConfirmacaoSaida++ == 0) return;
                 aguardandoConfirmacaoSaida = false;
                 golLiberado = true;
                 EmReposicao = false;
+                if (cobrancaBolaPresa)
+                {
+                    bola.RegistrarToque(cobradorReposicao);
+                    bola.Corpo.linearVelocity = velocidadeCobranca;
+                    bola.LimitarVelocidade(config.velocidadeMaximaBola);
+                    cobrancaBolaPresa = false;
+                    cobradorReposicao = null;
+                }
                 if (hud != null) hud.MostrarEstado(ui.EmProrrogacao ? "GOLDEN GOAL" : "BACK IN PLAY");
             }
             if (EmReposicao) return;
@@ -153,13 +173,17 @@ namespace FutebolDeDiscos
             TaticaDiscos.Atualizar(atletas, bola, config);
             for (int i = 0; i < atletas.Count; i++) atletas[i].Mover(tempoMovimento, dt, atletas, bola, ui.EmProrrogacao);
             bola.LimitarVelocidade(config.velocidadeMaximaBola);
+            bool monitorandoCanto = MonitorarBolaPresaNoCanto(dt);
+            if (EmReposicao) return;
             if (Vector2.Distance(bola.Corpo.position, centroBolaLenta) > 0.45f)
             {
                 centroBolaLenta = bola.Corpo.position;
                 tempoBolaLenta = 0f;
             }
             else tempoBolaLenta += dt;
-            if (tempoBolaLenta > (ui.EmProrrogacao ? 1.4f : 2.8f))
+            // The random rescue impulse must not interrupt the corner's own timer.
+            if (monitorandoCanto) tempoBolaLenta = 0f;
+            else if (tempoBolaLenta > (ui.EmProrrogacao ? 1.4f : 2.8f))
             {
                 // Free a trapped real ball without removing it or awarding a score.
                 Vector2 direction = new Vector2(random.Next(2) == 0 ? -1f : 1f, (float)random.NextDouble() - 0.5f).normalized;
@@ -172,7 +196,88 @@ namespace FutebolDeDiscos
                 bola.Repor(Vector2.zero, new Vector2(random.Next(2) == 0 ? -2f : 2f, 0.7f));
                 centroBolaLenta = Vector2.zero;
                 tempoBolaLenta = 0f;
+                ReiniciarMonitorCanto();
             }
+        }
+
+        private bool MonitorarBolaPresaNoCanto(float dt)
+        {
+            Vector2 p = bola.Corpo.position;
+            float alcance = config.alcanceCantoBolaPresa;
+            DiscoAtleta ultimo = bola.UltimoToque;
+            // A corner needs both boundaries, actual match possession and sustained
+            // lack of progress. Speed alone misses a ball jittering between discs.
+            if (!config.reporBolaPresaNoCanto || ultimo == null || !atletas.Contains(ultimo) ||
+                Mathf.Abs(p.x) < CampoDiscos.MeioComprimento - alcance ||
+                Mathf.Abs(p.y) < CampoDiscos.MeioLargura - alcance ||
+                Mathf.Abs(p.x) > CampoDiscos.MeioComprimento || Mathf.Abs(p.y) > CampoDiscos.MeioLargura)
+            {
+                ReiniciarMonitorCanto();
+                return false;
+            }
+            int canto = (p.x < 0f ? 0 : 2) + (p.y < 0f ? 0 : 1);
+            if (canto != cantoMonitorado || Vector2.Distance(p, ancoraCanto) > .45f)
+            {
+                cantoMonitorado = canto;
+                ancoraCanto = p;
+                tempoCantoPreso = 0f;
+            }
+            else tempoCantoPreso += dt;
+            if (tempoCantoPreso >= config.tempoBolaPresaNoCanto) IniciarCobrancaBolaPresa(p, ultimo);
+            return true;
+        }
+
+        private void ReiniciarMonitorCanto()
+        {
+            cantoMonitorado = -1;
+            tempoCantoPreso = 0f;
+        }
+
+        private void IniciarCobrancaBolaPresa(Vector2 canto, DiscoAtleta ultimo)
+        {
+            bool defensorA = canto.x < 0f;
+            bool escanteio = ultimo.TimeA == defensorA;
+            bool cobrancaA = escanteio ? !defensorA : defensorA;
+            float horizontal = canto.x < 0f ? -1f : 1f;
+            float vertical = canto.y < 0f ? -1f : 1f;
+            float margem = Mathf.Max(.38f, config.tamanhoBola * .5f + .16f);
+            posicaoCobranca = escanteio
+                ? new Vector2(horizontal * (CampoDiscos.MeioComprimento - margem), vertical * (CampoDiscos.MeioLargura - margem))
+                : new Vector2(horizontal * (CampoDiscos.MeioComprimento - 1.15f), vertical * .9f);
+            Vector2 alvo = escanteio
+                ? new Vector2(horizontal * (CampoDiscos.MeioComprimento - 3.2f), -vertical * .6f)
+                : new Vector2(0f, -vertical * .4f);
+            velocidadeCobranca = (alvo - posicaoCobranca).normalized *
+                Mathf.Min(config.velocidadeMaximaBola, Mathf.Max(4f, config.forcaChute * 1.2f));
+            cobradorReposicao = null;
+            float distancia = float.MaxValue;
+            foreach (DiscoAtleta atleta in atletas)
+            {
+                if (atleta.TimeA != cobrancaA) continue;
+                float d = Vector2.Distance(atleta.Corpo.position, canto);
+                if (d < distancia) { distancia = d; cobradorReposicao = atleta; }
+            }
+            cobrancaBolaPresa = true;
+            golLiberado = false;
+            EmReposicao = true;
+            reposicaoRestante = config.pausaReposicaoBolaPresa;
+            ColocarCobranca(false);
+            TeamData equipe = cobrancaA ? timeA : timeB;
+            if (hud != null) hud.MostrarEstado((escanteio ? "CORNER KICK — " : "GOAL KICK — ") + equipe.nomeEquipe.ToUpperInvariant());
+        }
+
+        private void ColocarCobranca(bool simular)
+        {
+            // Automatic kick: release the crowd without moving a player across
+            // tactical half-field limits. Keep the same ball and synchronize poses.
+            foreach (DiscoAtleta atleta in atletas) atleta.Repor(Formacao(atleta.TimeA, atleta.Indice), simular);
+            bola.Repor(posicaoCobranca, Vector2.zero, simular);
+            Physics2D.SyncTransforms();
+            aguardandoConfirmacaoSaida = simular;
+            passosConfirmacaoSaida = 0;
+            centroBolaLenta = posicaoCobranca;
+            tempoBolaLenta = 0f;
+            ReiniciarMonitorCanto();
         }
 
         public void NotificarGol(bool golEsquerdo)
@@ -227,6 +332,9 @@ namespace FutebolDeDiscos
 
         private void Reposicionar(bool simular)
         {
+            cobrancaBolaPresa = false;
+            cobradorReposicao = null;
+            ReiniciarMonitorCanto();
             golLiberado = false;
             aguardandoConfirmacaoSaida = simular;
             passosConfirmacaoSaida = 0;

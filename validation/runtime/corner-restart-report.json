@@ -1,0 +1,15 @@
+{
+  "assertions": 654,
+  "actual_game_sources": true,
+  "corner_decision_cases": 8,
+  "native_unity_executed": false,
+  "result": "pass",
+  "version": "2026.11.13.7",
+  "central_editor_assertions": 110,
+  "patch_scripts": 4,
+  "patch_bytes": 19762,
+  "patch_sha256": "4dbe634ce330821aff58af494d0fa92cd5263134021fca08fbb5563550770b07",
+  "source_files": 1238,
+  "duplicate_asset_guids": 0,
+  "save_schema_changed": false
+}

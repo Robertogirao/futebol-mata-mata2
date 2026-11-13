@@ -53,8 +53,11 @@ namespace FutebolDeDiscos
         }
         public void RegistrarToque(DiscoAtleta atleta) { UltimoToque = atleta; }
         public void LimitarVelocidade(float maximo) { Corpo.linearVelocity = Vector2.ClampMagnitude(Corpo.linearVelocity, maximo); }
-        private void OnCollisionEnter2D(Collision2D collision)
+        private void OnCollisionEnter2D(Collision2D collision) { RegistrarContato(collision); }
+        private void OnCollisionStay2D(Collision2D collision) { RegistrarContato(collision); }
+        private void RegistrarContato(Collision2D collision)
         {
+            if (Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;
             DiscoAtleta a = collision.collider.GetComponent<DiscoAtleta>(); if (a != null) RegistrarToque(a);
         }
     }

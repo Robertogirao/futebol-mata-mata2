@@ -155,6 +155,14 @@ namespace FutebolDeDiscos
                 Campo("usarForcaDosTimes", "Considerar o overall dos times");
                 Slider("limiarCores", "Diferença mínima entre as cores", 0f, 100f);
 
+                Titulo("Bola presa nos cantos");
+                Campo("reporBolaPresaNoCanto", "Repor a bola presa no canto", "Só interrompe quando a bola permanece no canto sem conseguir sair. Uma batida normal não gera cobrança.");
+                Slider("tempoBolaPresaNoCanto", "Tempo sem sair do canto (s)", 1f, 10f);
+                Slider("alcanceCantoBolaPresa", "Área de detecção do canto", .8f, 3f);
+                Slider("pausaReposicaoBolaPresa", "Pausa antes da cobrança (s)", .2f, 3f);
+                EditorGUILayout.HelpBox("A reposição só acontece quando a bola fica presa no canto. Último toque do time defensor: " +
+                    "escanteio para o atacante. Último toque do atacante: tiro de meta para o defensor.", MessageType.Info);
+
                 DesenharSonsEComemoracao(projeto);
 
                 serializedObject.ApplyModifiedProperties();

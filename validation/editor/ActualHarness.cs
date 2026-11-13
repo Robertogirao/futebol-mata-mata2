@@ -77,6 +77,51 @@ public static class ActualHarness
         Check(PainelCentralDiscosEditor.MostrarAviso(ui) && Selection.activeGameObject == manager.gameObject, "legacy redirect selects central manager without mutating settings");
         EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
     }
+    static void CheckCornerControls(ProjetoFutebolDiscos manager, ProjetoFutebolDiscosEditor editor)
+    {
+        Check(manager.reporBolaPresaNoCanto && manager.tempoBolaPresaNoCanto == 3f &&
+            manager.alcanceCantoBolaPresa == 1.6f && manager.pausaReposicaoBolaPresa == .8f,
+            "corner recovery defaults are enabled with a three-second wait");
+        var dataMethod = typeof(ProjetoFutebolDiscos).GetMethod("CriarDadosConfiguracao", BindingFlags.Instance | BindingFlags.NonPublic);
+        foreach (FormatoDiscos mode in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+        {
+            manager.formato = mode;
+            string savedConfiguration = JsonUtility.ToJson(dataMethod.Invoke(manager, null));
+            EditorGUILayout.labels.Clear(); EditorGUILayout.properties.Clear();
+            EditorGUILayout.floats["Tempo sem sair do canto (s)"] = 4.25f;
+            EditorGUILayout.floats["Área de detecção do canto"] = 2.1f;
+            EditorGUILayout.floats["Pausa antes da cobrança (s)"] = 1.25f;
+            editor.OnInspectorGUI(); EditorGUILayout.floats.Clear();
+            Check(EditorGUILayout.labels.Count(label => label == "Bola presa nos cantos") == 1 &&
+                EditorGUILayout.properties.Count(property => property == "reporBolaPresaNoCanto") == 1,
+                "one central corner-recovery group in mode " + mode);
+            Check(manager.tempoBolaPresaNoCanto == 4.25f && manager.alcanceCantoBolaPresa == 2.1f && manager.pausaReposicaoBolaPresa == 1.25f,
+                "central sliders edit actual recovery settings in mode " + mode);
+            manager.reporBolaPresaNoCanto = false;
+            Check(manager.ValidarConfiguracao(), "valid recovery controls can be disabled without invalidating " + mode);
+            Check(savedConfiguration == JsonUtility.ToJson(dataMethod.Invoke(manager, null)),
+                "changing recovery controls does not change the saved-season configuration in mode " + mode);
+        }
+        manager.formato = FormatoDiscos.Liga;
+        foreach (string field in new[] { "tempoBolaPresaNoCanto", "alcanceCantoBolaPresa", "pausaReposicaoBolaPresa" })
+        {
+            FieldInfo setting = typeof(ProjetoFutebolDiscos).GetField(field);
+            float original = (float)setting.GetValue(manager);
+            foreach (float invalid in new[] { 0f, -1f, 11f, float.NaN, float.PositiveInfinity })
+            {
+                setting.SetValue(manager, invalid);
+                Check(!manager.ValidarConfiguracao() && manager.ultimoErro.Contains("bola presa"), "validator rejects invalid recovery setting " + field + " = " + invalid);
+            }
+            setting.SetValue(manager, original);
+        }
+        manager.reporBolaPresaNoCanto = true; manager.tempoBolaPresaNoCanto = 1f;
+        manager.alcanceCantoBolaPresa = .8f; manager.pausaReposicaoBolaPresa = .2f;
+        Check(manager.ValidarConfiguracao(), "minimum recovery slider values validate");
+        manager.tempoBolaPresaNoCanto = 10f; manager.alcanceCantoBolaPresa = 3f; manager.pausaReposicaoBolaPresa = 3f;
+        Check(manager.ValidarConfiguracao(), "maximum recovery slider values validate");
+        manager.tempoBolaPresaNoCanto = 3f; manager.alcanceCantoBolaPresa = 1.6f; manager.pausaReposicaoBolaPresa = .8f;
+        EditorGUILayout.labels.Clear(); EditorGUILayout.properties.Clear();
+    }
     public static void Main()
     {
         Application.isPlaying = false;
@@ -85,6 +130,7 @@ public static class ActualHarness
         var manager = Manager();
         var editor = EditorFor(manager);
         CheckSinglePanel(manager, editor);
+        CheckCornerControls(manager, editor);
         Check(manager.ValidarConfiguracao(), "actual root validates scene default count/rounds/physics: " + manager.ultimoErro);
         editor.OnInspectorGUI();
         Check(manager.quantidadeTimes == 8 && manager.participantes.Count == 8, "actual default remains eight");

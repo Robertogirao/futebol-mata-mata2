@@ -83,6 +83,23 @@ Em **Discos e bola**, ajuste:
 
 Após um gol, os objetos são reposicionados. O cronômetro regulamentar fica pausado durante a reposição. A duração padrão da partida é **45 segundos de jogo**. O relógio mostra os **90 minutos virtuais** do futebol distribuídos nessa duração; aberturas, fotos, reposições, tabelas e Golden Goal aumentam a duração da gravação.
 
+### Escanteio e tiro de meta quando a bola prende
+
+No mesmo painel central, abra **Bola presa nos cantos**. A cobrança só acontece quando a bola permanece perto das duas bordas de um canto sem conseguir sair; uma batida ou passagem normal não gera reposição.
+
+| Controle | Padrão e efeito |
+| --- | --- |
+| Repor a bola presa no canto | Ativado; pode ser desligado |
+| Tempo sem sair do canto (s) | 3 segundos; ajuste de 1 a 10 |
+| Área de detecção do canto | 1,6 unidades de campo junto às duas bordas; ajuste de 0,8 a 3 |
+| Pausa antes da cobrança (s) | 0,8 segundo; ajuste de 0,2 a 3 |
+
+O sistema observa se a bola faz progresso: pequenos tremores e trocas de toque não reiniciam a espera. Se ela sair do canto ou se deslocar de forma relevante, a contagem começa de novo.
+
+Se o último toque foi do defensor, há **escanteio para o atacante**. Se foi do atacante, há **tiro de meta para o defensor**. Sem um último toque válido, o sistema mantém o recurso anterior para soltar a bola, sem escolher uma equipe para a cobrança.
+
+A transmissão mostra **CORNER KICK** ou **GOAL KICK** com o time beneficiado. O relógio pausa, os discos voltam à formação para abrir espaço e a cobrança é automática, com a bola lançada para dentro do campo. O placar e o tempo já jogado são mantidos. Isso funciona tanto na liga quanto no mata-mata, inclusive durante o Golden Goal. Esses ajustes não exigem nova temporada; altere fora do Play e salve a cena.
+
 ### Postura de cada time e pressão
 
 Selecione a ficha `TeamData` no Project e abra **Tática e IA > Postura tática**. As quatro opções são **Ultra defensivo** (0 jogadores podem avançar para pressionar), **Defensivo** (até 1), **Balanceado** (até 2) e **Ataque** (até 3), limitadas ao total disponível de discos.

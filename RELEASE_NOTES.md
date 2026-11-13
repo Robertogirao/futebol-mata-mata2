@@ -1,13 +1,15 @@
-Painel único de configuração, imagem externa da arena e scanner das fotos mais discreto.
+Escanteio e tiro de meta automáticos quando a bola fica presa no canto.
 
-- Configurações da Liga ou do Mata-mata no componente principal FutebolDiscos_Manager.
-- Tempos, sons e comemorações reunidos no painel; os componentes internos deixam de mostrar controles duplicados.
-- Preserva os valores existentes e corrige o intervalo aplicado duas vezes na liga.
-- Imagem externa como Sprite, proporcional, com opacidade e decoração opcionais, atrás do campo e dos gols.
-- Linha das fotos atrás do retrato, mais lenta e suave, com controle de velocidade e opção de desligar.
+A reposição exige falta de progresso no mesmo canto pelo tempo configurado, com padrão de 3 segundos. Uma batida na parede ou passagem normal não interrompe a partida.
 
-**Atualizar seu projeto:** [baixe o ZIP de sete scripts e o .meta do novo editor](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.6/Atualizacoes/Atualizacao_Painel_Central_Fundo_Fotos.zip). Pare o Play, extraia e copie Assets para seu projeto, aceitando as substituições. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.6/Atualizacoes/COMO_APLICAR_PAINEL_CENTRAL.md).
+- Último toque do defensor: escanteio para o atacante. Último toque do atacante: tiro de meta para o defensor.
+- Pequenos tremores e trocas de toque não reiniciam a espera; sair da região ou avançar com a bola reinicia.
+- Avisos CORNER KICK / GOAL KICK, pausa do cronômetro, reorganização dos discos e cobrança automática para dentro do campo.
+- Liga, mata-mata e Golden Goal usam a mesma regra, com controles próprios em cada cena no grupo **Bola presa nos cantos** do painel principal.
+- Tempo, área de detecção, pausa e opção de desligar podem ser ajustados sem criar outra temporada. Resultados e personalizações existentes ficam preservados.
 
-Suas cenas, fontes, imagens, fichas, configurações e resultados ficam preservados. O projeto completo está em Source code (zip) abaixo; abra a pasta Projeto no Unity 6000.4.11f1.
+**Atualizar seu projeto:** [baixe o ZIP de quatro scripts](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.7/Atualizacoes/Atualizacao_Bola_Presa_Escanteio_Tiro_Meta.zip). Pare o Play, extraia e copie Assets para seu projeto com o painel central 2026.11.13.6, aceitando as substituições. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.7/Atualizacoes/COMO_APLICAR_BOLA_PRESA.md).
 
-Testes de código passaram para painel, modos separados, valores preservados, intervalo único, imagem externa, scanner, liga, mata-mata e recursos anteriores. A renderização e a física nativa do Unity não foram executadas neste ambiente.
+O projeto completo está em **Source code (zip)** abaixo; abra a pasta **Projeto** no Unity 6000.4.11f1.
+
+Passaram 654 verificações da nova reposição, 110 do painel e os testes anteriores de liga, mata-mata, gols e apresentação. A validação de código usa fachadas das APIs Unity; a renderização e a física nativa não foram executadas neste ambiente.

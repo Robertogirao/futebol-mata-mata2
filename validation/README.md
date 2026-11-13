@@ -10,11 +10,12 @@ Os testes C# usam os arquivos reais do projeto e fachadas das APIs Unity/TMP/Edi
 | Torneios existentes | 68 | Liga, classificação, mata-mata, persistência e recuperação de resultado pendente |
 | Partida | 45 | Cruzamento completo da bola, gols repetidos, reposição, limites e ciclo dos componentes |
 | Regressão da reposição | 299 | Corpo congelado com Transform desatualizado, centenas de callbacks, saída confirmada na física e novos gols legítimos |
+| Bola presa nos cantos | 654 | Quatro cantos, último toque, falsos positivos, tremor local, pausa do relógio, Golden Goal e retomada segura |
 | Capitães e identificação | 87 | Um capitão por time, nomes distintos, tags, foto/bandeira por autor, gols contra e fila de banners |
 | Posturas e pressão | 572 | Quatro posturas, limites de 0/1/2/3, oportunidades, recuo sem teleporte, vagas de retorno e bloqueio geral |
 | Aberturas e prévias futuristas | 1.588 | Íris vertical, cobertura opaca, captura 30/60 fps, textos, cancelamento, temas e quadros de 2–32 equipes |
 | Controlador completo | 44 | Rodadas automáticas, retomada, tabela final, Golden Goal, falha de escrita e intervalo sem duplicação |
-| Editor real | 84 | Painel único por modo, controles internos redirecionados, preservação dos valores e compilação com todos os scripts |
+| Editor real | 110 | Painel único por modo, controles internos redirecionados, opções da bola presa, validação dos limites e preservação dos valores e da temporada |
 
 Para executar em um sistema com Bash, Mono (`mcs` e `mono`), Python 3 e `rg`, use `bash validation/run-all.sh` a partir da raiz. `MCS` e `MONO` podem selecionar executáveis alternativos. As fachadas estão fora de `Projeto/Assets` e não são importadas pelo Unity. Os executáveis de teste e os dados temporários não fazem parte da entrega.
 
