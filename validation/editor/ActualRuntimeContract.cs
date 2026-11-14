@@ -500,6 +500,7 @@ namespace UnityEngine
 namespace UnityEngine.SceneManagement { public struct Scene { public bool isLoaded {get{return true;}} public bool IsValid() { return true; } public UnityEngine.GameObject[] GetRootGameObjects() { return UnityEngine.GameObject.All.Where(g => g.transform.parent == null && !g.destroyed).ToArray(); } } }
 namespace UnityEngine.UI
 {
+    public class Mask : UnityEngine.Behaviour { public bool showMaskGraphic; }
     public class Button : UnityEngine.Behaviour { public ClickEvent onClick = new ClickEvent(); public class ClickEvent { public void RemoveAllListeners() { } public void AddListener(Action callback) { } } }
     public class GraphicRaycaster : UnityEngine.Behaviour { }
     public class Graphic : UnityEngine.Behaviour { public UnityEngine.Color color; public bool raycastTarget; public UnityEngine.RectTransform rectTransform { get { return transform as UnityEngine.RectTransform; } } }

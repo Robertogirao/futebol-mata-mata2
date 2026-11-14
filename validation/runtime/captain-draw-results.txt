@@ -1,0 +1,2 @@
+PASS 118 actual captain-draw controller, Canvas, simulation, cancellation and persistence integration assertions.
+Custom deterministic draw physics executed; native Unity rendering, input and audio were not executed.

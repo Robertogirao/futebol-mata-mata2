@@ -1,0 +1,2 @@
+PASS 1116 actual marble-draw simulation assertions.
+Deterministic custom 2D collisions and real finish-driven assignments; native Unity rendering was not executed.

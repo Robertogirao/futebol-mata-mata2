@@ -257,6 +257,69 @@ public static class ActualHarness
         UnityEngine.Object.Destroy(manager.gameObject);
         EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
     }
+    static void CheckCaptainDrawControls()
+    {
+        var manager = Manager();
+        manager.temporadaId = "draw_editor_controls";
+        var editor = EditorFor(manager);
+        var teams = manager.participantes.ToArray();
+        var captain = ScriptableObject.CreateInstance<CapitaoConvidado>(); captain.name = "draw_hero"; captain.nomeCapitao = "Draw Hero";
+        manager.catalogoCapitaes.Add(captain);
+        manager.capitaesFixos.Add(new VinculoCapitaoConvidado { time = teams[0], capitao = captain });
+        Check(manager.mostrarSorteioCapitaes && !manager.reexibirSorteioSalvo && manager.tempoApresentacaoSorteio == 2f &&
+            manager.velocidadeSorteio == 1f && manager.intervaloRevelacoesSorteio == .35f && manager.tempoResultadoSorteio == 3f,
+            "new guest seasons default to a visible draw without replaying saved assignments");
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear(); editor.OnInspectorGUI();
+        Check(!EditorGUILayout.labels.Contains("Sorteio na tela") && !EditorGUILayout.properties.Contains("mostrarSorteioCapitaes") &&
+            !EditorGUILayout.properties.Contains("reexibirSorteioSalvo"), "football-only scenes omit all guest draw controls");
+        MethodInfo configuration = typeof(ProjetoFutebolDiscos).GetMethod("CriarDadosConfiguracao", BindingFlags.Instance | BindingFlags.NonPublic);
+        foreach (FormatoDiscos mode in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+        {
+            manager.usarCapitaesConvidados = true; manager.formato = mode;
+            string savedRules = JsonUtility.ToJson(configuration.Invoke(manager, null));
+            EditorGUILayout.bools["Mostrar sorteio antes do campeonato"] = true;
+            EditorGUILayout.bools["Reexibir sorteio salvo"] = true;
+            EditorGUILayout.floats["Apresentação dos participantes (s)"] = 4.25f;
+            EditorGUILayout.floats["Velocidade das marbles no sorteio"] = 1.5f;
+            EditorGUILayout.floats["Intervalo entre associações (s)"] = .7f;
+            EditorGUILayout.floats["Exibição do resultado do sorteio (s)"] = 5.5f;
+            EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear(); editor.OnInspectorGUI();
+            EditorGUILayout.bools.Clear(); EditorGUILayout.floats.Clear();
+            Check(EditorGUILayout.labels.Count(label => label == "Sorteio na tela") == 1 &&
+                EditorGUILayout.properties.Count(property => property == "mostrarSorteioCapitaes") == 1 &&
+                EditorGUILayout.properties.Count(property => property == "reexibirSorteioSalvo") == 1,
+                "one central on-screen draw section and replay control in " + mode);
+            Check(manager.mostrarSorteioCapitaes && manager.reexibirSorteioSalvo && manager.tempoApresentacaoSorteio == 4.25f &&
+                manager.velocidadeSorteio == 1.5f && manager.intervaloRevelacoesSorteio == .7f && manager.tempoResultadoSorteio == 5.5f,
+                "central draw controls edit the actual timing and replay settings in " + mode);
+            Check(JsonUtility.ToJson(configuration.Invoke(manager, null)) == savedRules,
+                "draw presentation timing changes do not alter saved competition rules in " + mode);
+            Check(manager.participantes.SequenceEqual(teams) && manager.catalogoCapitaes.SequenceEqual(new[] { captain }) &&
+                manager.capitaesFixos.Count == 1 && manager.capitaesFixos[0].time == teams[0] && manager.capitaesFixos[0].capitao == captain,
+                "draw controls preserve team rosters, captain selection and fixed associations in " + mode);
+        }
+        EditorApplication.isPlayingOrWillChangePlaymode = true;
+        EditorGUILayout.bools["Mostrar sorteio antes do campeonato"] = false;
+        EditorGUILayout.bools["Reexibir sorteio salvo"] = false;
+        EditorGUILayout.floats["Apresentação dos participantes (s)"] = 9f;
+        EditorGUILayout.floats["Velocidade das marbles no sorteio"] = .25f;
+        EditorGUILayout.floats["Intervalo entre associações (s)"] = 2f;
+        EditorGUILayout.floats["Exibição do resultado do sorteio (s)"] = 30f;
+        editor.OnInspectorGUI();
+        Check(manager.mostrarSorteioCapitaes && manager.reexibirSorteioSalvo && manager.tempoApresentacaoSorteio == 4.25f &&
+            manager.velocidadeSorteio == 1.5f && manager.intervaloRevelacoesSorteio == .7f && manager.tempoResultadoSorteio == 5.5f,
+            "Play locks the draw toggles and every timing control");
+        EditorApplication.isPlayingOrWillChangePlaymode = false;
+        EditorGUILayout.bools.Clear(); EditorGUILayout.floats.Clear();
+        EditorGUILayout.bools["Mostrar sorteio antes do campeonato"] = false;
+        EditorGUILayout.floats["Velocidade das marbles no sorteio"] = 2f;
+        editor.OnInspectorGUI(); EditorGUILayout.bools.Clear(); EditorGUILayout.floats.Clear();
+        Check(!manager.mostrarSorteioCapitaes && manager.velocidadeSorteio == 1.5f && manager.reexibirSorteioSalvo,
+            "disabling the draw retains its prior speed and saved-replay preference");
+        Check(!Directory.Exists(manager.PastaDaTemporada), "editing presentation controls never creates a saved draw or starts a competition");
+        UnityEngine.Object.Destroy(manager.gameObject);
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
+    }
     public static void Main()
     {
         Application.isPlaying = false;
@@ -268,6 +331,7 @@ public static class ActualHarness
         CheckCornerControls(manager, editor);
         CheckSoundSelection();
         CheckGuestCaptainControls();
+        CheckCaptainDrawControls();
         Check(manager.ValidarConfiguracao(), "actual root validates scene default count/rounds/physics: " + manager.ultimoErro);
         editor.OnInspectorGUI();
         Check(manager.quantidadeTimes == 8 && manager.participantes.Count == 8, "actual default remains eight");

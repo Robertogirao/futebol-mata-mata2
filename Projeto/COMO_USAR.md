@@ -129,6 +129,26 @@ O convidado usa a foto e a legenda **CAPTAIN** na abertura, e nome/foto ao marca
 
 O sorteio é salvo em `capitaes_convidados.json` na pasta da temporada, antes das partidas. Stop/Play mantém o mesmo capitão em cada time. Use **Nova temporada** para mudar as associações, o overall usado ou a regra de disco extra, mantendo os arquivos anteriores. Nome e foto são ajustes visuais e podem ser alterados sem trocar o sorteio. Veja [o guia completo da atualização](../Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
 
+### Sorteio na tela antes do campeonato
+
+Em **Capitães convidados > Sorteio na tela**, mantenha **Mostrar sorteio antes do campeonato** marcado para apresentar as marbles antes de uma temporada nova da liga ou do mata-mata. Os capitães passam por pinos, rampas e obstáculos giratórios; as chegadas revelam os clubes atribuídos. Depois do quadro final, o campeonato começa automaticamente.
+
+A quantidade de marbles é a quantidade de times preenchidos, de 2 a 32. Uma liga com 10 ou 20 times mostra 10 ou 20 capitães. Folgas de uma chave não criam marbles adicionais. Se houver mais personagens no catálogo, são escolhidos apenas os necessários. Cada capitão e cada time aparecem uma vez; **Associações fixas (opcional)** continuam reservando os pares configurados. O overall do personagem não influencia o sorteio.
+
+| Controle | Padrão | Função |
+| --- | --- | --- |
+| Apresentação dos participantes (s) | 2 | Tempo inicial para ver as marbles e os clubes |
+| Velocidade das marbles no sorteio | 1 | Multiplicador da velocidade da apresentação |
+| Intervalo entre associações (s) | 0,35 | Espaçamento entre as revelações |
+| Exibição do resultado do sorteio (s) | 3 | Leitura do quadro completo antes do campeonato |
+| Reexibir sorteio salvo | Desmarcado | Reproduz a apresentação com as associações existentes |
+
+**Se você já deu Play nessa temporada, o sorteio salvo é retomado e a apresentação é pulada por padrão.** Para outro sorteio, use **Nova temporada (preserva as anteriores)**. Para apenas rever o resultado existente, marque **Reexibir sorteio salvo**; a tela mostra **SAVED DRAFT**, sem trocar capitães ou resultados.
+
+O arquivo `capitaes_convidados.json` só recebe o sorteio completo, quando todos os pares foram revelados, antes da leitura final e da primeira partida. Se parar durante a pista, não haverá associações parciais gravadas: o próximo Play recomeça a apresentação com a semente já guardada. Se parar após o resultado ter sido salvo, os pares permanecem iguais.
+
+Desmarcar a apresentação mantém a atribuição automática e o salvamento anteriores. Os controles de apresentação podem ser ajustados sem criar outra temporada. Veja [o guia de instalação e uso](../Atualizacoes/COMO_APLICAR_SORTEIO_MARBLES.md).
+
 ## 6. Nome, fontes, logos, fundos e fotos
 
 No mesmo painel, abra **Identidade visual > Fontes, imagens e cores da transmissão**. O tema inicial é `Assets/FutebolDiscos/Tema_Discos.asset`.
@@ -217,4 +237,4 @@ Esta entrega é o projeto-fonte, sem executável compilado. Scripts e assets de 
 
 Há verificações de código, calendário, CSV, arquivos salvos, continuidade dos torneios, geometria e referências das cenas. Para as APIs Unity, os testes usam fachadas de API; isso não certifica contatos físicos, importação, áudio ou aparência no Editor. O conjunto de calendário e metadados passou por **37.629 verificações** com o parser CSV original e arquivos reais. Os detalhes estão na pasta `validation`, ao lado de `Projeto`.
 
-Antes da primeira gravação, rode as cenas no Unity e confira a escala dos objetos, a bola branca marcando gols, as fichas de representantes, as fontes, o encerramento e a retomada após Stop/Play. Nas cenas de convidados, confira também nome/foto do capitão, os jogadores do elenco e a associação mantida entre sessões.
+Antes da primeira gravação, rode as cenas no Unity e confira a escala dos objetos, a bola branca marcando gols, as fichas de representantes, as fontes, o encerramento e a retomada após Stop/Play. Nas cenas de convidados, confira também o sorteio na tela, nome/foto do capitão, os jogadores do elenco e a associação mantida entre sessões.

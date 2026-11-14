@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.1.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.1)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.2.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.2)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -19,6 +19,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 **Sons escolhidos no painel:** [baixe a atualização dos efeitos e dos controles de áudio](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.8/Atualizacoes/Atualizacao_Sons_Painel.zip) · [instruções de instalação e configuração](Atualizacoes/COMO_APLICAR_SONS.md).
 
 **Capitães convidados:** [baixe a atualização com as duas novas cenas](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.1/Atualizacoes/Atualizacao_Capitaes_Convidados.zip) · [guia para cadastrar personagens, definir overall e sortear os times](Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
+
+**Sorteio das marbles antes do campeonato:** [baixe a atualização](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.2/Atualizacoes/Atualizacao_Sorteio_Marbles_Capitaes.zip) · [guia de instalação, controles e temporadas salvas](Atualizacoes/COMO_APLICAR_SORTEIO_MARBLES.md).
 
 ## Abrir o projeto
 
@@ -49,6 +51,18 @@ Cada time recebe um capitão diferente por sorteio. **Associações fixas (opcio
 Por padrão, **Capitão como disco extra** soma o personagem aos jogadores do elenco: 3 jogadores do Real Madrid + Goku formam quatro discos. O limite é 5 jogadores do time + 1 capitão. Desmarcada essa opção, o capitão ocupa uma das vagas do total configurado.
 
 O overall do convidado afeta somente a velocidade, potência e precisão dos chutes dele. Os jogadores do time continuam com o comportamento normal do overall da equipe. Nome, foto e overall do time original não são alterados. O convidado aparece na abertura como **CAPTAIN** e, quando marca, usa seu nome e foto; os demais gols usam o nome do jogador e o escudo/bandeira.
+
+## Sorteio dos capitães na tela
+
+Nas cenas de convidados, a apresentação **CAPTAIN DRAFT** mostra as marbles dos capitães passando por pinos, rampas e obstáculos giratórios. Os times aparecem ao lado, e cada chegada revela uma associação entre capitão e clube. O resultado completo aparece antes de a liga ou o mata-mata começar automaticamente.
+
+A quantidade acompanha os times preenchidos: 10 times usam 10 marbles; 16, 20 ou 32 usam a mesma quantidade de capitães. Quando o catálogo tem mais personagens, o sorteio seleciona apenas o necessário, sem repetições. Associações fixas são respeitadas; os demais clubes são distribuídos pelas chegadas. O overall não dá vantagem nessa etapa.
+
+Os controles ficam em **FutebolDiscos_Manager > Projeto Futebol Discos > Capitães convidados > Sorteio na tela**. Ajuste a apresentação dos participantes, a velocidade das marbles, o intervalo entre associações e a leitura do resultado.
+
+**Já existe um sorteio salvo na temporada?** Por padrão, ele é retomado sem repetir a abertura. Use **Nova temporada (preserva as anteriores)** para fazer um novo sorteio. Para apenas assistir às associações existentes, marque **Reexibir sorteio salvo**: a tela indica **SAVED DRAFT** e conserva os capitães e resultados.
+
+As associações são salvas quando todas foram reveladas, antes do resumo e da primeira partida. Interromper no meio da pista não grava um sorteio parcial; o próximo Play recomeça a apresentação com a semente da mesma temporada.
 
 ## Formatos e controles
 

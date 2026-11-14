@@ -29,6 +29,9 @@ namespace FutebolDeDiscos
         public bool capitaoExtra = true;
         public List<CapitaoConvidado> catalogoCapitaes = new List<CapitaoConvidado>();
         public List<VinculoCapitaoConvidado> capitaesFixos = new List<VinculoCapitaoConvidado>();
+        public bool mostrarSorteioCapitaes = true, reexibirSorteioSalvo;
+        public float tempoApresentacaoSorteio = 2f, velocidadeSorteio = 1f,
+            intervaloRevelacoesSorteio = .35f, tempoResultadoSorteio = 3f;
         public bool sortearConfrontos = true, permitirFolgas, umaRodadaOuFasePorPlay;
         public DistribuicaoMataMata distribuicao = DistribuicaoMataMata.ConfrontosNaOrdemDaLista;
         public int discosPorTime = 3;
@@ -76,6 +79,8 @@ namespace FutebolDeDiscos
         private TemporadaDiscos temporada;
         private TemaCompeticao temaEmUso;
         private TextAsset calendario;
+        private SorteioCapitaesUI sorteioCapitaes;
+        private MotorSorteioCapitaes motorSorteio;
         private readonly Dictionary<TeamData, CapitaoConvidado> capitaesEmUso = new Dictionary<TeamData, CapitaoConvidado>();
         private readonly Dictionary<TeamData, JogadorDados> representantesConvidados = new Dictionary<TeamData, JogadorDados>();
         private readonly Dictionary<TeamData, int> overallDosCapitaes = new Dictionary<TeamData, int>();
@@ -106,7 +111,17 @@ namespace FutebolDeDiscos
                     formato == FormatoDiscos.Liga ? "temporada.json" : "torneio.json"));
                 temporada = new RepositorioTemporadaDiscos(PastaDaTemporada, new SerializadorUnity())
                     .CarregarOuCriar(CriarDadosConfiguracao(), historico);
-                PrepararCapitaesConvidados(historico);
+                var repositorioCapitaes = new RepositorioCapitaesConvidados(PastaDaTemporada, new SerializadorCapitaesUnity());
+                bool sorteioSalvo = File.Exists(repositorioCapitaes.CaminhoArquivo);
+                bool exibirSorteio = usarCapitaesConvidados && mostrarSorteioCapitaes && (!sorteioSalvo || reexibirSorteioSalvo);
+                DadosCapitaesConvidados dadosAnteriores = null;
+                if (!exibirSorteio || sorteioSalvo) PrepararCapitaesConvidados(historico);
+                if (exibirSorteio && historico && !sorteioSalvo)
+                    throw new InvalidOperationException("Há resultados sem o sorteio salvo dos capitães. Preserve os arquivos e use Nova temporada.");
+                if (exibirSorteio && sorteioSalvo)
+                    dadosAnteriores = repositorioCapitaes.CarregarOuCriar(
+                        participantes.Where(t => t != null).Select(t => t.name), catalogoCapitaes, capitaesFixos,
+                        SementeEfetiva, historico, capitaoExtra);
 
                 campo = new GameObject("Disc Football Stadium").AddComponent<CampoDiscos>();
                 campo.transform.SetParent(transform, false);
@@ -114,12 +129,68 @@ namespace FutebolDeDiscos
                 hud = gameObject.AddComponent<HudFutebolDiscos>();
                 hud.Construir(this, ui, GetComponent<GoalBannerUI>());
                 partida.Configurar(this, campo, hud);
-                Preparado = true;
-                situacao = "Temporada preparada. Semente: " + SementeEfetiva;
-                if (formato == FormatoDiscos.Liga) PrepararLiga();
-                else PrepararMataMata();
+                if (exibirSorteio)
+                {
+                    motorSorteio = new MotorSorteioCapitaes(participantes.Where(t => t != null).ToList(),
+                        catalogoCapitaes, capitaesFixos, SementeEfetiva,
+                        dadosAnteriores != null ? dadosAnteriores.atribuicoes : null);
+                    sorteioCapitaes = GetComponent<SorteioCapitaesUI>();
+                    if (sorteioCapitaes == null) sorteioCapitaes = gameObject.AddComponent<SorteioCapitaesUI>();
+                    situacao = sorteioSalvo ? "Reexibindo o sorteio salvo dos capitães." : "Sorteando os capitães na arena de obstáculos.";
+                    StartCoroutine(ExecutarSorteioComProtecao(SequenciaSorteioCapitaes(repositorioCapitaes, historico, sorteioSalvo)));
+                }
+                else ConcluirPreparacao();
             }
             catch (Exception erro) { Falhar(erro.Message); }
+        }
+
+        private void ConcluirPreparacao()
+        {
+            Preparado = true;
+            situacao = "Temporada preparada. Semente: " + SementeEfetiva;
+            if (formato == FormatoDiscos.Liga) PrepararLiga();
+            else PrepararMataMata();
+        }
+
+        private IEnumerator SequenciaSorteioCapitaes(RepositorioCapitaesConvidados repositorio, bool possuiResultados, bool repeticao)
+        {
+            yield return sorteioCapitaes.Exibir(motorSorteio, participantes.Where(t => t != null).ToList(), catalogoCapitaes,
+                temaEmUso, tempoApresentacaoSorteio, velocidadeSorteio, intervaloRevelacoesSorteio, repeticao);
+            if (!isActiveAndEnabled || !sorteioCapitaes.Concluido) yield break;
+            if (!repeticao)
+            {
+                repositorio.SalvarSorteio(participantes.Where(t => t != null).Select(t => t.name),
+                    catalogoCapitaes, capitaesFixos, SementeEfetiva, motorSorteio.Resultados.ToList(), possuiResultados, capitaoExtra);
+                PrepararCapitaesConvidados(possuiResultados);
+            }
+            situacao = "Capitães atribuídos e salvos. Exibindo o resultado do sorteio.";
+            yield return sorteioCapitaes.ExibirResultadoFinal(tempoResultadoSorteio);
+            if (isActiveAndEnabled && sorteioCapitaes.Concluido) ConcluirPreparacao();
+        }
+
+        private IEnumerator ExecutarSorteioComProtecao(IEnumerator sequencia)
+        {
+            // Flatten nested UI routines so an error cannot leave a half-started
+            // competition or escape the controller's normal pause/error handling.
+            var pilha = new Stack<IEnumerator>();
+            pilha.Push(sequencia);
+            while (pilha.Count > 0)
+            {
+                Exception erro = null;
+                bool avancou = false;
+                object esperaAtual = null;
+                try
+                {
+                    avancou = pilha.Peek().MoveNext();
+                    if (avancou) esperaAtual = pilha.Peek().Current;
+                }
+                catch (Exception falha) { erro = falha; }
+                if (erro != null) { Falhar(erro.Message); yield break; }
+                if (!avancou) { pilha.Pop(); continue; }
+                IEnumerator aninhada = esperaAtual as IEnumerator;
+                if (aninhada != null) pilha.Push(aninhada);
+                else yield return esperaAtual;
+            }
         }
 
         private void PrepararCapitaesConvidados(bool possuiResultados)
@@ -403,6 +474,9 @@ namespace FutebolDeDiscos
                 if (!Faixa(tempoBolaPresaNoCanto, 1f, 10f) || !Faixa(alcanceCantoBolaPresa, .8f, 3f) ||
                     !Faixa(pausaReposicaoBolaPresa, .2f, 3f))
                     throw new InvalidOperationException("Confira o tempo de bola presa, a área dos cantos e a pausa da reposição.");
+                if (!Faixa(tempoApresentacaoSorteio, 0f, 10f) || !Faixa(velocidadeSorteio, .25f, 3f) ||
+                    !Faixa(intervaloRevelacoesSorteio, .05f, 2f) || !Faixa(tempoResultadoSorteio, 0f, 30f))
+                    throw new InvalidOperationException("Confira os tempos e a velocidade do sorteio dos capitães.");
                 ultimoErro = "";
                 return true;
             }
@@ -429,6 +503,7 @@ namespace FutebolDeDiscos
             ultimoErro = string.IsNullOrEmpty(mensagem) ? "Falha ao preparar a competição." : mensagem;
             situacao = "Sequência pausada. " + ultimoErro;
             Preparado = false;
+            if (sorteioCapitaes != null) sorteioCapitaes.Cancelar();
             if (partida != null) partida.PararPartida();
             if (ui != null) ui.CancelarPartida();
             if (mata != null) mata.CancelarApresentacao();
@@ -443,6 +518,7 @@ namespace FutebolDeDiscos
         {
             Preparado = false;
             StopAllCoroutines();
+            if (sorteioCapitaes != null) sorteioCapitaes.Cancelar();
             if (manager != null) manager.enabled = false;
             if (partida != null) partida.PararPartida();
             if (ui != null) ui.CancelarPartida();
@@ -450,6 +526,7 @@ namespace FutebolDeDiscos
         }
         private void OnDestroy()
         {
+            if (sorteioCapitaes != null) sorteioCapitaes.Cancelar();
             if (hud != null) hud.Limpar();
             if (campo != null) campo.Limpar();
             if (temaEmUso != null) Destroy(temaEmUso);

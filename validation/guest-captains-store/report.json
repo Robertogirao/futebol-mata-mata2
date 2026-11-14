@@ -1,8 +1,11 @@
 {
-  "assertions": 780,
+  "assertions": 874,
   "actual_asset_and_repository_sources": true,
   "team_counts": "2-32",
   "real_filesystem": true,
+  "completed_screen_draw_commit": true,
+  "arrival_order_normalized_without_reroll": true,
+  "incomplete_or_conflicting_result_preserved": true,
   "injected_serializer": "XML",
   "native_unity_import_or_json_executed": false,
   "result": "pass"

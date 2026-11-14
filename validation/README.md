@@ -13,12 +13,15 @@ Os testes C# usam os arquivos reais do projeto e fachadas das APIs Unity/TMP/Edi
 | Bola presa nos cantos | 654 | Quatro cantos, último toque, falsos positivos, tremor local, pausa do relógio, Golden Goal e retomada segura |
 | Seleção de áudio | 47 | Clipes exatos de gol/início/fim, fonte exclusiva, silêncio intencional, volume, troca de fonte e cancelamento sem parar música |
 | Capitães e identificação | 87 | Um capitão por time, nomes distintos, tags, foto/bandeira por autor, gols contra e fila de banners |
-| Sorteio e persistência de convidados | 780 | 2–32 times, sorteio sem repetição, vínculos fixos, retomada, overall/regra preservados, corrupção e gravação atômica |
+| Sorteio e persistência de convidados | 874 | 2–32 times, resultado da pista sem novo sorteio, vínculos fixos, retomada, corrupção e gravação atômica |
 | Capitães convidados na partida | 222 | Liga/mata-mata, foto e autor do gol, disco extra/substituto, overall individual, elenco intacto e retomada de resultados |
+| Motor do sorteio de marbles | 1.116 | Colisões, chegada definindo associações, 30/60 fps, sementes, vínculos fixos e replay salvo |
+| Tela do sorteio | 563 | 2/10/16/20/32 marbles e clubes, retratos, cartões legíveis, Recorder, cancelamento e descarte de recursos |
+| Sorteio antes do campeonato | 118 | Bloqueio das partidas, resultado salvo antes do resumo, interrupção, retomada e erros sem gravação parcial |
 | Posturas e pressão | 572 | Quatro posturas, limites de 0/1/2/3, oportunidades, recuo sem teleporte, vagas de retorno e bloqueio geral |
 | Aberturas e prévias futuristas | 1.588 | Íris vertical, cobertura opaca, captura 30/60 fps, textos, cancelamento, temas e quadros de 2–32 equipes |
 | Controlador completo | 44 | Rodadas automáticas, retomada, tabela final, Golden Goal, falha de escrita e intervalo sem duplicação |
-| Editor real | 148 | Painel por modo, catálogo e vínculos dos capitães, seis discos, seleção de áudio, persistência em cena/prefab e preservação da temporada |
+| Editor real | 161 | Painel por modo, controles do sorteio, catálogo dos capitães, seis discos, áudio e preservação da temporada |
 | Contrato das cenas | 160 | Quatro cenas, dois modos convidados, 16 fichas de exemplo, GUIDs, catálogo e inicialização original preservada |
 
 Para executar em um sistema com Bash, Mono (`mcs` e `mono`), Python 3 e `rg`, use `bash validation/run-all.sh` a partir da raiz. `MCS` e `MONO` podem selecionar executáveis alternativos. As fachadas estão fora de `Projeto/Assets` e não são importadas pelo Unity. Os executáveis de teste e os dados temporários não fazem parte da entrega.

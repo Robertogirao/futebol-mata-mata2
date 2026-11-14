@@ -86,6 +86,63 @@ namespace FutebolDeDiscos
             }
         }
 
+        /// <summary>Commit a completed on-screen draw without generating another assignment.</summary>
+        public DadosCapitaesConvidados SalvarSorteio(IEnumerable<string> times, IList<CapitaoConvidado> catalogo,
+            IList<VinculoCapitaoConvidado> manuais, int semente, IList<RegistroCapitaoConvidado> resultado,
+            bool possuiResultadosExistentes = false, bool capitaoExtra = true)
+        {
+            List<string> ids = times != null ? times.ToList() : null;
+            ValidarConfiguracao(ids, catalogo, manuais);
+            Exigir(resultado != null && resultado.Count == ids.Count && resultado.All(v => v != null) &&
+                resultado.All(v => ids.Contains(v.timeId, StringComparer.Ordinal)) &&
+                resultado.Select(v => v.timeId).Distinct(StringComparer.Ordinal).Count() == ids.Count,
+                "Conclua o sorteio de todos os times antes de salvar. O resultado não pode repetir ou omitir equipes.");
+            var porTime = resultado.ToDictionary(v => v.timeId, StringComparer.Ordinal);
+            var nova = new DadosCapitaesConvidados
+            {
+                semente = semente,
+                capitaoExtra = capitaoExtra,
+                times = new List<string>(ids),
+                vinculosManuais = ManuaisOrdenados(manuais),
+                salvoEmUtc = DateTime.UtcNow.ToString("o", System.Globalization.CultureInfo.InvariantCulture),
+                atribuicoes = ids.Select(id => new RegistroCapitaoConvidado
+                {
+                    timeId = id,
+                    capitaoId = porTime[id].capitaoId,
+                    nomeCapitao = porTime[id].nomeCapitao,
+                    overall = porTime[id].overall
+                }).ToList()
+            };
+            ValidarDados(nova, ids, catalogo, manuais, semente, capitaoExtra);
+            if (!File.Exists(CaminhoArquivo) && possuiResultadosExistentes)
+                throw new InvalidOperationException("Há resultados sem o sorteio salvo dos capitães. Preserve os arquivos e use Nova temporada.");
+            Directory.CreateDirectory(Pasta);
+            using (var trava = new FileStream(Path.Combine(Pasta, "capitaes_convidados.lock"), FileMode.OpenOrCreate,
+                FileAccess.ReadWrite, FileShare.None))
+            {
+                if (File.Exists(CaminhoArquivo))
+                {
+                    DadosCapitaesConvidados salva;
+                    try { salva = serializador.DeJson(File.ReadAllText(CaminhoArquivo, Encoding.UTF8)); }
+                    catch (Exception erro)
+                    { throw new InvalidDataException("O sorteio salvo dos capitães não pôde ser lido. O arquivo foi preservado.", erro); }
+                    ValidarDados(salva, ids, catalogo, manuais, semente, capitaoExtra);
+                    Exigir(MesmoSorteio(nova, salva),
+                        "Já existe outro sorteio salvo para esta temporada. Preserve os arquivos e use Nova temporada.");
+                    return salva;
+                }
+                if (possuiResultadosExistentes)
+                    throw new InvalidOperationException("Há resultados sem o sorteio salvo dos capitães. Use Nova temporada.");
+                string json = serializador.ParaJson(nova);
+                if (string.IsNullOrWhiteSpace(json)) throw new InvalidDataException("O serializador não produziu o sorteio dos capitães.");
+                DadosCapitaesConvidados recarregada = serializador.DeJson(json);
+                ValidarDados(recarregada, ids, catalogo, manuais, semente, capitaoExtra);
+                Exigir(MesmoSorteio(nova, recarregada), "O serializador alterou os capitães atribuídos aos times.");
+                GravarNovoArquivo(json);
+                return nova;
+            }
+        }
+
         public static void ValidarConfiguracao(IEnumerable<string> times, IList<CapitaoConvidado> catalogo,
             IList<VinculoCapitaoConvidado> manuais)
         {

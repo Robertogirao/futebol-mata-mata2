@@ -1,0 +1,2 @@
+PASS 563 captain-draw UI layout, assignment, clock and cancellation assertions using actual sources.
+Unity UI/TMP API facade; native rendering was not executed.

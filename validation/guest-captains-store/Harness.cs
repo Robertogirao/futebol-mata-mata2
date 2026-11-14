@@ -50,6 +50,19 @@ public static class GuestCaptainStoreHarness
     { return string.Join("|", value.atribuicoes.Select(v => v.timeId + ":" + v.capitaoId + ":" + v.overall).ToArray()); }
     private static RepositorioCapitaesConvidados Repository(string folder, ISerializadorCapitaesConvidados serializer = null)
     { return new RepositorioCapitaesConvidados(Path.Combine(root, folder), serializer ?? codec); }
+    private static List<RegistroCapitaoConvidado> ArrivalResults(List<string> teams, List<CapitaoConvidado> captains)
+    {
+        return teams.Select((team, i) => new RegistroCapitaoConvidado
+        {
+            timeId = team, capitaoId = captains[i].Identificador,
+            nomeCapitao = captains[i].nomeCapitao, overall = captains[i].overall
+        }).Reverse().ToList();
+    }
+    private static List<RegistroCapitaoConvidado> CopyResults(IList<RegistroCapitaoConvidado> results)
+    {
+        return results.Select(v => v == null ? null : new RegistroCapitaoConvidado
+        { timeId = v.timeId, capitaoId = v.capitaoId, nomeCapitao = v.nomeCapitao, overall = v.overall }).ToList();
+    }
 
     private static void AssetIdentity()
     {
@@ -198,13 +211,106 @@ public static class GuestCaptainStoreHarness
         }
     }
 
+    private static void CompletedOnScreenDraw()
+    {
+        foreach (int count in new[] { 2, 10, 16, 20, 32 })
+        {
+            var teams = Teams(count); var captains = Captains(count + 3);
+            var arrivals = ArrivalResults(teams, captains);
+            var manual = new List<VinculoCapitaoConvidado> { Manual(teams[0], captains[0]) };
+            string arrivalOrder = string.Join("|", arrivals.Select(v => v.timeId + ":" + v.capitaoId).ToArray());
+            var repository = Repository("screen_" + count);
+            Check(!File.Exists(repository.CaminhoArquivo), "draw has no saved assignment before it completes");
+            var saved = repository.SalvarSorteio(teams, captains, manual, 531, arrivals, false, false);
+            Check(saved.atribuicoes.Select(v => v.timeId).SequenceEqual(teams), "arrival records normalize to saved team order for " + count);
+            Check(saved.atribuicoes.All(v => arrivals.Any(a => a.timeId == v.timeId && a.capitaoId == v.capitaoId && a.overall == v.overall)), "saved mapping is exactly the displayed draw rather than another seeded assignment");
+            Check(saved.atribuicoes[0].capitaoId == captains[0].Identificador && !saved.capitaoExtra, "completed draw retains reservations and replacement mode");
+            Check(string.Join("|", arrivals.Select(v => v.timeId + ":" + v.capitaoId).ToArray()) == arrivalOrder,
+                "save does not mutate the simulator's arrival order");
+            Check(!ReferenceEquals(saved.atribuicoes[0], arrivals.Last()), "saved records do not alias mutable simulator records");
+            byte[] before = File.ReadAllBytes(repository.CaminhoArquivo);
+            var identical = repository.SalvarSorteio(teams, captains, manual, 531, arrivals.AsEnumerable().Reverse().ToList(), true, false);
+            Check(Signature(identical) == Signature(saved) && File.ReadAllBytes(repository.CaminhoArquivo).SequenceEqual(before),
+                "repeated completion in another arrival order reuses exact file bytes");
+            Check(identical.salvoEmUtc == saved.salvoEmUtc, "idempotent completion preserves its original timestamp");
+            var loaded = repository.CarregarOuCriar(teams, captains, manual, 531, true, false);
+            Check(Signature(loaded) == Signature(saved), "old loader resumes a physically drawn season without rerolling");
+            arrivals[0].nomeCapitao = "Changed after commit";
+            Check(saved.atribuicoes.Last().nomeCapitao != arrivals[0].nomeCapitao && File.ReadAllBytes(repository.CaminhoArquivo).SequenceEqual(before),
+                "later presentation mutations cannot change saved records or bytes");
+            Check(!Directory.GetFiles(repository.Pasta, "*.tmp").Any(), "screen draw commit leaves no temporary file");
+        }
+
+        var ids = Teams(4); var catalog = Captains(7); var result = ArrivalResults(ids, catalog);
+        Action<List<RegistroCapitaoConvidado>>[] invalidResults = {
+            x => x.RemoveAt(0), x => x.Add(x[0]), x => x[0] = null,
+            x => x[0].timeId = x[1].timeId, x => x[0].timeId = "Unknown club",
+            x => x[0].capitaoId = "Unknown captain", x => x[0].capitaoId = x[1].capitaoId,
+            x => x[0].overall++, x => x[0].overall = 0, x => x[0].nomeCapitao = " "
+        };
+        for (int i = 0; i < invalidResults.Length; i++)
+        {
+            var repository = Repository("screen_invalid_" + i); var altered = CopyResults(result);
+            invalidResults[i](altered);
+            Reject(() => repository.SalvarSorteio(ids, catalog, null, 25, altered), "invalid/partial draw result rejected before commit " + i);
+            Check(!File.Exists(repository.CaminhoArquivo), "invalid/partial draw never creates assignment file " + i);
+        }
+        var noResult = Repository("screen_null");
+        Reject(() => noResult.SalvarSorteio(ids, catalog, null, 25, null), "missing draw result cannot commit");
+        Check(!File.Exists(noResult.CaminhoArquivo), "missing draw result leaves no assignment file");
+        var manualMismatch = Repository("screen_manual_conflict");
+        Reject(() => manualMismatch.SalvarSorteio(ids, catalog, new[] { Manual(ids[0], catalog[6]) }, 25, result),
+            "displayed result cannot ignore a reserved captain");
+        Check(!File.Exists(manualMismatch.CaminhoArquivo), "manual conflict leaves no saved assignment");
+
+        var committed = Repository("screen_conflict");
+        var initial = committed.SalvarSorteio(ids, catalog, null, 25, result);
+        byte[] original = File.ReadAllBytes(committed.CaminhoArquivo);
+        var different = CopyResults(result);
+        var captainId = different[0].capitaoId; var name = different[0].nomeCapitao; int rating = different[0].overall;
+        different[0].capitaoId = different[1].capitaoId; different[0].nomeCapitao = different[1].nomeCapitao; different[0].overall = different[1].overall;
+        different[1].capitaoId = captainId; different[1].nomeCapitao = name; different[1].overall = rating;
+        Reject(() => committed.SalvarSorteio(ids, catalog, null, 25, different), "a different valid completion cannot replace a saved draw");
+        Check(File.ReadAllBytes(committed.CaminhoArquivo).SequenceEqual(original), "conflicting draw leaves original bytes intact");
+        Reject(() => committed.SalvarSorteio(ids, catalog, null, 26, result), "completion cannot change a saved seed");
+        Reject(() => committed.SalvarSorteio(ids, catalog, null, 25, result, false, false), "completion cannot change extra-captain rule");
+        Check(File.ReadAllBytes(committed.CaminhoArquivo).SequenceEqual(original), "seed/rule mismatches preserve the saved result");
+        File.WriteAllText(committed.CaminhoArquivo, "broken screen draw");
+        Reject(() => committed.SalvarSorteio(ids, catalog, null, 25, result), "completion cannot repair malformed saved draw by replacement");
+        Check(File.ReadAllText(committed.CaminhoArquivo) == "broken screen draw", "malformed saved draw bytes remain untouched");
+        var broken = codec.DeJson(codec.ParaJson(initial)); broken.atribuicoes[0].overall++;
+        File.WriteAllText(committed.CaminhoArquivo, codec.ParaJson(broken));
+        byte[] invalidSaved = File.ReadAllBytes(committed.CaminhoArquivo);
+        Reject(() => committed.SalvarSorteio(ids, catalog, null, 25, result), "completion refuses invalid existing snapshot");
+        Check(File.ReadAllBytes(committed.CaminhoArquivo).SequenceEqual(invalidSaved), "invalid existing snapshot is preserved");
+
+        var oldSaved = Repository("screen_legacy");
+        var legacy = oldSaved.CarregarOuCriar(ids, catalog, null, 58);
+        byte[] legacyBytes = File.ReadAllBytes(oldSaved.CaminhoArquivo);
+        var reused = oldSaved.SalvarSorteio(ids, catalog, null, 58, CopyResults(legacy.atribuicoes).AsEnumerable().Reverse().ToList(), true);
+        Check(Signature(reused) == Signature(legacy) && File.ReadAllBytes(oldSaved.CaminhoArquivo).SequenceEqual(legacyBytes),
+            "version-one legacy assignment can be safely acknowledged without migration");
+        var absent = Repository("screen_missing_over_results");
+        Reject(() => absent.SalvarSorteio(ids, catalog, null, 25, result, true), "completed draw cannot assign captains over existing results without companion file");
+        Check(!File.Exists(absent.CaminhoArquivo), "history guard does not create a new draw");
+        var tampered = Repository("screen_tampered_serializer", new ChangedRoundTrip());
+        Reject(() => tampered.SalvarSorteio(ids, catalog, null, 25, result), "serializer cannot alter a completed physical draw");
+        Check(!File.Exists(tampered.CaminhoArquivo), "tampered serializer cannot commit");
+        var locked = Repository("screen_writer_lock"); Directory.CreateDirectory(locked.Pasta);
+        using (var stream = new FileStream(Path.Combine(locked.Pasta, "capitaes_convidados.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
+        {
+            bool blocked = false; try { locked.SalvarSorteio(ids, catalog, null, 25, result); } catch (IOException) { blocked = true; }
+            Check(blocked && !File.Exists(locked.CaminhoArquivo), "completed draw respects an active writer lock");
+        }
+    }
+
     public static void Main()
     {
         root = Path.Combine(Path.GetTempPath(), "guest-captain-store-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(root);
         try
         {
-            AssetIdentity(); SizesSeedsAndManualAssignments(); InvalidConfiguration(); PreservationAndCorruption();
+            AssetIdentity(); SizesSeedsAndManualAssignments(); InvalidConfiguration(); PreservationAndCorruption(); CompletedOnScreenDraw();
             Console.WriteLine("PASS " + checks + " guest-captain asset, assignment and real-filesystem persistence assertions.");
             Console.WriteLine("XML serializer injection and minimal asset data adapters; native Unity import/JSON were not executed.");
         }

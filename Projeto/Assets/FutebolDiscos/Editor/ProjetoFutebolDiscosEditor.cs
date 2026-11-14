@@ -220,6 +220,21 @@ namespace FutebolDeDiscos
             int total = P("discosPorTime").intValue + (P("capitaoExtra").boolValue ? 1 : 0);
             EditorGUILayout.HelpBox("Total por time: " + total + " discos. O sorteio dos capitães é salvo com a temporada e se mantém entre Play e Stop. " +
                 "Use Nova temporada para sortear outra combinação. As associações fixas são respeitadas.", MessageType.None);
+
+            Titulo("Sorteio na tela");
+            Campo("mostrarSorteioCapitaes", "Mostrar sorteio antes do campeonato", "As marbles dos capitães passam pelos obstáculos antes da liga ou do mata-mata começar.");
+            using (new EditorGUI.DisabledScope(!P("mostrarSorteioCapitaes").boolValue))
+            {
+                Slider("tempoApresentacaoSorteio", "Apresentação dos participantes (s)", 0f, 10f);
+                Slider("velocidadeSorteio", "Velocidade das marbles no sorteio", .25f, 3f);
+                Slider("intervaloRevelacoesSorteio", "Intervalo entre associações (s)", .05f, 2f);
+                Slider("tempoResultadoSorteio", "Exibição do resultado do sorteio (s)", 0f, 30f);
+                Campo("reexibirSorteioSalvo", "Reexibir sorteio salvo", "Mostra novamente a apresentação com as associações já salvas. Não sorteia outros times.");
+            }
+            EditorGUILayout.HelpBox("A tela mostra uma marble por time preenchido, de 2 a 32, mesmo quando há mais capitães no catálogo. " +
+                "Nos sorteios novos, a passagem pelos obstáculos define as associações aleatórias, respeitando os vínculos fixos. " +
+                "Stop e Play retomam o resultado salvo. Reexibir sorteio salvo mostra SAVED DRAFT sem alterar as associações; " +
+                "use Nova temporada para fazer outro sorteio.", MessageType.None);
         }
 
         private void CarregarCapitaes()

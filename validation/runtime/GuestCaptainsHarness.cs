@@ -78,6 +78,7 @@ public static class GuestCaptainsHarness
             Config.competicaoId = "guest_integration"; Config.temporadaId = season; Config.formato = mode;
             Config.participantes = teams; Config.quantidadeTimes = teams.Count; Config.quantidadeRodadas = 3;
             Config.semente = seed; Config.sortearConfrontos = false; Config.usarCapitaesConvidados = guests;
+            Config.mostrarSorteioCapitaes = false;
             Config.capitaoExtra = extra; Config.catalogoCapitaes = captains; Config.discosPorTime = discs;
             Config.usarForcaDosTimes = teamStrength; Config.forcaChute = 4f;
             Config.duracaoPartida = duration; Config.tempoAbertura = Config.tempoFotos = Config.tempoTransicaoFotos = Config.tempoTabela = Config.intervaloEntrePartidas = 0f;
