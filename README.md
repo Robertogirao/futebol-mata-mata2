@@ -6,7 +6,7 @@ Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados
 
 [**ATUALIZAÇÃO DE ÁUDIO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_AUDIO.zip)
 
-O ZIP contém somente os **10 arquivos alterados/adicionados** em relação ao `BACKUP.part1.rar`, `BACKUP.part2.rar` e `BACKUP.part3.rar` enviados nesta conversa, além das instruções. As músicas e os efeitos já presentes no backup não são duplicados.
+O ZIP contém somente os **13 arquivos alterados/adicionados** em relação ao `BACKUP.part1.rar`, `BACKUP.part2.rar` e `BACKUP.part3.rar` enviados nesta conversa, além das instruções. As músicas e os efeitos já presentes no backup não são duplicados.
 
 Com o Unity fechado, extraia o ZIP e copie a pasta `Assets` sobre a pasta `Assets` do projeto desse backup, aceitando mesclar pastas e substituir os arquivos. O pacote atualiza os scripts e as quatro cenas. Depois abra o projeto no **Unity 6000.4.11f1**.
 
@@ -19,6 +19,7 @@ Com o Unity fechado, extraia o ZIP e copie a pasta `Assets` sobre a pasta `Asset
 
 ## Áudio
 
+- **Toque na bola:** novo efeito original curto, com volume próprio (45% do volume dos efeitos). Toca nos contatos com jogadores e nos chutes, incluindo cobranças. Um intervalo de 0,08 s por atleta evita duplicar o mesmo toque; outro jogador pode tocar logo em seguida. Paredes e contato contínuo sem chute não repetem o efeito.
 - **Apito inicial, apito final e gol:** configurados nas quatro cenas, usando os efeitos de `Assets/APITOS`.
 - **Abertura e prévias:** o som continua por **0,6 segundo** após a apresentação e termina com **fade out de 1,5 segundo**. A transição entre abertura geral e prévia do mata-mata preserva a saída suave.
 - **Música do jogo:** `Warpath`, já incluída no backup, toca em loop durante a partida, em **25% de volume**, com **fade in e fade out de 2 segundos**. Continua no Golden Goal e sai ao encerrar a partida.
@@ -30,7 +31,7 @@ Cancelar uma partida inicia a saída suave da música. Desativar ou destruir a c
 
 ## Verificação
 
-A sintaxe dos 35 scripts C# e as referências dos quatro áudios de partida nas quatro cenas foram verificadas. **Compilação, reprodução e equilíbrio dos volumes em Play Mode ainda precisam ser conferidos no Unity**, que não está instalado no ambiente de edição.
+A sintaxe dos 35 scripts C# e as referências dos cinco áudios de partida nas quatro cenas foram verificadas. **Compilação, reprodução e equilíbrio dos volumes em Play Mode ainda precisam ser conferidos no Unity**, que não está instalado no ambiente de edição.
 
 Confira em cada cena: abertura, início, gol, fim, próximo jogo e cancelamento; no mata-mata, confira também a abertura geral seguida da prévia e o Golden Goal.
 

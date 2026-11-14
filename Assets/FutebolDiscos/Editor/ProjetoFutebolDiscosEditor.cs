@@ -260,6 +260,9 @@ namespace FutebolDeDiscos
                 CampoInterno(dados, "somGol", "Som do gol");
                 CampoInterno(dados, "somApitoInicial", "Apito de início");
                 CampoInterno(dados, "somApitoFinal", "Apito de encerramento");
+                CampoInterno(dados, "somToqueBola", "Som do toque na bola");
+                CampoInterno(dados, "volumeToqueBola", "Volume do toque na bola");
+                CampoInterno(dados, "intervaloSomToqueBola", "Intervalo do mesmo atleta (s)");
                 CampoInterno(dados, "volumeSons", "Volume dos efeitos");
                 CampoInterno(dados, "musicaPartida", "Música durante a partida");
                 CampoInterno(dados, "volumeMusica", "Volume da música");
@@ -287,7 +290,7 @@ namespace FutebolDeDiscos
                 CampoInterno(dados, "somAbertura", "Som das aberturas e prévias");
                 AplicarDadosInternos(dados);
             }
-            EditorGUILayout.HelpBox("Gol e apitos usam os três efeitos escolhidos acima. O som das aberturas e prévias " +
+            EditorGUILayout.HelpBox("Gol, apitos e toque na bola usam os efeitos escolhidos acima. O som das aberturas e prévias " +
                 "é separado e pertence ao tema, compartilhado pelas cenas que usam esse tema.", MessageType.None);
             GoalBannerUI banner = projeto.GetComponent<GoalBannerUI>();
             if (banner != null)

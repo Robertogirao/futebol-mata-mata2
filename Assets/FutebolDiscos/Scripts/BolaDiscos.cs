@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FutebolDeDiscos
@@ -8,6 +9,7 @@ namespace FutebolDeDiscos
         public PartidaDiscos Partida { get; private set; }
         public DiscoAtleta UltimoToque { get; private set; }
         private TrailRenderer rastro;
+        private readonly Dictionary<DiscoAtleta, float> ultimosSonsDeToque = new Dictionary<DiscoAtleta, float>();
         public void Criar(PartidaDiscos partida, float diametro, Sprite sprite, Material material, PhysicsMaterial2D fisica)
         {
             Partida = partida;
@@ -49,16 +51,32 @@ namespace FutebolDeDiscos
             Corpo.interpolation = interpolacao;
             if (simular) Corpo.WakeUp();
             UltimoToque = null;
+            ultimosSonsDeToque.Clear();
             if (rastro != null) rastro.Clear();
         }
-        public void RegistrarToque(DiscoAtleta atleta) { UltimoToque = atleta; }
+        public void RegistrarToque(DiscoAtleta atleta, bool tocarSom = true)
+        {
+            UltimoToque = atleta;
+            if (!tocarSom || atleta == null || Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;
+            UniversalUI ui = UniversalUI.Instance;
+            if (ui == null) return;
+
+            // O chute e a colisão podem chegar no mesmo passo da física.
+            // O intervalo vale por atleta: outro jogador pode tocar logo em seguida.
+            float agora = Time.time;
+            float ultimoSom;
+            if (ultimosSonsDeToque.TryGetValue(atleta, out ultimoSom) &&
+                agora - ultimoSom < Mathf.Max(.02f, ui.intervaloSomToqueBola)) return;
+            if (ui.TocarSomToqueBola()) ultimosSonsDeToque[atleta] = agora;
+        }
         public void LimitarVelocidade(float maximo) { Corpo.linearVelocity = Vector2.ClampMagnitude(Corpo.linearVelocity, maximo); }
-        private void OnCollisionEnter2D(Collision2D collision) { RegistrarContato(collision); }
-        private void OnCollisionStay2D(Collision2D collision) { RegistrarContato(collision); }
-        private void RegistrarContato(Collision2D collision)
+        private void OnCollisionEnter2D(Collision2D collision) { RegistrarContato(collision, true); }
+        private void OnCollisionStay2D(Collision2D collision) { RegistrarContato(collision, false); }
+        private void RegistrarContato(Collision2D collision, bool tocarSom)
         {
             if (Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;
-            DiscoAtleta a = collision.collider.GetComponent<DiscoAtleta>(); if (a != null) RegistrarToque(a);
+            DiscoAtleta a = collision.collider.GetComponent<DiscoAtleta>();
+            if (a != null) RegistrarToque(a, tocarSom);
         }
     }
 }

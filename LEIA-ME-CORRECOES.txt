@@ -5,3 +5,6 @@ Consulte README.md para abrir o projeto, ajustar sons e baixar esta versão.
 A saída suave entre abertura geral e prévia do mata-mata também foi corrigida.
 
 Verificação estática concluída. Compilação e reprodução em Play Mode pendentes no Unity.
+
+Novo: som de toque/chute em todas as quatro cenas, com volume próprio e intervalo por atleta.
+O ZIP Downloads/ATUALIZACAO_AUDIO.zip é cumulativo: inclui 13 arquivos, sem o projeto completo.

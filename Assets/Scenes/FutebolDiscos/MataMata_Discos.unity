@@ -825,6 +825,9 @@ MonoBehaviour:
   volumeMusica: .25
   fadeInMusica: 2
   fadeOutMusica: 2
+  somToqueBola: {fileID: 8300000, guid: b22366d0f19656beb08c0de1acb7ca7d, type: 3}
+  volumeToqueBola: 0.45
+  intervaloSomToqueBola: 0.08
   volumeSons: 0.8
   escudoTimeA: {fileID: 0}
   escudoTimeB: {fileID: 0}

@@ -32,6 +32,11 @@ public class UniversalUI : MonoBehaviour
     public AudioClip somApitoInicial;
     public AudioClip somApitoFinal;
 
+    public AudioClip somToqueBola;
+    [Range(0f, 1f)] public float volumeToqueBola = .45f;
+    [Tooltip("Intervalo mínimo entre sons de toque do mesmo atleta. Evita duplicar chute e colisão.")]
+    [Range(.02f, .25f)] public float intervaloSomToqueBola = .08f;
+
     [Range(0f, 1f)]
     public float volumeSons = 0.8f;
 
@@ -169,6 +174,14 @@ public class UniversalUI : MonoBehaviour
         fonteDeAudio.PlayOneShot(
             clip,
             Mathf.Clamp01(volumeSons));
+    }
+
+    public bool TocarSomToqueBola()
+    {
+        if (!isActiveAndEnabled || !partidaEmAndamento || partidaEncerrando || somToqueBola == null) return false;
+        PrepararAudio();
+        fonteDeAudio.PlayOneShot(somToqueBola, Mathf.Clamp01(volumeSons) * Mathf.Clamp01(volumeToqueBola));
+        return true;
     }
 
     void Update()
