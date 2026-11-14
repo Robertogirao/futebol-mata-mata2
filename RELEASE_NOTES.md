@@ -1,16 +1,15 @@
-Sorteio na tela com marbles dos capitães passando por obstáculos antes da liga ou do mata-mata.
+Correção dos contatos no sorteio de marbles e fotos dos capitães junto aos clubes no chaveamento.
 
-- **CAPTAIN DRAFT** mostra os capitães na pista e os clubes ao lado. As chegadas revelam cada associação e o campeonato começa depois do quadro final.
-- A quantidade acompanha os times preenchidos, de 2 a 32, sem repetir capitães. Catálogos maiores fornecem apenas os personagens necessários; associações fixas continuam reservadas.
-- O resultado completo é salvo antes da primeira partida. Stop/Play conserva os pares; uma interrupção na pista não grava associações parciais.
-- **Sorteio na tela**, no painel de capitães convidados, reúne apresentação inicial, velocidade, intervalo entre revelações e duração do quadro final.
-- Temporadas já salvas são retomadas sem repetir a abertura. Use **Nova temporada** para outro sorteio ou **Reexibir sorteio salvo** para uma apresentação **SAVED DRAFT** com os mesmos pares.
-- O overall não influencia o sorteio e continua afetando apenas o capitão na partida. As cenas e salvamentos anteriores são preservados.
+- A pista tem mais espaço entre obstáculos. Os contatos voltam a ser resolvidos após empurrões entre marbles, evitando que elas fiquem dentro dos pinos.
+- Os pinos permanecem ativos até o fim. Marbles sem progresso recebem um impulso local para se soltar, sem teleporte ou atribuição forçada de time.
+- Marbles que já terminaram aguardam fora da pista e seguem até os cartões dos clubes por um trajeto externo aos obstáculos.
+- O mata-mata mostra o retrato do capitão junto ao escudo, nome e placar do clube, além das prévias e apresentações do campeão. Sem foto, o desenho anterior é mantido.
+- As fotos usam os capitães já associados no sorteio salvo. Nenhum capitão, overall, resultado ou associação existente é sorteado novamente pela atualização.
 
-**Atualizar seu projeto:** [baixe o ZIP do sorteio de marbles](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.2/Atualizacoes/Atualizacao_Sorteio_Marbles_Capitaes.zip). Pare o Play, extraia e copie Assets para seu projeto 2026.11.14.1, aceitando as substituições dos scripts. Salve a cena depois de conferir os controles. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.14.2/Atualizacoes/COMO_APLICAR_SORTEIO_MARBLES.md).
+**Atualizar seu projeto:** [baixe o ZIP de quatro scripts](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.3/Atualizacoes/Atualizacao_Pinos_Fotos_Capitaes.zip). Pare o Play, extraia e copie Assets para seu projeto 2026.11.14.2, aceitando as substituições. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.14.3/Atualizacoes/COMO_APLICAR_PINOS_E_FOTOS.md).
 
-**Já existe um sorteio salvo?** Para ver uma nova distribuição na tela, use **Nova temporada (preserva as anteriores)**. Marcar **Reexibir sorteio salvo** apenas reapresenta as associações existentes.
+**Não é preciso criar outra temporada.** Para rever a pista atualizada com os mesmos capitães, marque **Reexibir sorteio salvo**. Use **Nova temporada** apenas se quiser uma nova distribuição dos pares.
 
-O projeto completo está em **Source code (zip)** abaixo; abra a pasta **Projeto** no Unity 6000.4.11f1. Esta atualização não substitui cenas, fichas, imagens, sons ou ProjectSettings.
+O projeto completo está em **Source code (zip)** abaixo; abra a pasta **Projeto** no Unity 6000.4.11f1. O ZIP de atualização não substitui cenas, fichas, imagens, sons, arquivos `.meta` ou ProjectSettings.
 
-Passaram 1.116 verificações do motor, 563 da tela, 118 da integração antes do campeonato, 874 da persistência e 161 do painel, além dos testes anteriores. As verificações usam os scripts reais, fachadas das APIs Unity e arquivos salvos reais. A importação, a renderização e a física nativa do Unity não foram executadas neste ambiente.
+Passaram 1.179 verificações do motor, 591 da tela e 2.553 dos retratos no chaveamento, além das suítes anteriores. O defeito de penetração no pino foi reproduzido no código antigo e corrigido no novo. As verificações usam os scripts reais, fachadas das APIs Unity e arquivos salvos reais. A importação, a renderização e a física nativa do Unity não foram executadas neste ambiente.

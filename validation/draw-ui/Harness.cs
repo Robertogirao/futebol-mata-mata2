@@ -12,7 +12,7 @@ public static class DrawUiHarness
 {
     private static int checks;
     private static void Check(bool condition, string message) { checks++; if (!condition) throw new Exception(message); }
-    private static object Field(object obj,string name) { return obj.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).GetValue(obj); }
+    private static object Field(object obj,string name) { return obj.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public).GetValue(obj); }
     private static void Call(object obj,string name) { obj.GetType().GetMethod(name,BindingFlags.Instance|BindingFlags.NonPublic).Invoke(obj,null); }
     private static void Clean()
     {
@@ -108,9 +108,67 @@ public static class DrawUiHarness
         Check(!teams.Any(t=>t.escudoOuBandeira.destroyed)&&!caps.Any(c=>c.foto.destroyed),"cancellation leaves supplied assets intact");
         Check(Debug.Errors.Count==0,"UI emits no runtime errors");Clean();
     }
+    private static void FinishedMarblesStayOutsideTheCourse()
+    {
+        foreach(int count in new[]{10,16,20,32})
+        {
+            Clean();var teams=Teams(count);var caps=Captains(count);
+            var motor=new MotorSorteioCapitaes(teams,caps,null,9041+count);
+            var go=new GameObject("Arrival route fixture");var ui=go.AddComponent<SorteioCapitaesUI>();
+            // A fast course and deliberately slow reveal queue keep many finished
+            // marbles waiting together. Check rendered positions at every frame,
+            // rather than checking the simulation's already-finished positions.
+            Time.captureDeltaTime=.1f;Time.unscaledDeltaTime=0f;Time.timeScale=0f;
+            IEnumerator e=ui.Exibir(motor,teams,caps,null,.1f,3f,2f);
+            Check(e.MoveNext(),"arrival regression creates its initial frame for "+count);
+            RectTransform stage=ui.GetComponentsInChildren<RectTransform>(true).Single(r=>r.gameObject.name=="Obstacle Stage");
+            float left=stage.anchoredPosition.x,top=-stage.anchoredPosition.y;
+            float right=left+stage.sizeDelta.x,bottom=top+stage.sizeDelta.y;
+            float footerTop=-Text(ui,"Arena Footer").rectTransform.anchoredPosition.y;
+            bool sawQueue=false,sawFlight=false,queueOutside=true,flightOutside=true,queueClear=true;
+            string firstBad="";int frames=0;
+            while(e.MoveNext())
+            {
+                if(++frames>1800)throw new Exception("Arrival regression did not finish for "+count);
+                var waiting=new List<Vector3>();
+                foreach(object view in (IEnumerable)Field(ui,"marbles"))
+                {
+                    var state=(MotorSorteioCapitaes.MarbleState)Field(view,"estado");
+                    var area=(RectTransform)Field(view,"area");
+                    if(!state.Concluida||!area.gameObject.activeInHierarchy)continue;
+                    bool flight=(bool)Field(view,"revelada");
+                    float x=area.anchoredPosition.x,y=-area.anchoredPosition.y;
+                    if(ReferenceEquals(area.parent,stage)){x+=left;y+=top;}
+                    float radius=state.Raio*area.localScale.x;
+                    bool outside=x+radius<=left+.01f||x-radius>=right-.01f||y+radius<=top+.01f||y-radius>=bottom-.01f;
+                    if(!outside&&firstBad.Length==0)firstBad=state.Capitao.Identificador+" frame="+frames+" center="+x+","+y+" radius="+radius;
+                    if(flight){sawFlight=true;flightOutside&=outside;}
+                    else
+                    {
+                        sawQueue=true;queueOutside&=outside;
+                        queueClear&=x-radius>=left-.01f&&x+radius<=right+.01f&&y-radius>=bottom-.01f&&y+radius<footerTop;
+                        waiting.Add(new Vector3(x,y,radius));
+                    }
+                }
+                for(int i=0;i<waiting.Count;i++)for(int j=i+1;j<waiting.Count;j++)
+                {
+                    float dx=waiting[i].x-waiting[j].x,dy=waiting[i].y-waiting[j].y;
+                    float minimum=waiting[i].z+waiting[j].z;
+                    queueClear&=dx*dx+dy*dy>=minimum*minimum-.01f;
+                }
+            }
+            Check(sawQueue,"slow reveals exercise a visible finished-marble queue for "+count);
+            Check(sawFlight,"assignment flights are inspected for "+count);
+            Check(queueOutside,"finished marbles never return to the obstacle chamber while queued: "+firstBad);
+            Check(flightOutside,"assignment flights remain outside the obstacle chamber at every frame: "+firstBad);
+            Check(queueClear,"arrival thumbnails do not overlap, overflow the gate or cover its caption at count "+count);
+            Check(ui.Concluido&&ui.QuantidadeRevelada==count,"outside-course routing still completes every club assignment at count "+count);
+            Clean();
+        }
+    }
     public static void Main()
     {
-        try{CountsAndIdentity();ReplayAndCancellation();Console.WriteLine("PASS "+checks+" captain-draw UI layout, assignment, clock and cancellation assertions using actual sources.");Console.WriteLine("Unity UI/TMP API facade; native rendering was not executed.");}
+        try{CountsAndIdentity();ReplayAndCancellation();FinishedMarblesStayOutsideTheCourse();Console.WriteLine("PASS "+checks+" captain-draw UI layout, assignment, clock and cancellation assertions using actual sources.");Console.WriteLine("Unity UI/TMP API facade; native rendering was not executed.");}
         finally{Clean();}
     }
 }

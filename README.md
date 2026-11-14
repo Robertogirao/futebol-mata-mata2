@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.2.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.2)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.3)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -21,6 +21,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 **Capitães convidados:** [baixe a atualização com as duas novas cenas](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.1/Atualizacoes/Atualizacao_Capitaes_Convidados.zip) · [guia para cadastrar personagens, definir overall e sortear os times](Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
 
 **Sorteio das marbles antes do campeonato:** [baixe a atualização](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.2/Atualizacoes/Atualizacao_Sorteio_Marbles_Capitaes.zip) · [guia de instalação, controles e temporadas salvas](Atualizacoes/COMO_APLICAR_SORTEIO_MARBLES.md).
+
+**Pinos do sorteio e fotos no chaveamento:** [baixe a correção](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.3/Atualizacoes/Atualizacao_Pinos_Fotos_Capitaes.zip) · [instruções de instalação e uso](Atualizacoes/COMO_APLICAR_PINOS_E_FOTOS.md).
 
 ## Abrir o projeto
 
@@ -63,6 +65,10 @@ Os controles ficam em **FutebolDiscos_Manager > Projeto Futebol Discos > Capitã
 **Já existe um sorteio salvo na temporada?** Por padrão, ele é retomado sem repetir a abertura. Use **Nova temporada (preserva as anteriores)** para fazer um novo sorteio. Para apenas assistir às associações existentes, marque **Reexibir sorteio salvo**: a tela indica **SAVED DRAFT** e conserva os capitães e resultados.
 
 As associações são salvas quando todas foram reveladas, antes do resumo e da primeira partida. Interromper no meio da pista não grava um sorteio parcial; o próximo Play recomeça a apresentação com a semente da mesma temporada.
+
+Os obstáculos agora têm mais espaço de passagem, e a resolução dos contatos impede que um empurrão entre marbles as deixe dentro dos pinos. Os pinos permanecem ativos até o fim. Marbles sem progresso recebem um impulso para voltar a se mover; não são teleportadas para a chegada. Após cruzarem a linha, aguardam fora da pista e seguem até os cartões dos clubes por um trajeto externo aos obstáculos.
+
+No mata-mata com convidados, o chaveamento mostra a foto do capitão ao lado do escudo, nome e placar do clube. A prévia do confronto e as apresentações do campeão também usam a foto do capitão já associado àquele time. Sem foto cadastrada, o desenho anterior é mantido. Essa exibição não faz outro sorteio e não exige criar uma temporada nova.
 
 ## Formatos e controles
 

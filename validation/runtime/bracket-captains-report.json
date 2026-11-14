@@ -1,0 +1,27 @@
+{
+  "assertions": 2553,
+  "actual_game_sources": true,
+  "saved_captain_assignments": true,
+  "bracket_sizes": [
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "portraits_in_overview_preview_and_champion": true,
+  "original_no_photo_layout_preserved": true,
+  "native_unity_rendering_executed": false,
+  "result": "pass",
+  "version": "2026.11.14.3",
+  "simulation_assertions": 1179,
+  "draw_view_assertions": 591,
+  "old_pin_penetration_reproduced": true,
+  "patch_scripts": 4,
+  "patch_bytes": 34691,
+  "patch_sha256": "6e19e7aa7308acce7b067db0d5721fd0cf8f1b1648adca49e1814424df7479db",
+  "source_files": 1285,
+  "duplicate_asset_guids": 0,
+  "save_schema_changed": false,
+  "existing_scenes_unchanged": true
+}

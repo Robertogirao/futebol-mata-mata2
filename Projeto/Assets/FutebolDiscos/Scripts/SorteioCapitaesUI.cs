@@ -21,7 +21,7 @@ namespace FutebolDeDiscos
             public MotorSorteioCapitaes.MarbleState estado;
             public RectTransform area;
             public TextMeshProUGUI nome;
-            public bool revelada;
+            public bool revelada, naChegada;
         }
         private sealed class TeamView
         {
@@ -43,7 +43,7 @@ namespace FutebolDeDiscos
             public MarbleView marble;
             public TeamView equipe;
             public Vector2 inicio;
-            public float tempo;
+            public float tempo, duracao, distanciaHorizontal, distanciaVertical, distanciaFinal;
         }
 
         private Canvas canvas;
@@ -201,7 +201,7 @@ namespace FutebolDeDiscos
             luzGate = Caixa(raiz, "Arrival Gate Glow", PistaX, PistaY + 620f, 1080f, 4f, acento).GetComponent<Image>();
             for (int i = 0; i < 36; i++)
                 if (i % 2 == 0) Caixa(raiz, "Arrival Checker", PistaX + i * 30f, PistaY + 626f, 30f, 9f, Alpha(Color.white, .55f));
-            rodape = Texto(raiz, "Arena Footer", "ALL CAPTAINS ENTER THE DRAW TOGETHER", PistaX + 20f, PistaY + 647f, 1040f, 25f, 18f, fonteTexto, acento, TextAlignmentOptions.Center);
+            rodape = Texto(raiz, "Arena Footer", "ALL CAPTAINS ENTER THE DRAW TOGETHER", PistaX + 20f, PistaY + 679f, 1040f, 20f, 16f, fonteTexto, acento, TextAlignmentOptions.Center);
             CriarEquipes(times);
             foreach (MotorSorteioCapitaes.ObstacleState obstaculo in motor.Obstacles)
             {
@@ -285,6 +285,15 @@ namespace FutebolDeDiscos
             MarbleView marble = marblePorId[registro.capitaoId];
             TeamView equipe = equipePorId[registro.timeId];
             marble.revelada = true;
+            if (!marble.naChegada)
+            {
+                // A just-finished marble may not have had a rendered queue frame.
+                // Its assignment animation starts below the finish, never inside
+                // the obstacle chamber at the previous physics frame's position.
+                marble.area.anchoredPosition = new Vector2(marble.estado.Posicao.x, -650f);
+                marble.area.localScale = Vector3.one * .55f;
+                marble.naChegada = true;
+            }
             Vector2 inicio = new Vector2(PistaX + marble.area.anchoredPosition.x, PistaY - marble.area.anchoredPosition.y);
             marble.area.SetParent(raiz, false);
             marble.area.anchorMin = marble.area.anchorMax = new Vector2(0f, 1f);
@@ -294,7 +303,12 @@ namespace FutebolDeDiscos
             equipe.nomeCapitao.text = marble.estado.Capitao.nomeCapitao;
             equipe.nomeCapitao.color = acento;
             equipe.brilho = 1f;
-            voos.Add(new Flight { marble = marble, equipe = equipe, inicio = inicio });
+            float horizontal = Mathf.Abs(1195f - inicio.x);
+            float vertical = Mathf.Abs(equipe.destino.y - inicio.y);
+            float final = Mathf.Abs(equipe.destino.x - 1195f);
+            voos.Add(new Flight { marble = marble, equipe = equipe, inicio = inicio,
+                distanciaHorizontal = horizontal, distanciaVertical = vertical, distanciaFinal = final,
+                duracao = Mathf.Clamp((horizontal + vertical + final) / 1600f, .65f, 1.5f) });
             anuncio.text = Nome(marble.estado.Capitao.nomeCapitao) + "  →  " + Nome(equipe.equipe.nomeEquipe) + (marble.estado.Fixa ? "  /  LOCKED" : "");
             contador.text = (QuantidadeRevelada + 1) + " / " + equipePorId.Count;
             progresso.fillAmount = (QuantidadeRevelada + 1f) / equipePorId.Count;
@@ -328,8 +342,12 @@ namespace FutebolDeDiscos
                 Vector2 p = view.estado.Posicao;
                 if (view.estado.Concluida)
                 {
-                    // Completed marbles wait visibly in the arrival bay until their reveal.
-                    p = new Vector2(24f + (espera % 23) * 45f, 596f - (espera / 23) * 45f);
+                    // The arrival queue is outside the collision chamber. Keeping
+                    // completed portraits among live pins made them appear to pass
+                    // through obstacles while awaiting their assignment animation.
+                    p = new Vector2(18f + espera * 33.5f, 650f);
+                    view.naChegada = true;
+                    view.area.localScale = Vector3.one * .55f;
                     espera++;
                 }
                 view.area.anchoredPosition = new Vector2(p.x, -p.y);
@@ -348,12 +366,20 @@ namespace FutebolDeDiscos
             {
                 Flight voo = voos[i];
                 voo.tempo += dt;
-                float t = Mathf.Clamp01(voo.tempo / .58f);
+                float t = Mathf.Clamp01(voo.tempo / voo.duracao);
                 float suave = t * t * (3f - 2f * t);
-                Vector2 p = Vector2.Lerp(voo.inicio, voo.equipe.destino, suave);
-                p.y -= Mathf.Sin(t * Mathf.PI) * 86f;
+                float percurso = suave * (voo.distanciaHorizontal + voo.distanciaVertical + voo.distanciaFinal);
+                Vector2 canto = new Vector2(1195f, voo.inicio.y);
+                Vector2 coluna = new Vector2(1195f, voo.equipe.destino.y);
+                Vector2 p;
+                if (percurso < voo.distanciaHorizontal)
+                    p = Vector2.Lerp(voo.inicio, canto, percurso / Mathf.Max(.001f, voo.distanciaHorizontal));
+                else if (percurso < voo.distanciaHorizontal + voo.distanciaVertical)
+                    p = Vector2.Lerp(canto, coluna, (percurso - voo.distanciaHorizontal) / Mathf.Max(.001f, voo.distanciaVertical));
+                else
+                    p = Vector2.Lerp(coluna, voo.equipe.destino, (percurso - voo.distanciaHorizontal - voo.distanciaVertical) / Mathf.Max(.001f, voo.distanciaFinal));
                 voo.marble.area.anchoredPosition = new Vector2(p.x, -p.y);
-                float escala = Mathf.Lerp(1f, voo.equipe.tamanhoFoto / (voo.marble.estado.Raio * 2f), suave);
+                float escala = Mathf.Lerp(.55f, voo.equipe.tamanhoFoto / (voo.marble.estado.Raio * 2f), suave);
                 voo.marble.area.localScale = Vector3.one * escala;
                 if (t >= 1f)
                 {

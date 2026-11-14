@@ -5,18 +5,5 @@
   "live_simulation_result_persisted": true,
   "saved_replay_immutable": true,
   "native_unity_executed": false,
-  "result": "pass",
-  "version": "2026.11.14.2",
-  "simulation_assertions": 1116,
-  "view_assertions": 563,
-  "assignment_store_assertions": 874,
-  "central_editor_assertions": 161,
-  "patch_scripts": 5,
-  "patch_new_meta": 2,
-  "patch_bytes": 33040,
-  "patch_sha256": "5592df8dd81bad17440b3ee60a83aea276a6853353406cea0858ad9b254b7f90",
-  "source_files": 1285,
-  "duplicate_asset_guids": 0,
-  "save_schema_changed": false,
-  "existing_scenes_unchanged": true
+  "result": "pass"
 }

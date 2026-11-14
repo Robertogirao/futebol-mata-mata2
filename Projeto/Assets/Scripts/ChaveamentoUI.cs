@@ -29,6 +29,8 @@ public sealed class ChaveamentoUI : MonoBehaviour
         public string nome;
         public string sigla;
         public Sprite escudo;
+        public Sprite fotoCapitao;
+        public string nomeCapitao;
     }
 
     private sealed class JogoVista
@@ -77,6 +79,7 @@ public sealed class ChaveamentoUI : MonoBehaviour
     }
 
     private RoteiroTransmissaoDiscos roteiro = new RoteiroTransmissaoDiscos();
+    private Func<TeamData, CapitaoConvidado> resolverCapitao;
     private readonly List<Holograma> hologramas = new List<Holograma>();
     private RectTransform painelSuperior, painelInferior, nucleoArena;
     private CanvasGroup grupoNucleoCortina;
@@ -85,6 +88,12 @@ public sealed class ChaveamentoUI : MonoBehaviour
     public void ConfigurarRoteiro(RoteiroTransmissaoDiscos novo)
     {
         roteiro = novo ?? new RoteiroTransmissaoDiscos();
+    }
+
+    /// <summary>Resolve the already assigned captain; the bracket never draws another one.</summary>
+    public void ConfigurarCapitaes(Func<TeamData, CapitaoConvidado> resolver)
+    {
+        resolverCapitao = resolver;
     }
 
     private Canvas canvas;
@@ -351,11 +360,14 @@ public sealed class ChaveamentoUI : MonoBehaviour
         foreach (TeamData time in times)
         {
             if (time == null) continue;
+            CapitaoConvidado capitao = resolverCapitao != null ? resolverCapitao(time) : null;
             var vista = new EquipeVista
             {
                 nome = Limpar(time.nomeEquipe, Limpar(time.name, "TEAM")),
                 sigla = Limpar(time.sigla, Abreviar(time.nomeEquipe)),
-                escudo = time.escudoOuBandeira
+                escudo = time.escudoOuBandeira,
+                fotoCapitao = capitao != null ? capitao.foto : null,
+                nomeCapitao = capitao != null ? Limpar(capitao.nomeCapitao, "CAPTAIN") : null
             };
             string id = (time.name ?? string.Empty).Trim();
             if (!equipes.ContainsKey(id)) equipes.Add(id, vista);
@@ -613,8 +625,14 @@ public sealed class ChaveamentoUI : MonoBehaviour
             EquipeVista vencedor = ObterEquipe(campeao);
             if (vencedor != null)
             {
-                SpriteNoQuadro("EscudoCampeaoResumo", quadro, new Vector2(0f, -215f),
-                    new Vector2(colunas >= 4 ? 108f : 132f, colunas >= 4 ? 108f : 132f), vencedor.escudo);
+                float tamanhoResumo = colunas >= 4 ? 108f : 132f;
+                bool fotoResumo = vencedor.fotoCapitao != null;
+                if (fotoResumo) tamanhoResumo *= .7f;
+                SpriteNoQuadro("EscudoCampeaoResumo", quadro, new Vector2(fotoResumo ? -tamanhoResumo * .6f : 0f, -215f),
+                    new Vector2(tamanhoResumo, tamanhoResumo), vencedor.escudo);
+                if (fotoResumo)
+                    RetratoCapitao("FotoCapitaoCampeaoResumo", quadro, new Vector2(tamanhoResumo * .6f, -215f),
+                        tamanhoResumo, vencedor.fotoCapitao, Color.white);
                 Texto("CampeaoResumo", quadro, new Vector2(0f, colunas >= 4 ? -310f : -326f),
                     new Vector2(larguraCentro, 68f), colunas >= 3 ? vencedor.sigla : vencedor.nome,
                     28f, acento, true, TextAlignmentOptions.Center, 18f, true);
@@ -710,6 +728,14 @@ public sealed class ChaveamentoUI : MonoBehaviour
         imagem.color = perdeu ? ComAlpha(Color.white, 0.42f) : Color.white;
         bool possuiEscudo = equipe != null && equipe.escudo != null;
         float inicioNome = -largura * 0.5f + margem + (possuiEscudo ? escudo + 8f : 2f);
+        if (!vazia && equipe != null && equipe.fotoCapitao != null)
+        {
+            float foto = Mathf.Min(escudo, compacto ? 26f : 58f);
+            float xFoto = -largura * .5f + margem + (possuiEscudo ? escudo + 6f : 0f) + foto * .5f;
+            RetratoCapitao("FotoCapitao", linha, new Vector2(xFoto, 0f), foto, equipe.fotoCapitao,
+                perdeu ? ComAlpha(Color.white, .42f) : Color.white);
+            inicioNome = xFoto + foto * .5f + 6f;
+        }
         float larguraPlacar = compacto ? 27f : 48f;
         float finalNome = largura * 0.5f - larguraPlacar - 7f;
         string nome = vazia ? (resolvida ? "BYE" : "TBD") : compacto ? equipe.sigla : equipe.nome;
@@ -769,14 +795,23 @@ public sealed class ChaveamentoUI : MonoBehaviour
         }
         RectTransform scanner = Caixa("ScannerHolograma", placa, new Vector2(0f, 190f), new Vector2(590f, 3f));
         Image brilho = Imagem(scanner, ComAlpha(acento, .75f));
-        SpriteNoQuadro("EscudoDestaque", placa, new Vector2(0f, 36f), new Vector2(220f, 220f),
+        bool fotoCapitao = equipe != null && equipe.fotoCapitao != null;
+        float xEscudo = fotoCapitao ? -137f : 0f;
+        float tamanhoEscudo = fotoCapitao ? 170f : 220f;
+        SpriteNoQuadro("EscudoDestaque", placa, new Vector2(xEscudo, 36f), new Vector2(tamanhoEscudo, tamanhoEscudo),
             equipe != null ? equipe.escudo : null);
-        Texto("NomeDestaque", placa, new Vector2(0f, -144f), new Vector2(590f, 100f),
+        if (fotoCapitao)
+        {
+            RetratoCapitao("FotoCapitaoDestaque", placa, new Vector2(132f, 36f), 192f, equipe.fotoCapitao, Color.white);
+            Texto("NomeCapitaoDestaque", placa, new Vector2(0f, -94f), new Vector2(570f, 32f),
+                "CAPTAIN  ·  " + equipe.nomeCapitao, 24f, acento, false, TextAlignmentOptions.Center, 16f);
+        }
+        Texto("NomeDestaque", placa, new Vector2(0f, fotoCapitao ? -164f : -144f), new Vector2(590f, fotoCapitao ? 80f : 100f),
             equipe != null ? equipe.nome : resolvida ? "BYE" : "TBD", 53f, texto, true,
             TextAlignmentOptions.Center, 26f, true);
         if (equipe != null && equipe.escudo == null)
-            Texto("SiglaDestaque", placa, new Vector2(0f, 36f), new Vector2(350f, 150f),
-                equipe.sigla, 79f, acento, true, TextAlignmentOptions.Center, 39f);
+            Texto("SiglaDestaque", placa, new Vector2(xEscudo, 36f), new Vector2(fotoCapitao ? 190f : 350f, 150f),
+                equipe.sigla, fotoCapitao ? 59f : 79f, acento, true, TextAlignmentOptions.Center, fotoCapitao ? 29f : 39f);
         hologramas.Add(new Holograma
         {
             rect = placa, scanner = scanner, grupo = grupo, brilho = brilho, origem = placa.anchoredPosition,
@@ -802,11 +837,20 @@ public sealed class ChaveamentoUI : MonoBehaviour
         Trofeu(destaque, new Vector2(0f, 299f), 0.68f, trofeuCompeticao);
         Texto("TituloCampeao", destaque, new Vector2(0f, 208f), new Vector2(1400f, 80f),
             RoteiroTransmissaoDiscos.Texto(roteiro.tituloCampeao), 66f, acento, true);
-        SpriteNoQuadro("EscudoCampeao", destaque, new Vector2(0f, 15f), new Vector2(260f, 260f), equipe.escudo);
+        bool fotoCapitao = equipe.fotoCapitao != null;
+        float xEscudo = fotoCapitao ? -142f : 0f;
+        float tamanhoEscudo = fotoCapitao ? 220f : 260f;
+        SpriteNoQuadro("EscudoCampeao", destaque, new Vector2(xEscudo, 15f), new Vector2(tamanhoEscudo, tamanhoEscudo), equipe.escudo);
+        if (fotoCapitao)
+        {
+            RetratoCapitao("FotoCapitaoCampeao", destaque, new Vector2(142f, 15f), 210f, equipe.fotoCapitao, Color.white);
+            Texto("NomeCapitaoCampeao", destaque, new Vector2(0f, -132f), new Vector2(1300f, 32f),
+                "CAPTAIN  ·  " + equipe.nomeCapitao, 25f, acento, false, TextAlignmentOptions.Center, 16f);
+        }
         if (equipe.escudo == null)
-            Texto("SiglaCampeao", destaque, new Vector2(0f, 15f), new Vector2(1000f, 180f),
+            Texto("SiglaCampeao", destaque, new Vector2(xEscudo, 15f), new Vector2(fotoCapitao ? 240f : 1000f, 180f),
                 equipe.sigla, 100f, acento, true, TextAlignmentOptions.Center, 48f);
-        Texto("NomeCampeao", destaque, new Vector2(0f, -194f), new Vector2(1580f, 140f),
+        Texto("NomeCampeao", destaque, new Vector2(0f, fotoCapitao ? -215f : -194f), new Vector2(1580f, fotoCapitao ? 108f : 140f),
             equipe.nome, 78f, texto, true, TextAlignmentOptions.Center, 32f, true);
         Texto("LegendaCampeao", destaque, new Vector2(0f, -321f), new Vector2(1400f, 55f),
             RoteiroTransmissaoDiscos.Texto(roteiro.legendaCampeao), 30f, acento, true);
@@ -996,6 +1040,15 @@ public sealed class ChaveamentoUI : MonoBehaviour
         imagem.preserveAspect = true;
         imagem.enabled = sprite != null;
         return imagem;
+    }
+
+    private Image RetratoCapitao(string nome, Transform pai, Vector2 posicao, float tamanho, Sprite sprite, Color cor)
+    {
+        RectTransform borda = Caixa(nome + "Moldura", pai, posicao, new Vector2(tamanho + 2f, tamanho + 2f));
+        Imagem(borda, ComAlpha(acento, cor.a * .75f));
+        Image retrato = SpriteNoQuadro(nome, borda, Vector2.zero, new Vector2(tamanho, tamanho), sprite);
+        retrato.color = cor;
+        return retrato;
     }
 
     private TextMeshProUGUI Texto(string nome, Transform pai, Vector2 posicao, Vector2 tamanho,

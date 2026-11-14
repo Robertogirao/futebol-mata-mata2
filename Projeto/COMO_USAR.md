@@ -127,6 +127,8 @@ O overall individual afeta somente a velocidade, potência e precisão dos chute
 
 O convidado usa a foto e a legenda **CAPTAIN** na abertura, e nome/foto ao marcar. Os demais gols usam o nome do jogador de futebol e o escudo/bandeira. Sem foto cadastrada, o capitão usa o escudo/bandeira como alternativa.
 
+No mata-mata, a foto do capitão convidado também aparece junto ao clube no chaveamento, na prévia do confronto e nas apresentações do campeão. A imagem vem da ficha do capitão associado àquele time no sorteio salvo. Sem foto cadastrada, o chaveamento conserva o desenho anterior, sem reservar um retrato vazio. Não é necessário cadastrar novamente os capitães nem criar outra temporada para mostrar essas fotos.
+
 O sorteio é salvo em `capitaes_convidados.json` na pasta da temporada, antes das partidas. Stop/Play mantém o mesmo capitão em cada time. Use **Nova temporada** para mudar as associações, o overall usado ou a regra de disco extra, mantendo os arquivos anteriores. Nome e foto são ajustes visuais e podem ser alterados sem trocar o sorteio. Veja [o guia completo da atualização](../Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
 
 ### Sorteio na tela antes do campeonato
@@ -134,6 +136,10 @@ O sorteio é salvo em `capitaes_convidados.json` na pasta da temporada, antes da
 Em **Capitães convidados > Sorteio na tela**, mantenha **Mostrar sorteio antes do campeonato** marcado para apresentar as marbles antes de uma temporada nova da liga ou do mata-mata. Os capitães passam por pinos, rampas e obstáculos giratórios; as chegadas revelam os clubes atribuídos. Depois do quadro final, o campeonato começa automaticamente.
 
 A quantidade de marbles é a quantidade de times preenchidos, de 2 a 32. Uma liga com 10 ou 20 times mostra 10 ou 20 capitães. Folgas de uma chave não criam marbles adicionais. Se houver mais personagens no catálogo, são escolhidos apenas os necessários. Cada capitão e cada time aparecem uma vez; **Associações fixas (opcional)** continuam reservando os pares configurados. O overall do personagem não influencia o sorteio.
+
+Ao chegar, uma marble recebe um dos clubes ainda disponíveis na distribuição aleatória; uma associação manual reservada tem prioridade. Depois de salvo, esse capitão fica no mesmo clube durante toda a temporada, inclusive após Stop/Play e ao avançar de fase. A foto no chaveamento usa essa mesma associação.
+
+A pista possui folga entre pinos, rampas e obstáculos giratórios. Os contatos são resolvidos também após os empurrões entre marbles, e os pinos permanecem ativos até o fim. Uma marble sem progresso pode receber um impulso local para se soltar, sem teleporte ou atribuição forçada de clube. Depois de cruzar a chegada, a espera e o trajeto até o cartão do time ficam fora da área dos obstáculos.
 
 | Controle | Padrão | Função |
 | --- | --- | --- |
@@ -144,6 +150,8 @@ A quantidade de marbles é a quantidade de times preenchidos, de 2 a 32. Uma lig
 | Reexibir sorteio salvo | Desmarcado | Reproduz a apresentação com as associações existentes |
 
 **Se você já deu Play nessa temporada, o sorteio salvo é retomado e a apresentação é pulada por padrão.** Para outro sorteio, use **Nova temporada (preserva as anteriores)**. Para apenas rever o resultado existente, marque **Reexibir sorteio salvo**; a tela mostra **SAVED DRAFT**, sem trocar capitães ou resultados.
+
+Uma atualização da pista ou da exibição das fotos não exige outra temporada. Use **Reexibir sorteio salvo** para conferir a pista atualizada conservando os mesmos pares. Crie **Nova temporada** somente quando quiser outra distribuição ou mudar uma regra que faça parte do salvamento.
 
 O arquivo `capitaes_convidados.json` só recebe o sorteio completo, quando todos os pares foram revelados, antes da leitura final e da primeira partida. Se parar durante a pista, não haverá associações parciais gravadas: o próximo Play recomeça a apresentação com a semente já guardada. Se parar após o resultado ter sido salvo, os pares permanecem iguais.
 

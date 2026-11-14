@@ -15,9 +15,10 @@ Os testes C# usam os arquivos reais do projeto e fachadas das APIs Unity/TMP/Edi
 | Capitães e identificação | 87 | Um capitão por time, nomes distintos, tags, foto/bandeira por autor, gols contra e fila de banners |
 | Sorteio e persistência de convidados | 874 | 2–32 times, resultado da pista sem novo sorteio, vínculos fixos, retomada, corrupção e gravação atômica |
 | Capitães convidados na partida | 222 | Liga/mata-mata, foto e autor do gol, disco extra/substituto, overall individual, elenco intacto e retomada de resultados |
-| Motor do sorteio de marbles | 1.116 | Colisões, chegada definindo associações, 30/60 fps, sementes, vínculos fixos e replay salvo |
-| Tela do sorteio | 563 | 2/10/16/20/32 marbles e clubes, retratos, cartões legíveis, Recorder, cancelamento e descarte de recursos |
+| Motor do sorteio de marbles | 1.179 | Colisões contínuas, empurrões sem penetrar pinos, folga dos rotores, desvio local e associações por chegada |
+| Tela do sorteio | 591 | 2/10/16/20/32 marbles e clubes, fila e voos fora da pista, Recorder, cancelamento e recursos |
 | Sorteio antes do campeonato | 118 | Bloqueio das partidas, resultado salvo antes do resumo, interrupção, retomada e erros sem gravação parcial |
+| Retratos no chaveamento | 2.553 | 2–32 vagas, capitão salvo, avanço de fases, prévias, campeão, ausência de foto e espaço para escudo/nome/placar |
 | Posturas e pressão | 572 | Quatro posturas, limites de 0/1/2/3, oportunidades, recuo sem teleporte, vagas de retorno e bloqueio geral |
 | Aberturas e prévias futuristas | 1.588 | Íris vertical, cobertura opaca, captura 30/60 fps, textos, cancelamento, temas e quadros de 2–32 equipes |
 | Controlador completo | 44 | Rodadas automáticas, retomada, tabela final, Golden Goal, falha de escrita e intervalo sem duplicação |

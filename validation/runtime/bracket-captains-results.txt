@@ -1,0 +1,2 @@
+PASS 2553 saved-captain bracket portrait and layout assertions using actual sources.
+Unity UI/TMP API facade; native rendering was not executed.

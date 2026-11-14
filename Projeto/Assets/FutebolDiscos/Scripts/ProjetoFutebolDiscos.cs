@@ -268,6 +268,7 @@ namespace FutebolDeDiscos
             abertura.ConfigurarRoteiro(roteiroTransmissao);
             tabela.ConfigurarRoteiro(roteiroTransmissao);
             GetComponent<ChaveamentoUI>().ConfigurarRoteiro(roteiroTransmissao);
+            GetComponent<ChaveamentoUI>().ConfigurarCapitaes(ObterCapitaoConvidado);
             manager.iniciarAutomaticamente = false;
             manager.simuladorDiscos = partida;
             manager.campeonato = liga;

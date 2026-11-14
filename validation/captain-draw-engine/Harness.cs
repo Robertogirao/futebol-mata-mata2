@@ -133,8 +133,10 @@ public static class Harness
             foreach (var m in engine.Marbles) { m.Posicao = new Vector2(540f + m.Capitao.Identificador.GetHashCode() % 10, 22f); m.Velocidade = Vector2.zero; }
             engine.Avancar(.1f);
         }
-        Check(engine.Obstacles.All(o => !o.Ativo), "final lane visibly opens instead of assigning stuck marbles off-screen");
-        Finish(engine);
+        Check(engine.Obstacles.All(o => o.Ativo), "pins remain solid even during final clearance");
+        float liberadaEm=engine.TempoSimulado;
+        while(!engine.Concluido&&engine.TempoSimulado-liberadaEm<19f)engine.Avancar(1f/60f);
+        Check(engine.Concluido,"a previously obstructed pile finishes after release without disabling the obstacles");
         Check(engine.Marbles.All(m => m.Posicao.y >= MotorSorteioCapitaes.Altura + m.Raio), "final clearance still requires each finish crossing");
         scenario = "invalid inputs and stop-safe clock";
         var two = Teams(2); var caps = Captains(2);
@@ -147,9 +149,101 @@ public static class Harness
         Reject(() => clock.Avancar(-1f), "negative time rejected"); clock.Avancar(0f);
         Check(clock.TempoSimulado == 0f && clock.Resultados.Count == 0, "zero delta does not move or assign");
     }
+    private static float DistanceToSegment(Vector2 p, Vector2 a, Vector2 b)
+    {
+        Vector2 d = b - a;
+        float length = d.x * d.x + d.y * d.y;
+        float t = length < .000001f ? 0f : Math.Max(0f, Math.Min(1f, ((p.x-a.x)*d.x+(p.y-a.y)*d.y)/length));
+        return (p-a-d*t).magnitude;
+    }
+    private static float PinClearance(MotorSorteioCapitaes engine)
+    {
+        float minimum = float.MaxValue;
+        foreach (var m in engine.Marbles.Where(m=>!m.Concluida))
+            foreach (var o in engine.Obstacles.Where(o=>o.Ativo))
+                minimum=Math.Min(minimum,DistanceToSegment(m.Posicao,o.PontoA,o.PontoB)-m.Raio-o.Raio);
+        return minimum;
+    }
+    private static void SolidObstaclesAndClearPassages()
+    {
+        scenario="pair separation must not push a marble inside a pin";
+        var engine=new MotorSorteioCapitaes(Teams(2),Captains(2),null,2);
+        engine.Avancar(.6f);
+        var pin=engine.Obstacles.First(o=>o.Tipo==MotorSorteioCapitaes.TipoObstaculo.Pino);
+        var lower=engine.Marbles[0];var upper=engine.Marbles[1];
+        lower.Posicao=pin.Centro+new Vector2(0f,-lower.Raio-pin.Raio-.02f);
+        upper.Posicao=lower.Posicao+new Vector2(0f,-20f);
+        lower.Velocidade=upper.Velocidade=Vector2.zero;
+        float minimum=float.MaxValue;
+        for(int step=0;step<30;step++){engine.Avancar(MotorSorteioCapitaes.PassoFixo);minimum=Math.Min(minimum,PinClearance(engine));}
+        Check(minimum>=-.05f,"crowded marble-pair corrections leave every pin and ramp solid after every physical step");
+
+        scenario="fast grazing trajectory intersects a pin between frame endpoints";
+        engine=new MotorSorteioCapitaes(Teams(2),Captains(2),null,4);engine.Avancar(.6f);
+        pin=engine.Obstacles.First(o=>o.Tipo==MotorSorteioCapitaes.TipoObstaculo.Pino);
+        var marble=engine.Marbles[0];engine.Marbles[1].Posicao=new Vector2(1000f,50f);
+        marble.Posicao=pin.Centro+new Vector2(-1.8f,-marble.Raio-pin.Raio+.01f);
+        marble.Velocidade=new Vector2(430f,0f);int contacts=marble.ColisoesObstaculos;
+        engine.Avancar(MotorSorteioCapitaes.PassoFixo);
+        Check(marble.ColisoesObstaculos>contacts&&PinClearance(engine)>=-.05f,"continuous/substep contacts catch a grazing path that an endpoint-only check misses");
+
+        scenario="all 32 marbles crowded around one pin";
+        engine=new MotorSorteioCapitaes(Teams(32),Captains(32),null,91);engine.Avancar(.6f);
+        pin=engine.Obstacles.First(o=>o.Tipo==MotorSorteioCapitaes.TipoObstaculo.Pino);
+        for(int i=0;i<engine.Marbles.Count;i++)
+        {
+            double angle=i*Math.PI*2/engine.Marbles.Count;
+            engine.Marbles[i].Posicao=pin.Centro+new Vector2((float)Math.Cos(angle),(float)Math.Sin(angle))*34.02f;
+            engine.Marbles[i].Velocidade=Vector2.zero;
+        }
+        minimum=float.MaxValue;
+        for(int step=0;step<120;step++){engine.Avancar(MotorSorteioCapitaes.PassoFixo);minimum=Math.Min(minimum,PinClearance(engine));}
+        Check(minimum>=-.05f,"a dense pile cannot force any marble through solid geometry");
+        Finish(engine);
+
+        scenario="local balance is freed by motion while pins remain solid";
+        engine=new MotorSorteioCapitaes(Teams(2),Captains(2),null,22);engine.Avancar(.6f);
+        pin=engine.Obstacles.First(o=>o.Tipo==MotorSorteioCapitaes.TipoObstaculo.Pino);
+        marble=engine.Marbles[0];engine.Marbles[1].Posicao=new Vector2(1000f,50f);
+        for(int step=0;step<180;step++)
+        {
+            marble.Posicao=pin.Centro+new Vector2(0f,-marble.Raio-pin.Raio-.02f);
+            marble.Velocidade=Vector2.zero;
+            engine.Avancar(MotorSorteioCapitaes.PassoFixo);
+        }
+        Check(marble.Destravamentos>0,"sustained balancing triggers a local sideways/downward velocity release");
+        Check(!marble.Concluida&&marble.TimeAtribuido==null&&pin.Ativo,"the release neither teleports to the finish nor assigns a club nor disables the pin");
+        Finish(engine);
+
+        scenario="rotor clearances cover the whole rotation rather than the initial angle";
+        engine=new MotorSorteioCapitaes(Teams(2),Captains(2),null,21);
+        foreach(var rotor in engine.Obstacles.Where(o=>o.Tipo==MotorSorteioCapitaes.TipoObstaculo.Giratorio))
+            foreach(var other in engine.Obstacles.Where(o=>!ReferenceEquals(o,rotor)))
+            {
+                float gap=other.Tipo==MotorSorteioCapitaes.TipoObstaculo.Giratorio
+                    ?(rotor.Eixo-other.Eixo).magnitude-rotor.MeiaExtensao-other.MeiaExtensao-rotor.Raio-other.Raio
+                    :DistanceToSegment(rotor.Eixo,other.PontoA,other.PontoB)-rotor.MeiaExtensao-rotor.Raio-other.Raio;
+                Check(gap>=48f,"a full-width marble has clearance around every rotor throughout its sweep");
+            }
+
+        foreach(int count in new[]{10,16,20,32})foreach(int seed in new[]{3,73})
+        {
+            scenario="solid natural race count="+count+" seed="+seed;
+            engine=new MotorSorteioCapitaes(Teams(count),Captains(count),null,seed);
+            minimum=float.MaxValue;
+            while(!engine.Concluido&&engine.TempoSimulado<19f)
+            {
+                engine.Avancar(MotorSorteioCapitaes.PassoFixo);
+                minimum=Math.Min(minimum,PinClearance(engine));
+            }
+            Check(minimum>=-.05f,"marbles stay outside every visible obstacle throughout the race");
+            Check(engine.Concluido&&engine.TempoSimulado<19f,"all arrivals finish without removing solid pins");
+            Check(engine.Obstacles.All(o=>o.Ativo),"the course never disables collisions to force an arrival");
+        }
+    }
     public static void Main()
     {
-        SizesSeedsAndTimeSteps(); GenuineArrivalAndCollisions(); ManualReplayAndOverall(); BoundsAndInvalidData();
+        SizesSeedsAndTimeSteps(); GenuineArrivalAndCollisions(); ManualReplayAndOverall(); BoundsAndInvalidData(); SolidObstaclesAndClearPassages();
         Console.WriteLine("PASS " + checks + " actual marble-draw simulation assertions.");
         Console.WriteLine("Deterministic custom 2D collisions and real finish-driven assignments; native Unity rendering was not executed.");
     }

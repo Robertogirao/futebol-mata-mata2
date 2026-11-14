@@ -14,6 +14,7 @@ bash "$here/runtime/run-audio-selection.sh" | tee "$here/runtime/audio-selection
 bash "$here/runtime/run-captain.sh" | tee "$here/runtime/captain-results.txt"
 bash "$here/runtime/run-guest-captains.sh" | tee "$here/runtime/guest-captains-results.txt"
 bash "$here/runtime/run-captain-draw.sh" | tee "$here/runtime/captain-draw-results.txt"
+bash "$here/runtime/run-bracket-captains.sh" | tee "$here/runtime/bracket-captains-results.txt"
 bash "$here/runtime/run-tactics.sh" | tee "$here/runtime/tactics-results.txt"
 bash "$here/presentation/run.sh"
 bash "$here/editor/run-actual.sh"

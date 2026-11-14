@@ -26,7 +26,9 @@ namespace FutebolDeDiscos
             public TeamData TimeAtribuido { get; internal set; }
             public int Colisoes { get; internal set; }
             public int ColisoesObstaculos { get; internal set; }
+            public int Destravamentos { get; internal set; }
             internal float LiberarEm;
+            internal float MaiorY, TempoSemProgresso;
         }
 
         public sealed class ObstacleState
@@ -118,6 +120,7 @@ namespace FutebolDeDiscos
                 {
                     Capitao = escolhidos[i], Raio = 20f,
                     Posicao = new Vector2(x, 24f + linha * 48f),
+                    MaiorY = 24f + linha * 48f,
                     Velocidade = new Vector2((float)(random.NextDouble() * 90d - 45d), 0f),
                     LiberarEm = .15f + (float)random.NextDouble() * .35f,
                     Fixa = idsFixos.Contains(escolhidos[i].Identificador)
@@ -141,30 +144,32 @@ namespace FutebolDeDiscos
 
         private void CriarObstaculos(System.Random random)
         {
-            for (int linha = 0; linha < 3; linha++)
-                for (int coluna = 0; coluna < 7; coluna++)
+            // Keep clear passages throughout a rotor's entire sweep. The old
+            // ramps and rotors overlapped neighbouring pins and trapped discs.
+            for (int linha = 0; linha < 2; linha++)
+                for (int coluna = 0; coluna < (linha == 0 ? 7 : 6); coluna++)
                 {
-                    float x = 95f + coluna * 145f + (linha % 2 == 0 ? 0f : 42f);
-                    float y = 230f + linha * 116f + (float)random.NextDouble() * 16f;
+                    float x = linha == 0 ? 90f + coluna * 150f : 140f + coluna * 160f;
+                    float y = (linha == 0 ? 240f : 505f) + (float)random.NextDouble() * 8f;
                     var p = new Vector2(x, y);
                     obstacles.Add(new ObstacleState { Tipo = TipoObstaculo.Pino, PontoA = p, PontoB = p, Raio = 14f, Ativo = true });
                 }
-            obstacles.Add(new ObstacleState { Tipo = TipoObstaculo.Rampa, PontoA = new Vector2(110f, 302f), PontoB = new Vector2(245f, 350f), Raio = 8f, Ativo = true });
-            obstacles.Add(new ObstacleState { Tipo = TipoObstaculo.Rampa, PontoA = new Vector2(835f, 350f), PontoB = new Vector2(970f, 302f), Raio = 8f, Ativo = true });
-            foreach (Vector2 centro in new[] { new Vector2(380f, 366f), new Vector2(700f, 492f) })
+            obstacles.Add(new ObstacleState { Tipo = TipoObstaculo.Rampa, PontoA = new Vector2(95f, 340f), PontoB = new Vector2(225f, 385f), Raio = 8f, Ativo = true });
+            obstacles.Add(new ObstacleState { Tipo = TipoObstaculo.Rampa, PontoA = new Vector2(855f, 385f), PontoB = new Vector2(985f, 340f), Raio = 8f, Ativo = true });
+            foreach (Vector2 centro in new[] { new Vector2(390f, 375f), new Vector2(690f, 375f) })
             {
                 var o = new ObstacleState
                 {
-                    Tipo = TipoObstaculo.Giratorio, Raio = 9f, Ativo = true, Eixo = centro, MeiaExtensao = 77f,
+                    Tipo = TipoObstaculo.Giratorio, Raio = 9f, Ativo = true, Eixo = centro, MeiaExtensao = 55f,
                     Fase = (float)random.NextDouble() * 6.283185f, Rotacao = random.Next(2) == 0 ? -.9f : .9f
                 };
                 AtualizarGiratorio(o); obstacles.Add(o);
             }
         }
 
-        private void AtualizarGiratorio(ObstacleState obstaculo)
+        private void AtualizarGiratorio(ObstacleState obstaculo, float? tempo = null)
         {
-            float angulo = obstaculo.Fase + TempoSimulado * obstaculo.Rotacao;
+            float angulo = obstaculo.Fase + (tempo ?? TempoSimulado) * obstaculo.Rotacao;
             var eixo = new Vector2((float)Math.Cos(angulo), (float)Math.Sin(angulo)) * obstaculo.MeiaExtensao;
             obstaculo.PontoA = obstaculo.Eixo - eixo; obstaculo.PontoB = obstaculo.Eixo + eixo;
         }
@@ -172,34 +177,125 @@ namespace FutebolDeDiscos
         private void Passo()
         {
             passos++;
-            foreach (ObstacleState o in obstacles)
+            const int subpassos = 4;
+            float dt = PassoFixo / subpassos;
+            for (int subpasso = 0; subpasso < subpassos; subpasso++)
             {
-                o.Ativo = !RetaFinal;
-                if (o.Tipo == TipoObstaculo.Giratorio) AtualizarGiratorio(o);
+                float tempo = TempoSimulado - PassoFixo + (subpasso + 1) * dt;
+                foreach (ObstacleState o in obstacles)
+                    if (o.Tipo == TipoObstaculo.Giratorio) AtualizarGiratorio(o, tempo);
+                foreach (MarbleState m in marbles)
+                {
+                    if (m.Concluida || tempo < m.LiberarEm) continue;
+                    ResolverObstaculos(m);
+                    Vector2 v = m.Velocidade;
+                    v.y += (RetaFinal ? 230f : 190f) * dt;
+                    v.x *= .99985f;
+                    m.Velocidade = Limitar(v, 430f);
+                    MoverSemAtravessar(m, m.Posicao + m.Velocidade * dt);
+                    Conter(m);
+                }
+                // Pairs can push a marble back into a pin. Reconcile both kinds
+                // of contact repeatedly, giving solid obstacles final priority.
+                for (int iteracao = 0; iteracao < 6; iteracao++)
+                {
+                    bool contato = false;
+                    for (int i = 0; i < marbles.Count; i++)
+                        for (int j = i + 1; j < marbles.Count; j++) contato |= ColidirMarbles(marbles[i], marbles[j]);
+                    foreach (MarbleState m in marbles)
+                        if (!m.Concluida && tempo >= m.LiberarEm) { contato |= ResolverObstaculos(m); Conter(m); }
+                    if (!contato) break;
+                }
             }
-            foreach (MarbleState m in marbles)
-            {
-                if (m.Concluida || TempoSimulado < m.LiberarEm) continue;
-                Vector2 v = m.Velocidade;
-                v.y += (RetaFinal ? 300f : 190f) * PassoFixo;
-                v.x *= .9994f;
-                if (RetaFinal) v.y = Math.Max(200f, v.y);
-                m.Velocidade = Limitar(v, 430f);
-                m.Posicao += m.Velocidade * PassoFixo;
-                foreach (ObstacleState o in obstacles) if (o.Ativo) ColidirObstaculo(m, o);
-                Conter(m);
-            }
-            for (int i = 0; i < marbles.Count; i++)
-                for (int j = i + 1; j < marbles.Count; j++) ColidirMarbles(marbles[i], marbles[j]);
             foreach (MarbleState m in marbles)
             {
                 if (m.Concluida) continue;
-                Conter(m);
                 if (m.Posicao.y >= Altura + m.Raio) Finalizar(m);
+                else if (TempoSimulado >= m.LiberarEm)
+                {
+                    if (m.Posicao.y > m.MaiorY + 12f) { m.MaiorY = m.Posicao.y; m.TempoSemProgresso = 0f; }
+                    else m.TempoSemProgresso += PassoFixo;
+                    if (m.TempoSemProgresso >= 1.2f)
+                    {
+                        // Free a balanced/crowded marble by velocity, never by
+                        // teleporting it or turning collision off.
+                        float lado = m.Posicao.x < Largura * .5f ? 1f : -1f;
+                        m.Velocidade = new Vector2(lado * 125f, Math.Max(45f, m.Velocidade.y));
+                        m.TempoSemProgresso = 0f; m.Destravamentos++;
+                    }
+                }
             }
         }
 
-        private void ColidirObstaculo(MarbleState m, ObstacleState o)
+        private bool ResolverObstaculos(MarbleState m)
+        {
+            bool contato = false;
+            foreach (ObstacleState o in obstacles) if (o.Ativo) contato |= ColidirObstaculo(m, o);
+            return contato;
+        }
+
+        private void MoverSemAtravessar(MarbleState m, Vector2 destino)
+        {
+            Vector2 origem = m.Posicao, delta = destino - origem;
+            float primeiro = 1f;
+            Vector2 normal = Vector2.zero;
+            ObstacleState atingido = null;
+            foreach (ObstacleState o in obstacles)
+            {
+                if (!o.Ativo) continue;
+                float t; Vector2 n;
+                if (IntersecaoCapsula(origem, delta, o.PontoA, o.PontoB, m.Raio + o.Raio + .02f, out t, out n) && t < primeiro)
+                { primeiro = t; normal = n; atingido = o; }
+            }
+            m.Posicao = atingido == null ? destino : origem + delta * Math.Max(0f, primeiro - .00001f);
+            if (atingido != null) ResponderContato(m, atingido, normal, m.Posicao - normal * m.Raio);
+        }
+
+        private static bool IntersecaoCirculo(Vector2 origem, Vector2 delta, Vector2 centro, float raio, out float t, out Vector2 normal)
+        {
+            t = 2f; normal = Vector2.zero;
+            float a = Dot(delta, delta);
+            if (a < .0000001f) return false;
+            Vector2 relativo = origem - centro;
+            float b = Dot(relativo, delta), c = Dot(relativo, relativo) - raio * raio;
+            if (b >= 0f || c < -.01f) return false;
+            float discriminante = b * b - a * c;
+            if (discriminante < 0f) return false;
+            float contato = (-b - (float)Math.Sqrt(discriminante)) / a;
+            if (contato < -.0001f || contato > 1f) return false;
+            t = Math.Max(0f, contato);
+            normal = (origem + delta * t - centro).normalized;
+            return true;
+        }
+
+        private static bool IntersecaoCapsula(Vector2 origem, Vector2 delta, Vector2 a, Vector2 b, float raio, out float t, out Vector2 normal)
+        {
+            t = 2f; normal = Vector2.zero;
+            Vector2 segmento = b - a;
+            float comprimento = segmento.magnitude;
+            if (comprimento < .0001f) return IntersecaoCirculo(origem, delta, a, raio, out t, out normal);
+            float candidato; Vector2 n;
+            if (IntersecaoCirculo(origem, delta, a, raio, out candidato, out n)) { t = candidato; normal = n; }
+            if (IntersecaoCirculo(origem, delta, b, raio, out candidato, out n) && candidato < t) { t = candidato; normal = n; }
+            if (comprimento > .0001f)
+            {
+                Vector2 eixo = segmento / comprimento, perpendicular = new Vector2(-eixo.y, eixo.x);
+                float distancia = Dot(origem - a, perpendicular), movimento = Dot(delta, perpendicular);
+                if (Math.Abs(movimento) > .00001f)
+                    for (int lado = -1; lado <= 1; lado += 2)
+                    {
+                        if (movimento * lado >= 0f) continue;
+                        candidato = (lado * raio - distancia) / movimento;
+                        if (candidato < -.0001f || candidato > 1f || candidato >= t) continue;
+                        float posicao = Dot(origem + delta * candidato - a, eixo);
+                        if (posicao < 0f || posicao > comprimento) continue;
+                        t = Math.Max(0f, candidato); normal = perpendicular * lado;
+                    }
+            }
+            return t <= 1f;
+        }
+
+        private bool ColidirObstaculo(MarbleState m, ObstacleState o)
         {
             Vector2 segmento = o.PontoB - o.PontoA;
             float comprimento = Dot(segmento, segmento);
@@ -207,9 +303,15 @@ namespace FutebolDeDiscos
             Vector2 ponto = o.PontoA + segmento * t;
             Vector2 delta = m.Posicao - ponto;
             float distancia = delta.magnitude, raio = m.Raio + o.Raio;
-            if (distancia >= raio) return;
+            if (distancia >= raio) return false;
             Vector2 normal = distancia > .0001f ? delta / distancia : new Vector2(0f, -1f);
             m.Posicao = ponto + normal * (raio + .02f);
+            ResponderContato(m, o, normal, ponto);
+            return true;
+        }
+
+        private static void ResponderContato(MarbleState m, ObstacleState o, Vector2 normal, Vector2 ponto)
+        {
             Vector2 superficie = Vector2.zero;
             if (o.Tipo == TipoObstaculo.Giratorio)
             {
@@ -226,22 +328,25 @@ namespace FutebolDeDiscos
             m.ColisoesObstaculos++;
         }
 
-        private void ColidirMarbles(MarbleState a, MarbleState b)
+        private bool ColidirMarbles(MarbleState a, MarbleState b)
         {
-            if (a.Concluida || b.Concluida || TempoSimulado < a.LiberarEm || TempoSimulado < b.LiberarEm) return;
+            if (a.Concluida || b.Concluida || TempoSimulado < a.LiberarEm || TempoSimulado < b.LiberarEm) return false;
             Vector2 delta = b.Posicao - a.Posicao;
             float d = delta.magnitude, alvo = a.Raio + b.Raio;
-            if (d >= alvo) return;
+            if (d >= alvo) return false;
             Vector2 normal = d > .0001f ? delta / d : new Vector2(1f, 0f);
             Vector2 correcao = normal * ((alvo - d + .02f) * .5f);
-            a.Posicao -= correcao; b.Posicao += correcao;
+            MoverSemAtravessar(a, a.Posicao - correcao);
+            MoverSemAtravessar(b, b.Posicao + correcao);
             float entrada = Dot(b.Velocidade - a.Velocidade, normal);
             if (entrada < 0f)
             {
                 Vector2 impulso = normal * (entrada * .8f);
                 a.Velocidade += impulso; b.Velocidade -= impulso;
             }
+            ResolverObstaculos(a); ResolverObstaculos(b);
             a.Colisoes++; b.Colisoes++;
+            return true;
         }
 
         private static void Conter(MarbleState m)
