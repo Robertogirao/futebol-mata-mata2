@@ -1,2 +1,2 @@
-PASS 130 assertions using real central editor, MataMataEditor, central runtime, all tournament/storage/field/HUD/physics source; Unity APIs provided by facade.
+PASS 148 assertions using real central editor, MataMataEditor, central runtime, all tournament/storage/field/HUD/physics source; Unity APIs provided by facade.
 No Unity import, rendering or physics solver execution.

@@ -25,6 +25,10 @@ namespace FutebolDeDiscos
         public bool sobreporDecoracaoExterna;
         public int quantidadeTimes = 8, quantidadeRodadas = 7, semente;
         public List<TeamData> participantes = new List<TeamData>();
+        public bool usarCapitaesConvidados;
+        public bool capitaoExtra = true;
+        public List<CapitaoConvidado> catalogoCapitaes = new List<CapitaoConvidado>();
+        public List<VinculoCapitaoConvidado> capitaesFixos = new List<VinculoCapitaoConvidado>();
         public bool sortearConfrontos = true, permitirFolgas, umaRodadaOuFasePorPlay;
         public DistribuicaoMataMata distribuicao = DistribuicaoMataMata.ConfrontosNaOrdemDaLista;
         public int discosPorTime = 3;
@@ -48,6 +52,7 @@ namespace FutebolDeDiscos
 
         public bool Preparado { get; private set; }
         public bool CompeticaoConcluida { get; private set; }
+        public int TotalDiscosPorTime { get { return discosPorTime + (usarCapitaesConvidados && capitaoExtra ? 1 : 0); } }
         public int SementeEfetiva { get { return temporada != null ? temporada.sementeEfetiva : semente; } }
         public string PastaDaTemporada
         {
@@ -71,6 +76,9 @@ namespace FutebolDeDiscos
         private TemporadaDiscos temporada;
         private TemaCompeticao temaEmUso;
         private TextAsset calendario;
+        private readonly Dictionary<TeamData, CapitaoConvidado> capitaesEmUso = new Dictionary<TeamData, CapitaoConvidado>();
+        private readonly Dictionary<TeamData, JogadorDados> representantesConvidados = new Dictionary<TeamData, JogadorDados>();
+        private readonly Dictionary<TeamData, int> overallDosCapitaes = new Dictionary<TeamData, int>();
         private bool rodadaConfirmada, aguardandoContinuar, rodadaEncerrada;
         private float espera;
 
@@ -98,6 +106,7 @@ namespace FutebolDeDiscos
                     formato == FormatoDiscos.Liga ? "temporada.json" : "torneio.json"));
                 temporada = new RepositorioTemporadaDiscos(PastaDaTemporada, new SerializadorUnity())
                     .CarregarOuCriar(CriarDadosConfiguracao(), historico);
+                PrepararCapitaesConvidados(historico);
 
                 campo = new GameObject("Disc Football Stadium").AddComponent<CampoDiscos>();
                 campo.transform.SetParent(transform, false);
@@ -111,6 +120,52 @@ namespace FutebolDeDiscos
                 else PrepararMataMata();
             }
             catch (Exception erro) { Falhar(erro.Message); }
+        }
+
+        private void PrepararCapitaesConvidados(bool possuiResultados)
+        {
+            capitaesEmUso.Clear(); representantesConvidados.Clear(); overallDosCapitaes.Clear();
+            var repositorio = new RepositorioCapitaesConvidados(PastaDaTemporada, new SerializadorCapitaesUnity());
+            if (!usarCapitaesConvidados)
+            {
+                if (File.Exists(repositorio.CaminhoArquivo))
+                    throw new InvalidOperationException("Esta temporada usa capitães convidados. Reative a opção ou use Nova temporada.");
+                return;
+            }
+            DadosCapitaesConvidados sorteio = repositorio.CarregarOuCriar(
+                participantes.Where(t => t != null).Select(t => t.name), catalogoCapitaes, capitaesFixos,
+                SementeEfetiva, possuiResultados, capitaoExtra);
+            var catalogo = catalogoCapitaes.ToDictionary(c => c.Identificador, StringComparer.Ordinal);
+            foreach (RegistroCapitaoConvidado registro in sorteio.atribuicoes)
+            {
+                TeamData time = participantes.First(t => t != null && t.name == registro.timeId);
+                CapitaoConvidado capitao = catalogo[registro.capitaoId];
+                capitaesEmUso.Add(time, capitao);
+                representantesConvidados.Add(time, capitao.CriarJogador());
+                overallDosCapitaes.Add(time, registro.overall);
+            }
+        }
+
+        public CapitaoConvidado ObterCapitaoConvidado(TeamData equipe)
+        {
+            CapitaoConvidado capitao;
+            return usarCapitaesConvidados && equipe != null && capitaesEmUso.TryGetValue(equipe, out capitao) ? capitao : null;
+        }
+
+        public List<JogadorDados> SelecionarRepresentantes(TeamData equipe)
+        {
+            if (equipe == null) return new List<JogadorDados>();
+            if (!usarCapitaesConvidados) return equipe.ObterTitularesDaPartida();
+            JogadorDados representante;
+            if (!representantesConvidados.TryGetValue(equipe, out representante))
+                throw new InvalidOperationException("Prepare o sorteio dos capitães antes de iniciar as partidas.");
+            return new List<JogadorDados> { representante };
+        }
+
+        public bool TentarObterOverallCapitao(TeamData equipe, out int overall)
+        {
+            overall = 0;
+            return usarCapitaesConvidados && equipe != null && overallDosCapitaes.TryGetValue(equipe, out overall);
         }
 
         private void ObterComponentes()
@@ -331,6 +386,9 @@ namespace FutebolDeDiscos
                         !equipe.elenco.Any(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador)))
                         throw new InvalidOperationException("Confira o nome e cadastre um representante em " + equipe.name + ".");
                 }
+                if (usarCapitaesConvidados)
+                    RepositorioCapitaesConvidados.ValidarConfiguracao(
+                        participantes.Where(t => t != null).Select(t => t.name), catalogoCapitaes, capitaesFixos);
                 if (!Faixa(tamanhoDisco, 0.6f, 1.4f) || !Faixa(tamanhoBola, 0.25f, 0.65f) ||
                     !Faixa(velocidadeDiscos, 1f, 8f) || !Faixa(velocidadeMaximaBola, 4f, 25f) ||
                     !Faixa(forcaChute, 1f, 15f) || !Faixa(pausaAposGol, 0.2f, 5f))
@@ -402,6 +460,12 @@ namespace FutebolDeDiscos
         {
             public string ParaJson(TemporadaDiscos dados) { return JsonUtility.ToJson(dados, true); }
             public TemporadaDiscos DeJson(string json) { return JsonUtility.FromJson<TemporadaDiscos>(json); }
+        }
+
+        private sealed class SerializadorCapitaesUnity : ISerializadorCapitaesConvidados
+        {
+            public string ParaJson(DadosCapitaesConvidados dados) { return JsonUtility.ToJson(dados, true); }
+            public DadosCapitaesConvidados DeJson(string json) { return JsonUtility.FromJson<DadosCapitaesConvidados>(json); }
         }
     }
 }

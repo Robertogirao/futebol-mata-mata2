@@ -78,6 +78,8 @@ namespace FutebolDeDiscos
                     EditorGUI.indentLevel--;
                 }
 
+                DesenharCapitaesConvidados();
+
                 Titulo(mataMata ? "Chaveamento" : "Calendário");
                 if (mataMata)
                 {
@@ -131,8 +133,11 @@ namespace FutebolDeDiscos
                 Campo("mostrarDetalhesFormato", "Mostrar formato e quantidade de discos", "Controla os detalhes Liga/Mata-mata e 3 v 3 separadamente do subtítulo.");
 
                 Titulo("Identificação dos jogadores");
-                EditorGUILayout.HelpBox("Os nomes vêm do Elenco de cada ficha de time. O capitão é o representante da foto. " +
-                    "Cadastre os demais jogadores para nomear os outros discos; vagas sem jogador usam a sigla e o número do disco.", MessageType.Info);
+                bool capitaesConvidados = P("usarCapitaesConvidados").boolValue;
+                EditorGUILayout.HelpBox(capitaesConvidados
+                    ? "O capitão convidado usa o nome e a foto da própria ficha. Os demais discos usam os jogadores do Elenco do time; vagas sem jogador usam a sigla e o número do disco."
+                    : "Os nomes vêm do Elenco de cada ficha de time. O capitão é o representante da foto. " +
+                        "Cadastre os demais jogadores para nomear os outros discos; vagas sem jogador usam a sigla e o número do disco.", MessageType.Info);
                 Campo("mostrarTagsJogadores", "Mostrar nome nos discos");
                 Slider("tamanhoFonteTags", "Tamanho da fonte das tags", 2f, 8f);
                 Slider("larguraTags", "Largura das tags", 1f, 4f);
@@ -142,7 +147,8 @@ namespace FutebolDeDiscos
                 Slider("velocidadeScannerFotos", "Velocidade da leitura luminosa", 0.1f, 3f);
 
                 Titulo("Discos e bola");
-                IntSlider("discosPorTime", "Discos por time", 1, 5);
+                IntSlider("discosPorTime", capitaesConvidados && P("capitaoExtra").boolValue
+                    ? "Jogadores do time (sem o capitão)" : "Discos por time", 1, 5);
                 Slider("tamanhoDisco", "Diâmetro dos discos", 0.6f, 1.4f);
                 Slider("tamanhoBola", "Diâmetro da bola", 0.25f, 0.65f);
                 Slider("velocidadeDiscos", "Velocidade dos discos", 1f, 8f);
@@ -153,7 +159,7 @@ namespace FutebolDeDiscos
                 EditorGUILayout.HelpBox("Para liberar pressão no campo adversário, desmarque a opção acima e escolha a postura " +
                     "na ficha de cada time: ultra defensivo (0), defensivo (até 1), balanceado (até 2) ou ataque (até 3). " +
                     "A subida depende da posição e da direção da bola.", MessageType.Info);
-                Campo("usarForcaDosTimes", "Considerar o overall dos times");
+                Campo("usarForcaDosTimes", "Considerar o overall dos times", "Controla a força dos jogadores do elenco. O capitão convidado continua usando o próprio overall.");
                 Slider("limiarCores", "Diferença mínima entre as cores", 0f, 100f);
 
                 Titulo("Bola presa nos cantos");
@@ -196,6 +202,37 @@ namespace FutebolDeDiscos
             }
             if (!string.IsNullOrWhiteSpace(projeto.ultimoErro))
                 EditorGUILayout.HelpBox(projeto.ultimoErro, MessageType.Error);
+        }
+
+        private void DesenharCapitaesConvidados()
+        {
+            Titulo("Capitães convidados");
+            Campo("usarCapitaesConvidados", "Usar capitães convidados", "Cada time recebe um capitão do catálogo, sem alterar sua ficha nem seu elenco original.");
+            if (!P("usarCapitaesConvidados").boolValue) return;
+
+            EditorGUILayout.HelpBox("Para cadastrar um personagem, use Project > Create > Futebol de Discos > Capitão convidado. " +
+                "Na ficha, escolha nome, foto e overall de 1 a 100. O overall individual afeta apenas o disco desse capitão. " +
+                "Os modelos incluídos são exemplos; substitua-os ou remova-os desta lista para usar seus personagens.", MessageType.Info);
+            Campo("catalogoCapitaes", "Capitães disponíveis", "Cadastre pelo menos um capitão diferente por time. Os que não tiverem associação fixa são sorteados sem repetição.");
+            if (GUILayout.Button("Carregar capitães do catálogo")) CarregarCapitaes();
+            Campo("capitaesFixos", "Associações fixas (opcional)", "Escolha time e capitão para vínculos manuais. Deixe os demais times sem vínculo para o sorteio da temporada.");
+            Campo("capitaoExtra", "Capitão como disco extra", "Ligado: soma um capitão aos jogadores do time. Desligado: o capitão ocupa uma das vagas configuradas.");
+            int total = P("discosPorTime").intValue + (P("capitaoExtra").boolValue ? 1 : 0);
+            EditorGUILayout.HelpBox("Total por time: " + total + " discos. O sorteio dos capitães é salvo com a temporada e se mantém entre Play e Stop. " +
+                "Use Nova temporada para sortear outra combinação. As associações fixas são respeitadas.", MessageType.None);
+        }
+
+        private void CarregarCapitaes()
+        {
+            if (ConfiguracaoBloqueada) return;
+            List<CapitaoConvidado> catalogo = AssetDatabase.FindAssets("t:CapitaoConvidado")
+                .Select(guid => AssetDatabase.LoadAssetAtPath<CapitaoConvidado>(AssetDatabase.GUIDToAssetPath(guid)))
+                .Where(capitao => capitao != null).Distinct()
+                .OrderBy(capitao => capitao.name, StringComparer.Ordinal).ToList();
+            SerializedProperty lista = P("catalogoCapitaes");
+            lista.arraySize = catalogo.Count;
+            for (int i = 0; i < catalogo.Count; i++)
+                lista.GetArrayElementAtIndex(i).objectReferenceValue = catalogo[i];
         }
 
         private void DesenharSonsEComemoracao(ProjetoFutebolDiscos projeto)
@@ -371,6 +408,10 @@ namespace FutebolDeDiscos
         private static void AbrirLiga() { AbrirCena("Assets/Scenes/FutebolDiscos/Liga_Discos.unity"); }
         [MenuItem("Tools/Futebol de Discos/Abrir Mata-mata")]
         private static void AbrirMataMata() { AbrirCena("Assets/Scenes/FutebolDiscos/MataMata_Discos.unity"); }
+        [MenuItem("Tools/Futebol de Discos/Capitães/Abrir Liga")]
+        private static void AbrirLigaCapitaes() { AbrirCena("Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity"); }
+        [MenuItem("Tools/Futebol de Discos/Capitães/Abrir Mata-mata")]
+        private static void AbrirMataMataCapitaes() { AbrirCena("Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity"); }
         private static void AbrirCena(string caminho)
         {
             if (ConfiguracaoBloqueada || !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;

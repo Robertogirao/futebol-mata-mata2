@@ -1,6 +1,6 @@
 {
   "scope": "Static YAML validation; not Unity import or Play Mode",
-  "asset_count": 6,
+  "asset_count": 8,
   "assets": [
     {
       "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Prefabs/Canvas.prefab",
@@ -40,6 +40,36 @@
         "306cc8c2b49d7114eaa3623786fc2126",
         "f4688fdb7df04437aeb418b961361dc5",
         "fe87c0e1cc204ed48ad3b37840f39efc"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity",
+      "documents": 29,
+      "gameobjects": 4,
+      "local_nonzero_references": 50,
+      "source_guid_count": 97,
+      "external_package_or_builtin_guids": [
+        "01614664b831546d2ae94a42149d80ac",
+        "073797afb82c5a1438f328866b10b3f0",
+        "76c392e42b5098c458856cdf6ecaaaa1",
+        "a79441f348de89743a2939f4d699eac1",
+        "ca9f5fa95ffab41fb9a615ab714db018"
+      ],
+      "errors": []
+    },
+    {
+      "path": "/workspace/work/github/futebol-discos-entrega/validation/../Projeto/Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity",
+      "documents": 29,
+      "gameobjects": 4,
+      "local_nonzero_references": 50,
+      "source_guid_count": 97,
+      "external_package_or_builtin_guids": [
+        "01614664b831546d2ae94a42149d80ac",
+        "073797afb82c5a1438f328866b10b3f0",
+        "76c392e42b5098c458856cdf6ecaaaa1",
+        "a79441f348de89743a2939f4d699eac1",
+        "ca9f5fa95ffab41fb9a615ab714db018"
       ],
       "errors": []
     },

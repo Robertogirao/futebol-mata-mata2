@@ -724,10 +724,10 @@ public class TournamentManager : MonoBehaviour
 
         // A escalação é escolhida uma única vez.
         var titularesA =
-            confronto.timeA.ObterTitularesDaPartida();
+            simuladorDiscos.SelecionarRepresentantes(confronto.timeA);
 
         var titularesB =
-            confronto.timeB.ObterTitularesDaPartida();
+            simuladorDiscos.SelecionarRepresentantes(confronto.timeB);
 
         if (titularesA.Count == 0 ||
             titularesB.Count == 0)

@@ -11,5 +11,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FutebolDiscos/MataMata_Discos.unity
     guid: 7b1af1394a84547a8d33ec55fe6c6072
+  - enabled: 1
+    path: Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity
+    guid: eb6e2dcf8f5659e694a92a365bfac706
+  - enabled: 1
+    path: Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity
+    guid: 1570cab0e5cf56d7a6cc5507f6658209
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

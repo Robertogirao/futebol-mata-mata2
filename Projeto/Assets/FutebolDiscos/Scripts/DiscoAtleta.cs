@@ -14,6 +14,9 @@ namespace FutebolDeDiscos
         public bool Pressionando { get; private set; }
         public bool Recuando { get; private set; }
         public bool Capitao { get { return Indice == 0; } }
+        private int overallIndividual;
+        public bool TemOverallIndividual { get { return overallIndividual > 0; } }
+        public int OverallEfetivo { get { return TemOverallIndividual ? overallIndividual : Mathf.Clamp(Equipe.overall, 1, 100); } }
         public string NomeExibicao
         {
             get
@@ -39,6 +42,8 @@ namespace FutebolDeDiscos
             Color cor, Sprite circulo, Material material, PhysicsMaterial2D fisica, TMP_FontAsset fonte)
         {
             partida = match; Equipe = equipe; TimeA = timeA; Indice = indice; Jogador = jogador;
+            int valorIndividual;
+            overallIndividual = Capitao && partida.Configuracao.TentarObterOverallCapitao(equipe, out valorIndividual) ? valorIndividual : 0;
             transform.localScale = Vector3.one;
             float d = partida.Configuracao.tamanhoDisco;
             Corpo = gameObject.AddComponent<Rigidbody2D>();
@@ -157,7 +162,7 @@ namespace FutebolDeDiscos
                     alvo = new Vector2(sinal * progresso, bola.Corpo.position.y + (ordemPressao == 1 ? 1.6f : -1.6f));
                 }
             }
-            else if (!Recuando && bolaNaMetade && maisPerto < (cfg.discosPorTime > 2 ? 2 : 1))
+            else if (!Recuando && bolaNaMetade && maisPerto < (cfg.TotalDiscosPorTime > 2 ? 2 : 1))
                 alvo = bola.Corpo.position - new Vector2(TimeA ? .45f : -.45f, 0f);
 
             float raio = cfg.tamanhoDisco * .5f;
@@ -176,7 +181,7 @@ namespace FutebolDeDiscos
             Vector2 corrigida = new Vector2(Mathf.Clamp(pos.x, minX, maxX),
                 Mathf.Clamp(pos.y, -CampoDiscos.MeioLargura + raio, CampoDiscos.MeioLargura - raio));
             if (Vector2.Distance(pos, corrigida) > .01f) { Corpo.position = corrigida; pos = corrigida; }
-            float habilidade = cfg.usarForcaDosTimes ? .88f + Mathf.Clamp(Equipe.overall, 1, 100) / 100f * .24f : 1f;
+            float habilidade = TemOverallIndividual || cfg.usarForcaDosTimes ? .88f + OverallEfetivo / 100f * .24f : 1f;
             float velocidade = cfg.velocidadeDiscos * habilidade * (prorrogacao ? 1.12f : 1f);
             Vector2 diferenca = alvo - pos;
             Vector2 desejada = diferenca.magnitude > .18f ? diferenca.normalized * velocidade : Vector2.zero;

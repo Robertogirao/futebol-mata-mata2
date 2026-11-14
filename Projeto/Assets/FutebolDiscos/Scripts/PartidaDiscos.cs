@@ -57,6 +57,11 @@ namespace FutebolDeDiscos
                 throw new InvalidOperationException("Configure o campo de discos antes de preparar a partida.");
             if (a == null || b == null || ReferenceEquals(a, b))
                 throw new InvalidOperationException("Escolha duas equipes diferentes.");
+            if (config.usarCapitaesConvidados)
+            {
+                repsA = config.SelecionarRepresentantes(a);
+                repsB = config.SelecionarRepresentantes(b);
+            }
             LimparJogadores();
             timeA = a; timeB = b; corA = colorA; corB = colorB;
             int rodada = TournamentManager.Instance != null ? TournamentManager.Instance.rodadaDesejada : 0;
@@ -82,7 +87,7 @@ namespace FutebolDeDiscos
                 ? representantes.FirstOrDefault(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador)) : null;
             if (capitao == null) capitao = elenco.FirstOrDefault();
             var demais = elenco.Where(j => !ReferenceEquals(j, capitao)).ToList();
-            for (int i = 0; i < config.discosPorTime; i++)
+            for (int i = 0; i < config.TotalDiscosPorTime; i++)
             {
                 var go = new GameObject((equipeA ? "Home Disc " : "Away Disc ") + (i + 1));
                 go.transform.SetParent(raiz.transform, false);
@@ -92,6 +97,11 @@ namespace FutebolDeDiscos
                     campo.MaterialFisica, config.tema != null ? config.tema.fonteTexto : TMP_Settings.defaultFontAsset);
                 atletas.Add(atleta);
             }
+        }
+
+        public List<JogadorDados> SelecionarRepresentantes(TeamData equipe)
+        {
+            return config != null ? config.SelecionarRepresentantes(equipe) : equipe.ObterTitularesDaPartida();
         }
 
         public void IniciarPartida(TeamData a, TeamData b, float duracao, List<JogadorDados> repsA, List<JogadorDados> repsB, Color colorA, Color colorB)
@@ -312,21 +322,22 @@ namespace FutebolDeDiscos
             bool ataqueA = atleta.TimeA;
             float objetivoX = ataqueA ? CampoDiscos.MeioComprimento + 0.4f : -CampoDiscos.MeioComprimento - 0.4f;
             float mira = ((float)random.NextDouble() * 2f - 1f) * CampoDiscos.MeioGol * 0.86f;
-            float habilidade = config.usarForcaDosTimes ? Mathf.Clamp(atleta.Equipe.overall, 1, 100) / 100f : 0.75f;
+            float habilidade = atleta.TemOverallIndividual || config.usarForcaDosTimes ? atleta.OverallEfetivo / 100f : 0.75f;
             mira += ((float)random.NextDouble() * 2f - 1f) * (1f - habilidade) * 1.2f;
             Vector2 direction = (new Vector2(objetivoX, mira) - bola.Corpo.position).normalized;
             bola.RegistrarToque(atleta);
-            bola.Corpo.AddForce(direction * config.forcaChute * (0.82f + (float)random.NextDouble() * 0.18f), ForceMode2D.Impulse);
+            float potenciaIndividual = atleta.TemOverallIndividual ? .75f + atleta.OverallEfetivo / 100f * .5f : 1f;
+            bola.Corpo.AddForce(direction * config.forcaChute * potenciaIndividual * (0.82f + (float)random.NextDouble() * 0.18f), ForceMode2D.Impulse);
             bola.LimitarVelocidade(config.velocidadeMaximaBola);
         }
 
         public Vector2 Formacao(bool equipeA, int index)
         {
             float side = equipeA ? -1f : 1f;
-            if (config.discosPorTime == 1) return new Vector2(side * 5.5f, 0f);
-            if (config.discosPorTime == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
+            if (config.TotalDiscosPorTime == 1) return new Vector2(side * 5.5f, 0f);
+            if (config.TotalDiscosPorTime == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
             if (index == 0) return new Vector2(side * 8.5f, 0f);
-            float lane = (index - 1f) / Mathf.Max(1f, config.discosPorTime - 2f);
+            float lane = (index - 1f) / Mathf.Max(1f, config.TotalDiscosPorTime - 2f);
             return new Vector2(side * (index % 2 == 0 ? 3.7f : 5.7f), Mathf.Lerp(-3f, 3f, lane));
         }
 

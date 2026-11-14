@@ -1,6 +1,8 @@
 {
   "scope": "Static Unity scene/content contract; not Unity import/Play",
-  "checks": 42,
+  "checks": 160,
   "errors": [],
-  "rosterTeamCount": 68
+  "rosterTeamCount": 68,
+  "competitionSceneCount": 4,
+  "captainTemplateCount": 16
 }

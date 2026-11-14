@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.8.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.8)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.1.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.1)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -18,6 +18,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 
 **Sons escolhidos no painel:** [baixe a atualização dos efeitos e dos controles de áudio](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.8/Atualizacoes/Atualizacao_Sons_Painel.zip) · [instruções de instalação e configuração](Atualizacoes/COMO_APLICAR_SONS.md).
 
+**Capitães convidados:** [baixe a atualização com as duas novas cenas](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.14.1/Atualizacoes/Atualizacao_Capitaes_Convidados.zip) · [guia para cadastrar personagens, definir overall e sortear os times](Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
+
 ## Abrir o projeto
 
 1. Instale o **Unity 6000.4.11f1** pelo Unity Hub.
@@ -31,14 +33,28 @@ As cenas ficam em `Assets/Scenes/FutebolDiscos/`:
 | --- | --- |
 | `Liga_Discos.unity` | 8 seleções, 7 rodadas, 3 discos por equipe |
 | `MataMata_Discos.unity` | 16 clubes, chave de 16, 3 discos por equipe |
+| `Capitaes/Liga_Capitaes.unity` | Liga com capitães convidados; 3 jogadores do time + 1 capitão |
+| `Capitaes/MataMata_Capitaes.unity` | Mata-mata com capitães convidados; 3 jogadores do time + 1 capitão |
 
 O campo e a transmissão são construídos ao entrar em Play. O guia completo está em [Projeto/COMO_USAR.md](Projeto/COMO_USAR.md).
+
+## Liga e mata-mata com capitães convidados
+
+Abra **Tools > Futebol de Discos > Capitães > Abrir Liga** ou **Abrir Mata-mata**. As cenas anteriores continuam disponíveis, com seus próprios salvamentos. As novas cenas usam os identificadores `discos_liga_capitaes` e `discos_mata_capitaes`.
+
+No Project, use **Create > Futebol de Discos > Capitão convidado** para criar uma ficha com nome, foto como Sprite e **overall de 1 a 100**. Em **FutebolDiscos_Manager > Projeto Futebol Discos > Capitães convidados**, preencha **Capitães disponíveis**. Há 16 fichas genéricas em `Assets/FutebolDiscos/Capitaes/Modelos/` que você pode editar ou substituir; elas não incluem imagens de DBZ.
+
+Cada time recebe um capitão diferente por sorteio. **Associações fixas (opcional)** permite reservar combinações, como Real Madrid + Goku; os demais times continuam no sorteio. A associação fica salva na temporada e se mantém após Stop/Play. Para outro sorteio ou para mudar o overall usado naquela edição, crie uma **Nova temporada**.
+
+Por padrão, **Capitão como disco extra** soma o personagem aos jogadores do elenco: 3 jogadores do Real Madrid + Goku formam quatro discos. O limite é 5 jogadores do time + 1 capitão. Desmarcada essa opção, o capitão ocupa uma das vagas do total configurado.
+
+O overall do convidado afeta somente a velocidade, potência e precisão dos chutes dele. Os jogadores do time continuam com o comportamento normal do overall da equipe. Nome, foto e overall do time original não são alterados. O convidado aparece na abertura como **CAPTAIN** e, quando marca, usa seu nome e foto; os demais gols usam o nome do jogador e o escudo/bandeira.
 
 ## Formatos e controles
 
 - **Liga:** 2 a 32 equipes e 1 a 100 rodadas. O calendário distribui todos os confrontos de um turno, inclui folga para número ímpar de equipes e inverte os lados no returno. Vitória vale 3 pontos; empate, 1; derrota, 0.
 - **Mata-mata:** chaves de 2, 4, 8, 16 ou 32 vagas, com folgas opcionais, ordem da lista ou cabeças de chave e opção de embaralhar. Empate leva a **Golden Goal**: a partida continua até um gol real da simulação, podendo ultrapassar a duração regulamentar. O sistema não escolhe um vencedor artificial.
-- **Partidas:** 1 a 5 discos por time, com padrão de 3, mais uma única bola branca. Velocidades, tamanhos, força do chute, pausa após gol, uso do overall e permanência dos discos em sua metade ficam no painel central.
+- **Partidas:** 1 a 5 discos por time nas cenas tradicionais, com padrão de 3, mais uma única bola branca. Nas cenas de convidados, o capitão extra permite até seis discos por equipe. Velocidades, tamanhos, força do chute, pausa após gol, uso do overall e permanência dos discos em sua metade ficam no painel central.
 - **Transmissão:** nome da competição, fontes, logos, fundos, cores, duração das aberturas, fotos ampliadas dos representantes e tempo das tabelas ficam no mesmo painel e no tema associado.
 
 ## Tags, capitães e textos da arena
@@ -91,6 +107,7 @@ Os dados ficam em `Application.persistentDataPath`, sob o Product Name **Futebol
 
 ```text
 Discos/<competição>/<temporada>/configuracao_discos.json
+Discos/<competição>/<temporada>/capitaes_convidados.json  (nas cenas com convidados)
 Ligas/<competição>/<temporada>/temporada.json
 MataMata/<competição>/<temporada>/torneio.json
 ```

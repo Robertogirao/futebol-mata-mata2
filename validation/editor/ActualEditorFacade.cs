@@ -23,6 +23,7 @@ namespace UnityEditor {
   public string name{get{return field.Name;}}private System.Collections.IList list{get{return (System.Collections.IList)owner.Read(field);}}
   public int intValue{get{return Convert.ToInt32(owner.Read(field));}set{owner.Write(field,field.FieldType.IsEnum?Enum.ToObject(field.FieldType,value):(object)value);}}
   public int enumValueIndex{get{return intValue;}set{intValue=value;}}
+  public bool boolValue{get{return(bool)owner.Read(field);}set{owner.Write(field,value);}}
   public float floatValue{get{return(float)owner.Read(field);}set{owner.Write(field,value);}}
   public int arraySize{get{return list.Count;}set{if(list.Count!=value)owner.MarkArrayChange();while(list.Count>value)list.RemoveAt(list.Count-1);object prior=list.Count>0?list[list.Count-1]:null;while(list.Count<value)list.Add(prior);}}
   public SerializedProperty GetArrayElementAtIndex(int i){return new SerializedProperty(owner,field){index=i};}
@@ -33,10 +34,10 @@ namespace UnityEditor {
  public static class EditorGUI {public static int disabledCount,indentLevel;public class DisabledScope:IDisposable {bool disabled;public DisabledScope(bool b){disabled=b;if(b)disabledCount++;}public void Dispose(){if(disabled)disabledCount--;}}}
  public enum MessageType{None,Info,Warning,Error}
  public static class EditorGUILayout {
-  public static Dictionary<string,UnityEngine.Object> objects=new Dictionary<string,UnityEngine.Object>();public static Dictionary<string,int> ints=new Dictionary<string,int>();public static Dictionary<string,float> floats=new Dictionary<string,float>();public static Dictionary<string,int> popups=new Dictionary<string,int>();public static List<string> properties=new List<string>();public static List<string> labels=new List<string>();
+  public static Dictionary<string,bool> bools=new Dictionary<string,bool>();public static Dictionary<string,UnityEngine.Object> objects=new Dictionary<string,UnityEngine.Object>();public static Dictionary<string,int> ints=new Dictionary<string,int>();public static Dictionary<string,float> floats=new Dictionary<string,float>();public static Dictionary<string,int> popups=new Dictionary<string,int>();public static List<string> properties=new List<string>();public static List<string> labels=new List<string>();
   public class HorizontalScope:IDisposable {public void Dispose(){}}
   public static void HelpBox(string s,MessageType t){}public static void Space(float f=0){}public static void LabelField(string s,object o){labels.Add(s);}
-  public static void PropertyField(SerializedProperty p,UnityEngine.GUIContent c,bool child=false){properties.Add(p.name);if(EditorGUI.disabledCount==0&&floats.ContainsKey(c.text))p.floatValue=floats[c.text];if(EditorGUI.disabledCount==0&&objects.ContainsKey(c.text))p.objectReferenceValue=objects[c.text];}
+  public static void PropertyField(SerializedProperty p,UnityEngine.GUIContent c,bool child=false){properties.Add(p.name);if(EditorGUI.disabledCount==0&&bools.ContainsKey(c.text))p.boolValue=bools[c.text];if(EditorGUI.disabledCount==0&&floats.ContainsKey(c.text))p.floatValue=floats[c.text];if(EditorGUI.disabledCount==0&&objects.ContainsKey(c.text))p.objectReferenceValue=objects[c.text];}
   public static int Popup(string s,int v,string[] opts){return EditorGUI.disabledCount==0&&popups.ContainsKey(s)?popups[s]:v;}
   public static int IntField(string s,int v){return EditorGUI.disabledCount==0&&ints.ContainsKey(s)?ints[s]:v;}
   public static bool Foldout(bool b,string s,bool toggle){return b;}
@@ -45,7 +46,7 @@ namespace UnityEditor {
  }
  public static class Undo {public static int count;public static void RecordObject(UnityEngine.Object o,string s){count++;}}
  public static class EditorUtility {public static int dirty;public static HashSet<UnityEngine.Object> dirtyObjects=new HashSet<UnityEngine.Object>();public static string revealed;public static void SetDirty(UnityEngine.Object o){dirty++;dirtyObjects.Add(o);}public static bool IsPersistent(UnityEngine.Object o){return false;}public static void RevealInFinder(string s){revealed=s;}public static bool DisplayDialog(string a,string b,string c){return true;}}
- public static class AssetDatabase {public static Dictionary<string,UnityEngine.Object> assets=new Dictionary<string,UnityEngine.Object>();public static string[] FindAssets(string query){var result=new List<string>();foreach(var entry in assets)if(entry.Value is TeamData)result.Add(entry.Key);return result.ToArray();}public static string GUIDToAssetPath(string g){return g;}public static string GetAssetPath(UnityEngine.Object o){return o.name;}public static T LoadAssetAtPath<T>(string p)where T:class{return assets.ContainsKey(p)?assets[p] as T:null;}}
+ public static class AssetDatabase {public static Dictionary<string,UnityEngine.Object> assets=new Dictionary<string,UnityEngine.Object>();public static string[] FindAssets(string query){var result=new List<string>();foreach(var entry in assets)if(entry.Value!=null&&(!query.StartsWith("t:")||entry.Value.GetType().Name==query.Substring(2)))result.Add(entry.Key);return result.ToArray();}public static string GUIDToAssetPath(string g){return g;}public static string GetAssetPath(UnityEngine.Object o){return o.name;}public static T LoadAssetAtPath<T>(string p)where T:class{return assets.ContainsKey(p)?assets[p] as T:null;}}
  public enum SelectionMode {DeepAssets}
  public static class PrefabUtility{public static HashSet<UnityEngine.Object> instances=new HashSet<UnityEngine.Object>();public static int records;public static bool IsPartOfPrefabInstance(UnityEngine.Object o){return instances.Contains(o);}public static void RecordPrefabInstancePropertyModifications(UnityEngine.Object o){records++;}}
  public static class Selection {public static UnityEngine.GameObject activeGameObject;public static T[] GetFiltered<T>(SelectionMode m){return new T[0];}}

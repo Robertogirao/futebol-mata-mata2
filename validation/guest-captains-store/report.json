@@ -1,0 +1,9 @@
+{
+  "assertions": 780,
+  "actual_asset_and_repository_sources": true,
+  "team_counts": "2-32",
+  "real_filesystem": true,
+  "injected_serializer": "XML",
+  "native_unity_import_or_json_executed": false,
+  "result": "pass"
+}

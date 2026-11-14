@@ -90,7 +90,7 @@ namespace FutebolDeDiscos
                 Texto(raiz, "Broadcast Signature", tituloRodape, 530f, 976f, 860f, 40f,
                     31f, Color.white, true, TextAlignmentOptions.Center);
             string formato = config != null && config.formato == FormatoDiscos.MataMata ? "KNOCKOUT" : "LEAGUE";
-            int discos = config != null ? Mathf.Max(1, config.discosPorTime) : 3;
+            int discos = config != null ? Mathf.Max(1, config.TotalDiscosPorTime) : 3;
             string linhaRodape = config == null || config.mostrarDetalhesFormato ? formato + "  ·  " + discos + " v " + discos : "";
             string subtitulo = config == null ? "AUTOMATIC DISC FOOTBALL" :
                 config.mostrarSubtituloRodape ? TextoOpcional(config.subtituloRodape) : "";

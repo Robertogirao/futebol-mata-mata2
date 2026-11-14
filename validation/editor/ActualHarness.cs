@@ -192,6 +192,71 @@ public static class ActualHarness
         }
         EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
     }
+    static void CheckGuestCaptainControls()
+    {
+        var manager = Manager();
+        var editor = EditorFor(manager);
+        var teams = manager.participantes.ToArray();
+        Check(!manager.usarCapitaesConvidados, "guest captain mode is opt-in for the original scenes");
+        EditorGUILayout.properties.Clear(); editor.OnInspectorGUI();
+        Check(EditorGUILayout.properties.Contains("usarCapitaesConvidados") && !EditorGUILayout.properties.Contains("catalogoCapitaes") &&
+            !EditorGUILayout.properties.Contains("capitaesFixos"), "original inspector keeps guest-only configuration collapsed");
+        var alpha = ScriptableObject.CreateInstance<CapitaoConvidado>(); alpha.name = "Alpha"; alpha.nomeCapitao = "Guest Alpha";
+        var zeta = ScriptableObject.CreateInstance<CapitaoConvidado>(); zeta.name = "Zeta"; zeta.nomeCapitao = "Guest Zeta";
+        AssetDatabase.assets["captain-zeta"] = zeta;
+        AssetDatabase.assets["unrelated-team"] = teams[0];
+        AssetDatabase.assets["captain-alpha"] = alpha;
+        foreach (FormatoDiscos mode in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+        {
+            manager.formato = mode;
+            EditorGUILayout.bools["Usar capitães convidados"] = true;
+            EditorGUILayout.bools["Capitão como disco extra"] = true;
+            EditorGUILayout.ints["Jogadores do time (sem o capitão)"] = 5;
+            GUILayout.buttons.Add("Carregar capitães do catálogo");
+            EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear(); editor.OnInspectorGUI();
+            EditorGUILayout.bools.Clear(); EditorGUILayout.ints.Clear();
+            Check(manager.usarCapitaesConvidados && manager.capitaoExtra && manager.discosPorTime == 5 && manager.TotalDiscosPorTime == 6,
+                "central guest controls add an extra captain to the chosen football-player count in " + mode);
+            Check(manager.catalogoCapitaes.SequenceEqual(new[] { alpha, zeta }), "catalog button loads only captain assets in stable name order in " + mode);
+            Check(EditorGUILayout.properties.Count(p => p == "catalogoCapitaes") == 1 && EditorGUILayout.properties.Count(p => p == "capitaesFixos") == 1,
+                "catalog and optional fixed assignments each appear once in " + mode);
+            Check(teams.SequenceEqual(manager.participantes) && teams.All(t => t.elenco.Count == 1 && t.elenco[0].nomeJogador.StartsWith("Player ")),
+                "guest inspector never changes team selection or football rosters in " + mode);
+            manager.capitaesFixos.Clear();
+            manager.capitaesFixos.Add(new VinculoCapitaoConvidado { time = teams[0], capitao = alpha });
+            EditorGUILayout.bools["Capitão como disco extra"] = false;
+            EditorGUILayout.ints["Discos por time"] = 4;
+            editor.OnInspectorGUI(); EditorGUILayout.bools.Clear(); EditorGUILayout.ints.Clear();
+            Check(!manager.capitaoExtra && manager.discosPorTime == 4 && manager.TotalDiscosPorTime == 4,
+                "using one existing slot updates the displayed count in " + mode);
+            Check(manager.capitaesFixos.Count == 1 && manager.capitaesFixos[0].time == teams[0] && manager.capitaesFixos[0].capitao == alpha,
+                "ordinary redraw preserves manually chosen captain bindings in " + mode);
+        }
+        var priorCatalog = manager.catalogoCapitaes.ToArray();
+        EditorApplication.isPlayingOrWillChangePlaymode = true;
+        EditorGUILayout.bools["Usar capitães convidados"] = false;
+        GUILayout.buttons.Add("Carregar capitães do catálogo");
+        AssetDatabase.assets["third-captain"] = ScriptableObject.CreateInstance<CapitaoConvidado>();
+        editor.OnInspectorGUI();
+        Check(manager.usarCapitaesConvidados && manager.catalogoCapitaes.SequenceEqual(priorCatalog),
+            "Play locks both the guest toggle and catalog-loading action");
+        EditorApplication.isPlayingOrWillChangePlaymode = false;
+        EditorGUILayout.bools.Clear(); GUILayout.buttons.Clear();
+        EditorGUILayout.bools["Usar capitães convidados"] = false;
+        editor.OnInspectorGUI(); EditorGUILayout.bools.Clear();
+        Check(!manager.usarCapitaesConvidados && manager.catalogoCapitaes.SequenceEqual(priorCatalog),
+            "turning guest mode off preserves the catalog for later use");
+        foreach (string menu in new[] { "AbrirLigaCapitaes", "AbrirMataMataCapitaes" })
+        {
+            typeof(ProjetoFutebolDiscosEditor).GetMethod(menu, BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, null);
+            Check(UnityEditor.SceneManagement.EditorSceneManager.path.EndsWith(menu == "AbrirLigaCapitaes"
+                ? "/Capitaes/Liga_Capitaes.unity" : "/Capitaes/MataMata_Capitaes.unity"),
+                "guest scene menu opens the correct independent scene: " + menu);
+        }
+        AssetDatabase.assets.Clear();
+        UnityEngine.Object.Destroy(manager.gameObject);
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
+    }
     public static void Main()
     {
         Application.isPlaying = false;
@@ -202,6 +267,7 @@ public static class ActualHarness
         CheckSinglePanel(manager, editor);
         CheckCornerControls(manager, editor);
         CheckSoundSelection();
+        CheckGuestCaptainControls();
         Check(manager.ValidarConfiguracao(), "actual root validates scene default count/rounds/physics: " + manager.ultimoErro);
         editor.OnInspectorGUI();
         Check(manager.quantidadeTimes == 8 && manager.participantes.Count == 8, "actual default remains eight");

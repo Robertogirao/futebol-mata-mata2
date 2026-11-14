@@ -1,0 +1,2 @@
+PASS 780 guest-captain asset, assignment and real-filesystem persistence assertions.
+XML serializer injection and minimal asset data adapters; native Unity import/JSON were not executed.

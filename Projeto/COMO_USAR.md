@@ -8,6 +8,7 @@ No Editor, use:
 
 - **Tools > Futebol de Discos > Abrir Liga**: cena `Assets/Scenes/FutebolDiscos/Liga_Discos.unity`, com 8 seleções e 7 rodadas inicialmente.
 - **Tools > Futebol de Discos > Abrir Mata-mata**: cena `Assets/Scenes/FutebolDiscos/MataMata_Discos.unity`, com 16 clubes inicialmente.
+- **Tools > Futebol de Discos > Capitães > Abrir Liga** ou **Abrir Mata-mata**: novas cenas em `Assets/Scenes/FutebolDiscos/Capitaes/`, com personagens convidados como capitães e resultados próprios.
 
 Selecione **FutebolDiscos_Manager** na Hierarchy. O componente **Projeto Futebol Discos** reúne as configurações e mostra **Configurações da Liga** ou **Configurações do Mata-mata**, conforme a cena. Os componentes internos exibem apenas um atalho para esse painel no Inspector normal, evitando controles duplicados. Não é necessário marcar e desmarcar os modos nos scripts `TournamentManager`, `LigaCampeonato` ou `MataMataCampeonato`: o controlador configura o formato escolhido. Mantenha os componentes do manager habilitados.
 
@@ -67,6 +68,8 @@ Se o placar estiver empatado ao fim do tempo regulamentar, começa o **Golden Go
 
 Cada equipe tem **1 a 5 discos**, com **3 por padrão**. Essa quantidade permanece fixa durante a partida. Há uma única bola branca, e somente ela marca gols. Os discos se movimentam e chutam automaticamente, com colisões físicas no campo e nos gols.
 
+Nas cenas de capitães convidados, a opção de capitão extra soma um disco a essa quantidade, permitindo até **5 jogadores do time + 1 capitão**.
+
 Em **Discos e bola**, ajuste:
 
 | Controle | Efeito |
@@ -109,6 +112,22 @@ No **FutebolDiscos_Manager**, desmarque **Manter cada time em sua metade** para 
 O limite não mantém os jogadores permanentemente adiantados. A posição e a direção da bola abrem ou fecham a oportunidade: um jogador vai à bola e os apoios podem subir por faixas diferentes. Na ameaça defensiva eles retornam à formação, sem teleporte. Uma vaga só é liberada para outro jogador depois que o anterior regressa. O capitão também pode avançar.
 
 As escolhas das fichas antigas são preservadas: **Defesa** passa a aparecer como **Defensivo**, com o mesmo valor salvo. Altere as posturas fora do Play; elas afetam os próximos jogos, sem alterar os resultados concluídos. Para mudar o bloqueio geral da metade em uma temporada já salva, crie outra temporada, como nas regras anteriores.
+
+### Capitães convidados: personagens com overall próprio
+
+Abra **Tools > Futebol de Discos > Capitães > Abrir Liga** ou **Abrir Mata-mata**. As cenas são `Capitaes/Liga_Capitaes.unity` e `Capitaes/MataMata_Capitaes.unity`, dentro de `Assets/Scenes/FutebolDiscos/`. Seus identificadores `discos_liga_capitaes` e `discos_mata_capitaes` separam os resultados das cenas anteriores.
+
+No Project, use **Create > Futebol de Discos > Capitão convidado** para criar uma ficha. Defina **Nome Capitao**, **Foto** importada como Sprite e **Overall** de 1 a 100. O nome do arquivo é seu identificador no salvamento; não o renomeie durante uma temporada em andamento. Há 16 fichas genéricas editáveis em `Assets/FutebolDiscos/Capitaes/Modelos/`, inicialmente sem foto e com overall 75.
+
+No painel central, abra **Capitães convidados** e preencha **Capitães disponíveis**. **Carregar capitães do catálogo** encontra as fichas cadastradas, incluindo os modelos; retire da lista os exemplos que não quiser usar. É necessário um capitão diferente por time preenchido. **Associações fixas (opcional)** reserva combinações, como Real Madrid + Goku. Os capitães restantes são sorteados entre os demais times sem repetição.
+
+**Capitão como disco extra** vem marcado: o controle **Jogadores do time (sem o capitão)** configura o elenco de futebol, ao qual é somado o convidado. Assim, 3 jogadores + Goku formam quatro discos; 5 jogadores + Goku formam seis. Desmarcada a opção, o convidado ocupa uma das vagas de **Discos por time**. O elenco e o overall do asset `TeamData` permanecem intactos.
+
+O overall individual afeta somente a velocidade, potência e precisão dos chutes do convidado. Isso vale mesmo com **Considerar o overall dos times** desligado. Os jogadores do elenco continuam com seu comportamento normal; aumentar o overall de Goku não fortalece o restante do Real Madrid.
+
+O convidado usa a foto e a legenda **CAPTAIN** na abertura, e nome/foto ao marcar. Os demais gols usam o nome do jogador de futebol e o escudo/bandeira. Sem foto cadastrada, o capitão usa o escudo/bandeira como alternativa.
+
+O sorteio é salvo em `capitaes_convidados.json` na pasta da temporada, antes das partidas. Stop/Play mantém o mesmo capitão em cada time. Use **Nova temporada** para mudar as associações, o overall usado ou a regra de disco extra, mantendo os arquivos anteriores. Nome e foto são ajustes visuais e podem ser alterados sem trocar o sorteio. Veja [o guia completo da atualização](../Atualizacoes/COMO_APLICAR_CAPITAES_CONVIDADOS.md).
 
 ## 6. Nome, fontes, logos, fundos e fotos
 
@@ -181,11 +200,12 @@ O projeto usa o Product Name **Futebol de Discos**, isolando sua pasta de dados 
 
 ```text
 Discos/<competição>/<temporada>/configuracao_discos.json
+Discos/<competição>/<temporada>/capitaes_convidados.json  (nas cenas com convidados)
 Ligas/<competição>/<temporada>/temporada.json
 MataMata/<competição>/<temporada>/torneio.json
 ```
 
-Os metadados guardam a configuração, a semente efetiva e o calendário da liga. Os arquivos em `Ligas` e `MataMata` guardam os resultados e o andamento de seus respectivos formatos. A liga também mantém suas exportações por rodada.
+Os metadados guardam a configuração, a semente efetiva e o calendário da liga. Nas cenas com convidados, o arquivo adicional guarda a associação entre times e capitães, o overall utilizado e a regra de capitão extra. Os arquivos em `Ligas` e `MataMata` guardam os resultados e o andamento de seus respectivos formatos. A liga também mantém suas exportações por rodada.
 
 **Abrir pasta desta temporada** localiza a pasta dentro de `Discos`. Volte à raiz de dados para encontrar `Ligas` e `MataMata`. No Windows, com as configurações atuais, a raiz normalmente é `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Futebol de Discos`.
 
@@ -197,4 +217,4 @@ Esta entrega é o projeto-fonte, sem executável compilado. Scripts e assets de 
 
 Há verificações de código, calendário, CSV, arquivos salvos, continuidade dos torneios, geometria e referências das cenas. Para as APIs Unity, os testes usam fachadas de API; isso não certifica contatos físicos, importação, áudio ou aparência no Editor. O conjunto de calendário e metadados passou por **37.629 verificações** com o parser CSV original e arquivos reais. Os detalhes estão na pasta `validation`, ao lado de `Projeto`.
 
-Antes da primeira gravação, rode as duas cenas no Unity e confira a escala dos objetos, a bola branca marcando gols, as fichas de representantes, as fontes, o encerramento e a retomada após Stop/Play.
+Antes da primeira gravação, rode as cenas no Unity e confira a escala dos objetos, a bola branca marcando gols, as fichas de representantes, as fontes, o encerramento e a retomada após Stop/Play. Nas cenas de convidados, confira também nome/foto do capitão, os jogadores do elenco e a associação mantida entre sessões.
