@@ -2,6 +2,16 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
+## Correção dos textos em inglês
+
+[**BAIXAR SOMENTE A CORREÇÃO DE IDIOMA — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_TEXTOS_INGLES.zip)
+
+Aplique sobre a versão atual com música no sorteio e placar final. O pacote contém apenas dois scripts.
+
+Os rótulos gerados pela transmissão do jogo ficam em **inglês**: **FULL TIME**, **FINAL SCORE**, **WINNER**, **DRAW**, e as posições **DEFENSE**, **MIDFIELD**, **ATTACK** (siglas **DEF**, **MID**, **FWD**). Novas fichas usam **New Captain** como nome inicial. Nomes próprios e textos personalizados cadastrados pelo usuário permanecem como dados da competição.
+
+Com o Unity fechado, copie `Assets` do ZIP sobre a pasta do projeto e substitua os dois scripts. As posições salvas e os overalls continuam compatíveis.
+
 ## Música no sorteio e apresentação do placar final
 
 [**BAIXAR SOMENTE ESTA ATUALIZAÇÃO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_SORTEIO_E_PLACAR.zip)

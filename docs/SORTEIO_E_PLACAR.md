@@ -10,7 +10,7 @@ A música toca em loop durante apresentação, sorteio e quadro final, tanto num
 
 Em **Tempos da transmissão (segundos)**, ajuste **Mostrar apresentação do placar final** e **Apresentação do placar final (s)**. O padrão é ligado por três segundos, incluindo entrada e saída suaves. Opção desligada ou duração zero pula a apresentação.
 
-O cartão central mostra escudos, nomes, placar grande, “FIM DE JOGO” e vencedor ou empate. Aparece depois da pausa pós-jogo e de todas as comemorações de gol. A simulação continua parada enquanto o cartão é exibido, e o campeonato só recebe o resultado e avança depois de sua saída. Também funciona no Golden Goal.
+O cartão central mostra escudos, nomes, placar grande, “FULL TIME” e vencedor ou empate. Aparece depois da pausa pós-jogo e de todas as comemorações de gol. A simulação continua parada enquanto o cartão é exibido, e o campeonato só recebe o resultado e avança depois de sua saída. Também funciona no Golden Goal.
 
 Cancelar, desativar ou configurar outra partida oculta o cartão e invalida a apresentação anterior, evitando que ela avance ou interfira no jogo seguinte.
 

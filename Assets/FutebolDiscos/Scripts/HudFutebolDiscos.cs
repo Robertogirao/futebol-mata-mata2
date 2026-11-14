@@ -155,7 +155,7 @@ namespace FutebolDeDiscos
             AtribuirImagem(escudoFinalA, equipeA != null ? equipeA.escudoOuBandeira : null);
             AtribuirImagem(escudoFinalB, equipeB != null ? equipeB.escudoOuBandeira : null);
             resultadoFinal.text = golsA + "  –  " + golsB;
-            conclusaoFinal.text = golsA == golsB ? "EMPATE" : "VENCEDOR: " +
+            conclusaoFinal.text = golsA == golsB ? "DRAW" : "WINNER: " +
                 NomeEquipe(golsA > golsB ? equipeA : equipeB, golsA > golsB ? "HOME TEAM" : "AWAY TEAM");
             conclusaoFinal.color = golsA == golsB ? Color.white : destaque;
             painelPlacarFinal.SetAsLastSibling();
@@ -209,7 +209,7 @@ namespace FutebolDeDiscos
             Caixa(painelPlacarFinal, "Result Top Accent", 0f, 0f, 1440f, 4f, destaque);
             Caixa(painelPlacarFinal, "Result Bottom Accent", 0f, 416f, 1440f, 4f,
                 new Color(destaque.r, destaque.g, destaque.b, .55f));
-            Texto(painelPlacarFinal, "Full Time Title", "FIM DE JOGO", 120f, 25f, 1200f, 48f,
+            Texto(painelPlacarFinal, "Full Time Title", "FULL TIME", 120f, 25f, 1200f, 48f,
                 35f, destaque, true, TextAlignmentOptions.Center);
             corFinalA = Caixa(painelPlacarFinal, "Final Home Color", 48f, 94f, 420f, 4f, Color.white).GetComponent<Image>();
             corFinalB = Caixa(painelPlacarFinal, "Final Away Color", 972f, 94f, 420f, 4f, Color.white).GetComponent<Image>();
@@ -222,7 +222,7 @@ namespace FutebolDeDiscos
             resultadoFinal = Texto(painelPlacarFinal, "Final Score", "", 490f, 111f, 460f, 158f,
                 112f, Color.white, true, TextAlignmentOptions.Center);
             resultadoFinal.fontSizeMin = 42f;
-            Texto(painelPlacarFinal, "Result Label", "PLACAR FINAL", 510f, 273f, 420f, 28f,
+            Texto(painelPlacarFinal, "Result Label", "FINAL SCORE", 510f, 273f, 420f, 28f,
                 20f, new Color(.62f, .81f, .82f), false, TextAlignmentOptions.Center);
             conclusaoFinal = Texto(painelPlacarFinal, "Final Winner", "", 96f, 338f, 1248f, 44f,
                 30f, destaque, true, TextAlignmentOptions.Center);

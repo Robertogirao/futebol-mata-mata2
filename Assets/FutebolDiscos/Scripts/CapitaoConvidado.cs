@@ -12,16 +12,16 @@ namespace FutebolDeDiscos
         { return posicao == PosicaoCapitao.Defesa || posicao == PosicaoCapitao.Meio || posicao == PosicaoCapitao.Ataque; }
 
         public static string Nome(PosicaoCapitao posicao)
-        { return posicao == PosicaoCapitao.Ataque ? "Ataque" : posicao == PosicaoCapitao.Meio ? "Meio" : "Defesa"; }
+        { return posicao == PosicaoCapitao.Ataque ? "ATTACK" : posicao == PosicaoCapitao.Meio ? "MIDFIELD" : "DEFENSE"; }
 
         public static string Sigla(PosicaoCapitao posicao)
-        { return posicao == PosicaoCapitao.Ataque ? "ATA" : posicao == PosicaoCapitao.Meio ? "MEI" : "DEF"; }
+        { return posicao == PosicaoCapitao.Ataque ? "FWD" : posicao == PosicaoCapitao.Meio ? "MID" : "DEF"; }
     }
 
     [CreateAssetMenu(fileName = "NovoCapitao", menuName = "Futebol de Discos/Capitão convidado", order = 20)]
     public sealed class CapitaoConvidado : ScriptableObject
     {
-        public string nomeCapitao = "Novo Capitão";
+        public string nomeCapitao = "New Captain";
         public Sprite foto;
         [Range(1, 100)]
         [Tooltip("Força individual do capitão. Não altera o overall nem os jogadores do time.")]
