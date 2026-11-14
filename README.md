@@ -2,9 +2,13 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
-[**Baixar esta versão completa em ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/heads/entrega/audio-partidas.zip)
+## Baixar apenas a atualização
 
-Extraia o ZIP e adicione sua pasta raiz pelo Unity Hub. A pasta correta contém `Assets`, `Packages` e `ProjectSettings`. Use **Unity 6000.4.11f1**.
+[**ATUALIZAÇÃO DE ÁUDIO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_AUDIO.zip)
+
+O ZIP contém somente os **10 arquivos alterados/adicionados** em relação ao `BACKUP.part1.rar`, `BACKUP.part2.rar` e `BACKUP.part3.rar` enviados nesta conversa, além das instruções. As músicas e os efeitos já presentes no backup não são duplicados.
+
+Com o Unity fechado, extraia o ZIP e copie a pasta `Assets` sobre a pasta `Assets` do projeto desse backup, aceitando mesclar pastas e substituir os arquivos. O pacote atualiza os scripts e as quatro cenas. Depois abra o projeto no **Unity 6000.4.11f1**.
 
 ## Cenas
 
