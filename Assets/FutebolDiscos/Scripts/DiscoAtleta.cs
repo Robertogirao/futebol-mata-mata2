@@ -57,7 +57,7 @@ namespace FutebolDeDiscos
             Imagem("Disc Shadow", circulo, material, new Color(0f, 0f, 0f, .65f), d * 1.1f, 12);
             bool destacar = Capitao && partida.Configuracao.mostrarMarcaCapitao;
             Color ouro = new Color(1f, .81f, .2f);
-            if (destacar) Imagem("Captain Ring", circulo, material, ouro, d * 1.16f, 12);
+            if (destacar) Imagem("Captain Ring", circulo, material, cor, d * 1.16f, 12);
             Imagem("Team Ring", circulo, material, cor, d, 13);
             Imagem("Inner Plate", circulo, material, new Color(.025f, .055f, .09f), d * .83f, 14);
             Sprite identidade = Capitao && partida.Configuracao.usarFotoNoDiscoCapitao ? ImagemDoGol : equipe.escudoOuBandeira;

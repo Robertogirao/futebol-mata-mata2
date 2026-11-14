@@ -2,6 +2,14 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
+## Contorno do capitão na cor do time
+
+[**BAIXAR SOMENTE ESTA ATUALIZAÇÃO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_CONTORNO_CAPITAO.zip)
+
+O contorno circular do capitão agora acompanha a cor usada pelos demais discos do time na partida, inclusive a alternativa escolhida para contraste. Tamanho e demais detalhes permanecem iguais.
+
+O ZIP contém somente `Assets/FutebolDiscos/Scripts/DiscoAtleta.cs` e as instruções. Com o Unity fechado, copie `Assets` sobre a pasta do projeto atual e substitua esse script. Não exige nova temporada.
+
 ## Editor de retratos dos capitães
 
 [**BAIXAR O EDITOR HTML — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/CAPTAIN_PORTRAIT_EDITOR.zip)
