@@ -32,11 +32,16 @@ namespace FutebolDeDiscos
         public bool mostrarSorteioCapitaes = true, reexibirSorteioSalvo;
         public float tempoApresentacaoSorteio = 2f, velocidadeSorteio = 1f,
             intervaloRevelacoesSorteio = .35f, tempoResultadoSorteio = 3f;
+        public AudioClip musicaSorteio;
+        [Range(0f, 1f)] public float volumeMusicaSorteio = .35f;
+        [Min(0f)] public float fadeInMusicaSorteio = 1.5f, fadeOutMusicaSorteio = 1.5f;
         public bool sortearConfrontos = true, permitirFolgas, umaRodadaOuFasePorPlay;
         public DistribuicaoMataMata distribuicao = DistribuicaoMataMata.ConfrontosNaOrdemDaLista;
         public int discosPorTime = 3;
         public float duracaoPartida = 45f, tempoAbertura = 5f, tempoFotos = 4f,
             tempoTransicaoFotos = 0.8f, tempoTabela = 7f, intervaloEntrePartidas = 2f;
+        public bool mostrarPlacarFinal = true;
+        [Min(0f)] public float tempoPlacarFinal = 3f;
         public float velocidadeDiscos = 3f, velocidadeMaximaBola = 15f, forcaChute = 7f,
             tamanhoDisco = 1f, tamanhoBola = 0.42f, pausaAposGol = 1.1f;
         public bool limitarDiscosNaMetade = true, usarForcaDosTimes = true;
@@ -155,6 +160,7 @@ namespace FutebolDeDiscos
 
         private IEnumerator SequenciaSorteioCapitaes(RepositorioCapitaesConvidados repositorio, bool possuiResultados, bool repeticao)
         {
+            sorteioCapitaes.ConfigurarMusica(musicaSorteio, volumeMusicaSorteio, fadeInMusicaSorteio, fadeOutMusicaSorteio);
             yield return sorteioCapitaes.Exibir(motorSorteio, participantes.Where(t => t != null).ToList(), catalogoCapitaes,
                 temaEmUso, tempoApresentacaoSorteio, velocidadeSorteio, intervaloRevelacoesSorteio, repeticao);
             if (!isActiveAndEnabled || !sorteioCapitaes.Concluido) yield break;
@@ -295,6 +301,8 @@ namespace FutebolDeDiscos
             manager.jogandoFaseDeGrupos = false;
             ui.duracaoRealEmSegundos = duracaoPartida;
             ui.tempoCongeladoPosJogo = intervaloEntrePartidas;
+            ui.mostrarPlacarFinal = mostrarPlacarFinal;
+            ui.tempoPlacarFinal = tempoPlacarFinal;
             ui.ConfigurarEfeitoFotos(mostrarScannerFotos, velocidadeScannerFotos);
             tabela.nomeDaLiga = nomeCampeonato;
             tabela.logo = temaEmUso.logoCompeticao;
@@ -487,6 +495,11 @@ namespace FutebolDeDiscos
                 if (!Faixa(tempoApresentacaoSorteio, 0f, 10f) || !Faixa(velocidadeSorteio, .25f, 3f) ||
                     !Faixa(intervaloRevelacoesSorteio, .05f, 2f) || !Faixa(tempoResultadoSorteio, 0f, 30f))
                     throw new InvalidOperationException("Confira os tempos e a velocidade do sorteio dos capitães.");
+                if (!Faixa(volumeMusicaSorteio, 0f, 1f) || !Faixa(fadeInMusicaSorteio, 0f, 10f) ||
+                    !Faixa(fadeOutMusicaSorteio, 0f, 10f))
+                    throw new InvalidOperationException("Confira o volume e os fades da música do sorteio.");
+                if (!Faixa(tempoPlacarFinal, 0f, 15f))
+                    throw new InvalidOperationException("A apresentação do placar final deve durar de 0 a 15 segundos.");
                 ultimoErro = "";
                 return true;
             }

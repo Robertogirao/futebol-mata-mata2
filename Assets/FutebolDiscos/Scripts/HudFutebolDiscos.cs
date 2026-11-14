@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,13 @@ namespace FutebolDeDiscos
         private UniversalUI interfacePartida;
         private GoalBannerUI bannerPartida;
         private Color destaque;
+        private TeamData equipeA, equipeB;
+        private Color corEquipeA, corEquipeB;
+        private RectTransform painelPlacarFinal;
+        private CanvasGroup grupoPlacarFinal;
+        private TextMeshProUGUI nomeFinalA, nomeFinalB, resultadoFinal, conclusaoFinal;
+        private Image escudoFinalA, escudoFinalB, corFinalA, corFinalB;
+        private int versaoPlacarFinal;
 
         public void Construir(ProjetoFutebolDiscos config, UniversalUI ui, GoalBannerUI banner)
         {
@@ -112,6 +120,11 @@ namespace FutebolDeDiscos
 
         public void ConfigurarEquipes(TeamData a, TeamData b, Color corA, Color corB)
         {
+            OcultarPlacarFinal();
+            equipeA = a;
+            equipeB = b;
+            corEquipeA = Visivel(corA);
+            corEquipeB = Visivel(corB);
             if (raiz == null) return;
             nomeA.text = NomeEquipe(a, "HOME TEAM");
             nomeB.text = NomeEquipe(b, "AWAY TEAM");
@@ -127,8 +140,105 @@ namespace FutebolDeDiscos
             if (estado != null) estado.text = string.IsNullOrWhiteSpace(texto) ? "" : texto.Trim();
         }
 
+        /// <summary>Shows the settled result after goal celebrations, even while gameplay is paused.</summary>
+        public IEnumerator ExibirPlacarFinal(int golsA, int golsB, float segundos)
+        {
+            OcultarPlacarFinal();
+            float duracao = float.IsNaN(segundos) || float.IsInfinity(segundos) ? 3f : Mathf.Max(0f, segundos);
+            if (duracao <= 0f || !isActiveAndEnabled || raiz == null || !raiz.gameObject.activeInHierarchy) yield break;
+            ConstruirPlacarFinal();
+            int minhaVersao = versaoPlacarFinal;
+            nomeFinalA.text = NomeEquipe(equipeA, "HOME TEAM");
+            nomeFinalB.text = NomeEquipe(equipeB, "AWAY TEAM");
+            corFinalA.color = corEquipeA;
+            corFinalB.color = corEquipeB;
+            AtribuirImagem(escudoFinalA, equipeA != null ? equipeA.escudoOuBandeira : null);
+            AtribuirImagem(escudoFinalB, equipeB != null ? equipeB.escudoOuBandeira : null);
+            resultadoFinal.text = golsA + "  –  " + golsB;
+            conclusaoFinal.text = golsA == golsB ? "EMPATE" : "VENCEDOR: " +
+                NomeEquipe(golsA > golsB ? equipeA : equipeB, golsA > golsB ? "HOME TEAM" : "AWAY TEAM");
+            conclusaoFinal.color = golsA == golsB ? Color.white : destaque;
+            painelPlacarFinal.SetAsLastSibling();
+            painelPlacarFinal.gameObject.SetActive(true);
+            grupoPlacarFinal.alpha = 0f;
+
+            float transicao = Mathf.Min(.32f, duracao * .25f);
+            double tempo = 0d;
+            while (PlacarFinalAtual(minhaVersao))
+            {
+                float atual = (float)tempo;
+                float entrada = Mathf.Clamp01(atual / transicao);
+                float saida = Mathf.Clamp01((duracao - atual) / transicao);
+                float visibilidade = Mathf.SmoothStep(0f, 1f, Mathf.Min(entrada, saida));
+                grupoPlacarFinal.alpha = visibilidade;
+                painelPlacarFinal.localScale = Vector3.one * Mathf.Lerp(.95f, 1f, visibilidade);
+                if (tempo + .000001d >= duracao) break;
+                yield return null;
+                tempo += PassoPlacarFinal();
+            }
+            if (PlacarFinalAtual(minhaVersao)) OcultarPlacarFinal();
+        }
+
+        public void OcultarPlacarFinal()
+        {
+            unchecked { versaoPlacarFinal++; }
+            if (grupoPlacarFinal != null) grupoPlacarFinal.alpha = 0f;
+            if (painelPlacarFinal != null)
+            {
+                painelPlacarFinal.localScale = Vector3.one;
+                painelPlacarFinal.gameObject.SetActive(false);
+            }
+        }
+
+        private bool PlacarFinalAtual(int versao)
+        {
+            return this != null && isActiveAndEnabled && versao == versaoPlacarFinal &&
+                raiz != null && raiz.gameObject.activeInHierarchy && painelPlacarFinal != null;
+        }
+
+        private void ConstruirPlacarFinal()
+        {
+            if (painelPlacarFinal != null) return;
+            painelPlacarFinal = Caixa(raiz, "Final Score Presentation", 240f, 330f, 1440f, 420f,
+                new Color(.012f, .045f, .06f, .98f));
+            painelPlacarFinal.pivot = new Vector2(.5f, .5f);
+            painelPlacarFinal.anchoredPosition = new Vector2(960f, -540f);
+            grupoPlacarFinal = painelPlacarFinal.gameObject.AddComponent<CanvasGroup>();
+            grupoPlacarFinal.interactable = false;
+            grupoPlacarFinal.blocksRaycasts = false;
+            Caixa(painelPlacarFinal, "Result Top Accent", 0f, 0f, 1440f, 4f, destaque);
+            Caixa(painelPlacarFinal, "Result Bottom Accent", 0f, 416f, 1440f, 4f,
+                new Color(destaque.r, destaque.g, destaque.b, .55f));
+            Texto(painelPlacarFinal, "Full Time Title", "FIM DE JOGO", 120f, 25f, 1200f, 48f,
+                35f, destaque, true, TextAlignmentOptions.Center);
+            corFinalA = Caixa(painelPlacarFinal, "Final Home Color", 48f, 94f, 420f, 4f, Color.white).GetComponent<Image>();
+            corFinalB = Caixa(painelPlacarFinal, "Final Away Color", 972f, 94f, 420f, 4f, Color.white).GetComponent<Image>();
+            escudoFinalA = Imagem(painelPlacarFinal, "Final Home Crest", 208f, 114f, 100f, 100f);
+            escudoFinalB = Imagem(painelPlacarFinal, "Final Away Crest", 1132f, 114f, 100f, 100f);
+            nomeFinalA = Texto(painelPlacarFinal, "Final Home Name", "", 48f, 232f, 420f, 68f,
+                35f, Color.white, true, TextAlignmentOptions.Center);
+            nomeFinalB = Texto(painelPlacarFinal, "Final Away Name", "", 972f, 232f, 420f, 68f,
+                35f, Color.white, true, TextAlignmentOptions.Center);
+            resultadoFinal = Texto(painelPlacarFinal, "Final Score", "", 490f, 111f, 460f, 158f,
+                112f, Color.white, true, TextAlignmentOptions.Center);
+            resultadoFinal.fontSizeMin = 42f;
+            Texto(painelPlacarFinal, "Result Label", "PLACAR FINAL", 510f, 273f, 420f, 28f,
+                20f, new Color(.62f, .81f, .82f), false, TextAlignmentOptions.Center);
+            conclusaoFinal = Texto(painelPlacarFinal, "Final Winner", "", 96f, 338f, 1248f, 44f,
+                30f, destaque, true, TextAlignmentOptions.Center);
+            grupoPlacarFinal.alpha = 0f;
+            painelPlacarFinal.gameObject.SetActive(false);
+        }
+
+        private static float PassoPlacarFinal()
+        {
+            float passo = Time.captureDeltaTime > 0f ? Time.captureDeltaTime : Time.unscaledDeltaTime;
+            return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
+        }
+
         public void Limpar()
         {
+            OcultarPlacarFinal();
             if (bannerPartida != null) bannerPartida.LimparFila();
             if (raiz != null)
             {
@@ -155,6 +265,11 @@ namespace FutebolDeDiscos
             bannerPartida = null;
             nomeA = nomeB = estado = null;
             faixaA = faixaB = escudoA = escudoB = null;
+            equipeA = equipeB = null;
+            painelPlacarFinal = null;
+            grupoPlacarFinal = null;
+            nomeFinalA = nomeFinalB = resultadoFinal = conclusaoFinal = null;
+            escudoFinalA = escudoFinalB = corFinalA = corFinalB = null;
         }
 
         private static string NomeEquipe(TeamData time, string padrao)
@@ -230,6 +345,7 @@ namespace FutebolDeDiscos
             return text;
         }
 
+        private void OnDisable() { OcultarPlacarFinal(); }
         private void OnDestroy() { Limpar(); }
     }
 }

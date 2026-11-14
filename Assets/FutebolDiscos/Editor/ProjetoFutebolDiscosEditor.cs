@@ -110,6 +110,11 @@ namespace FutebolDeDiscos
                 Campo("tempoTransicaoFotos", "Retorno das fichas ao jogo (s)");
                 Campo("tempoTabela", mataMata ? "Leitura do quadro final (s)" : "Leitura da classificação (s)");
                 Campo("intervaloEntrePartidas", "Pausa após a partida (s)", "Aplicada uma única vez. Se houver comemorações pendentes, aguarda o fim delas.");
+                Campo("mostrarPlacarFinal", "Mostrar apresentação do placar final");
+                using (new EditorGUI.DisabledScope(!P("mostrarPlacarFinal").boolValue))
+                    Slider("tempoPlacarFinal", "Apresentação do placar final (s)", 0f, 15f);
+                EditorGUILayout.HelpBox("Após a pausa e as comemorações, mostra escudos, nomes e placar final antes de avançar. " +
+                    "O tempo inclui a entrada e a saída suaves; zero ou opção desligada pula a apresentação.", MessageType.None);
                 EditorGUILayout.HelpBox("Os tempos desta seção são os únicos usados pelo modo escolhido. O jogo real é contado em segundos; as aberturas e prévias têm mínimo de três segundos.", MessageType.Info);
 
                 Titulo("Identidade visual");
@@ -234,6 +239,12 @@ namespace FutebolDeDiscos
                 Slider("intervaloRevelacoesSorteio", "Intervalo entre associações (s)", .05f, 2f);
                 Slider("tempoResultadoSorteio", "Exibição do resultado do sorteio (s)", 0f, 30f);
                 Campo("reexibirSorteioSalvo", "Reexibir sorteio salvo", "Mostra novamente a apresentação com as associações já salvas. Não sorteia outros times.");
+                Campo("musicaSorteio", "Música do sorteio", "Arraste uma faixa de áudio. Vazio: sorteio sem música.");
+                Slider("volumeMusicaSorteio", "Volume da música do sorteio", 0f, 1f);
+                Slider("fadeInMusicaSorteio", "Entrada da música do sorteio (s)", 0f, 10f);
+                Slider("fadeOutMusicaSorteio", "Saída da música do sorteio (s)", 0f, 10f);
+                EditorGUILayout.HelpBox("A música acompanha a apresentação, o sorteio e o quadro final, também ao reexibir um sorteio salvo. " +
+                    "A transição para o campeonato aguarda a saída suave terminar.", MessageType.None);
             }
             EditorGUILayout.HelpBox("A tela mostra uma marble por time preenchido, de 2 a 32, mesmo quando há mais capitães no catálogo. " +
                 "Nos sorteios novos, a passagem pelos obstáculos define as associações aleatórias, respeitando os vínculos fixos. " +

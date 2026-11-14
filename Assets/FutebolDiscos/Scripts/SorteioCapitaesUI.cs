@@ -62,6 +62,32 @@ namespace FutebolDeDiscos
         private readonly Dictionary<string, MarbleView> marblePorId = new Dictionary<string, MarbleView>(StringComparer.Ordinal);
         private readonly Dictionary<string, TeamView> equipePorId = new Dictionary<string, TeamView>(StringComparer.Ordinal);
         private readonly List<Flight> voos = new List<Flight>();
+        private AudioClip musicaSorteio;
+        private float volumeMusicaSorteio = .35f, fadeInMusicaSorteio = 1.5f, fadeOutMusicaSorteio = 1.5f;
+        private AudioTransicao audioSorteio;
+
+        public void ConfigurarMusica(AudioClip clip, float volume, float fadeIn, float fadeOut)
+        {
+            musicaSorteio = clip;
+            volumeMusicaSorteio = Seguro(volume, 0f, 1f, .35f);
+            fadeInMusicaSorteio = Seguro(fadeIn, 0f, 10f, 1.5f);
+            fadeOutMusicaSorteio = Seguro(fadeOut, 0f, 10f, 1.5f);
+        }
+
+        private void TocarMusica()
+        {
+            if (musicaSorteio == null || volumeMusicaSorteio <= 0f) return;
+            audioSorteio = gameObject.AddComponent<AudioTransicao>();
+            audioSorteio.Tocar(musicaSorteio, volumeMusicaSorteio, true, fadeInMusicaSorteio);
+        }
+
+        private void PararMusica()
+        {
+            if (audioSorteio == null) return;
+            audioSorteio.Parar();
+            Destroy(audioSorteio);
+            audioSorteio = null;
+        }
 
         public IEnumerator Exibir(MotorSorteioCapitaes simulacao, IList<TeamData> times,
             IList<CapitaoConvidado> catalogo, TemaCompeticao tema, float tempoApresentacao,
@@ -75,6 +101,7 @@ namespace FutebolDeDiscos
             int atual = versao;
             Construir(times, tema, replay);
             AtualizarVisual(0f);
+            TocarMusica();
             float duracao = Seguro(tempoApresentacao, 0f, 60f, 2f);
             float decorrido = 0f;
             while (atual == versao && decorrido < duracao)
@@ -119,11 +146,27 @@ namespace FutebolDeDiscos
             if (!Ativo || !Concluido) yield break;
             int atual = versao;
             float tempo = 0f, duracao = Seguro(segundos, 0f, 60f, 3f);
+            bool saidaIniciada = false;
+            float inicioSaida = Mathf.Max(0f, duracao - fadeOutMusicaSorteio);
             while (atual == versao && tempo < duracao)
             {
+                if (!saidaIniciada && tempo >= inicioSaida)
+                {
+                    if (audioSorteio != null) audioSorteio.Encerrar(fadeOutMusicaSorteio);
+                    saidaIniciada = true;
+                }
                 float dt = PassoVideo();
                 tempo += dt;
                 AtualizarVisual(dt);
+                yield return null;
+            }
+            if (atual != versao) yield break;
+            if (!saidaIniciada && audioSorteio != null) audioSorteio.Encerrar(fadeOutMusicaSorteio);
+            // O áudio usa tempo real. Captura de vídeo ou um quadro final curto
+            // não podem cortar o fade nem deixar a música vazar para a abertura.
+            while (atual == versao && audioSorteio != null && audioSorteio.EstaTocando)
+            {
+                AtualizarVisual(PassoVideo());
                 yield return null;
             }
             if (atual == versao) Ocultar();
@@ -131,6 +174,7 @@ namespace FutebolDeDiscos
 
         public void Ocultar()
         {
+            PararMusica();
             if (canvas != null) canvas.gameObject.SetActive(false);
         }
 
@@ -140,6 +184,7 @@ namespace FutebolDeDiscos
             Concluido = false;
             QuantidadeRevelada = 0;
             StopAllCoroutines();
+            PararMusica();
             if (canvas != null)
             {
                 canvas.gameObject.SetActive(false);

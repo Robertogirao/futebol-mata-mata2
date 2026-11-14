@@ -16,6 +16,10 @@ public class UniversalUI : MonoBehaviour
         "comemorações na fila, aguarda todas terminarem antes de seguir.")]
     public float tempoCongeladoPosJogo = 5f;
 
+    [Header("Apresentação do placar final")]
+    public bool mostrarPlacarFinal = true;
+    [Min(0f)] public float tempoPlacarFinal = 3f;
+
     [Header("Regras de Partida")]
     [Tooltip(
         "Ligado: empate vai para Golden Goal. " +
@@ -101,6 +105,7 @@ public class UniversalUI : MonoBehaviour
 
     private bool emProrrogacao = false;
     private bool partidaEncerrando = false;
+    private int versaoPartida;
 
     public int GolsA { get { return golsA; } }
     public int GolsB { get { return golsB; } }
@@ -125,9 +130,17 @@ public class UniversalUI : MonoBehaviour
 
     private void OnDisable()
     {
+        StopAllCoroutines();
+        CancelarPlacarFinal();
         CancelarApresentacaoJogadores();
         PararAudioDaPartida();
         if (trilhaPartida != null) trilhaPartida.Parar();
+        if (partidaEncerrando)
+        {
+            partidaEmAndamento = partidaEncerrando = emProrrogacao = false;
+            PararSimulacao();
+            Time.timeScale = 1f;
+        }
     }
 
     private void OnDestroy()
@@ -209,6 +222,7 @@ public class UniversalUI : MonoBehaviour
         List<JogadorDados> titularesA,
         List<JogadorDados> titularesB)
     {
+        CancelarPlacarFinal();
         CancelarApresentacaoJogadores();
         PrepararAudio();
         PararAudioDaPartida();
@@ -380,6 +394,7 @@ public class UniversalUI : MonoBehaviour
     public void CancelarPartida()
     {
         StopAllCoroutines();
+        CancelarPlacarFinal();
         EncerrarMusica();
         CancelarApresentacaoJogadores();
         PararAudioDaPartida();
@@ -498,21 +513,24 @@ public class UniversalUI : MonoBehaviour
 
         Time.timeScale = 0f;
 
-        StartCoroutine(RotinaFimDeJogo(timeAVenceu));
+        int versao;
+        unchecked { versao = ++versaoPartida; }
+        StartCoroutine(RotinaFimDeJogo(timeAVenceu, versao));
     }
 
     private System.Collections.IEnumerator RotinaFimDeJogo(
-        bool timeAVenceu)
+        bool timeAVenceu, int versao)
     {
         // No Golden Goal, a partida de discos chama RegistrarGol
         // antes de adicionar a comemoração ao banner.
         // Este frame permite que essa chamada seja concluída.
         yield return null;
+        if (!EncerramentoAtual(versao)) yield break;
 
         // A pausa mínima acontece enquanto os banners continuam.
         float pausa = 0f;
         float duracaoPausa = Mathf.Max(0f, tempoCongeladoPosJogo);
-        while (pausa < duracaoPausa)
+        while (EncerramentoAtual(versao) && pausa < duracaoPausa)
         {
             pausa += PassoTempoVideo();
             yield return null;
@@ -520,11 +538,26 @@ public class UniversalUI : MonoBehaviour
 
         // Não libera o próximo jogo ou a tabela enquanto
         // existir alguma comemoração sendo exibida ou na fila.
-        while (GoalBannerUI.Instance != null &&
+        while (EncerramentoAtual(versao) && GoalBannerUI.Instance != null &&
                GoalBannerUI.Instance.TemBannersPendentes)
         {
             yield return null;
         }
+
+        if (!EncerramentoAtual(versao)) yield break;
+        FutebolDeDiscos.HudFutebolDiscos hud = GetComponent<FutebolDeDiscos.HudFutebolDiscos>();
+        float duracaoPlacar = float.IsNaN(tempoPlacarFinal) || float.IsInfinity(tempoPlacarFinal)
+            ? 0f : Mathf.Max(0f, tempoPlacarFinal);
+        if (mostrarPlacarFinal && duracaoPlacar > 0f && hud != null && hud.isActiveAndEnabled)
+        {
+            // As comemorações terminam antes do resumo. A simulação permanece
+            // parada até a saída completa da apresentação do resultado.
+            IEnumerator apresentacao = hud.ExibirPlacarFinal(golsA, golsB, duracaoPlacar);
+            while (EncerramentoAtual(versao) && hud != null && hud.isActiveAndEnabled && apresentacao.MoveNext())
+                yield return apresentacao.Current;
+            if (EncerramentoAtual(versao) && hud != null) hud.OcultarPlacarFinal();
+        }
+        if (!EncerramentoAtual(versao)) yield break;
 
         Time.timeScale = 1f;
         emProrrogacao = false;
@@ -546,6 +579,18 @@ public class UniversalUI : MonoBehaviour
                 golsA,
                 golsB);
         }
+    }
+
+    private bool EncerramentoAtual(int versao)
+    {
+        return this != null && isActiveAndEnabled && partidaEncerrando && versao == versaoPartida;
+    }
+
+    private void CancelarPlacarFinal()
+    {
+        unchecked { versaoPartida++; }
+        FutebolDeDiscos.HudFutebolDiscos hud = GetComponent<FutebolDeDiscos.HudFutebolDiscos>();
+        if (hud != null) hud.OcultarPlacarFinal();
     }
 
     private static void PararSimulacao()

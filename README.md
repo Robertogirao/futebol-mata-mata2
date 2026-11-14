@@ -2,6 +2,20 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
+## Música no sorteio e apresentação do placar final
+
+[**BAIXAR SOMENTE ESTA ATUALIZAÇÃO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_SORTEIO_E_PLACAR.zip)
+
+Aplique sobre a versão que já recebeu a atualização dos capitães. O pacote contém somente os cinco scripts alterados; não substitui cenas, músicas ou fotos.
+
+- Em **Projeto Futebol Discos → Sorteio na tela**, arraste uma faixa para **Música do sorteio** e ajuste volume, entrada e saída. Sem faixa, o sorteio permanece em silêncio. A música acompanha o sorteio e o quadro final, inclusive na reexibição, e termina com fade antes do campeonato.
+- Em **Tempos da transmissão**, ajuste **Mostrar apresentação do placar final** e sua duração. O padrão é **3 segundos**, com entrada/saída suaves, escudos, nomes, placar grande e vencedor ou empate.
+- A apresentação final aguarda a pausa pós-jogo e todas as comemorações de gol. Só depois avança para a próxima partida ou tabela. Opção desligada ou tempo zero pula a apresentação.
+
+Com o Unity fechado, copie a pasta `Assets` do ZIP sobre a do projeto, aceitando substituir os scripts. Os ajustes visuais e de música podem ser alterados fora do Play sem criar outra temporada.
+
+Detalhes e conferência: [docs/SORTEIO_E_PLACAR.md](docs/SORTEIO_E_PLACAR.md).
+
 ## Atualização dos capitães
 
 [**BAIXAR SOMENTE A ATUALIZAÇÃO DOS CAPITÃES — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_CAPITAES.zip)
