@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: 8590983400803435859, guid: 3348e24672cfd0e4983b97c08ee3d90b, type: 3}
     estrelasSkill: 5
-  - nomeJogador: "Luis Su\xE1rez"
-    numeroCamisa: 17
-    foto512x512: {fileID: -1500093417446104051, guid: 6fc67cf404ac3c2469b12a1b9cd7e8dd, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Sergi Altimira
-    numeroCamisa: 19
-    foto512x512: {fileID: -6097209920501332699, guid: 19990d9446cca1b418d4417bed8c61d4, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

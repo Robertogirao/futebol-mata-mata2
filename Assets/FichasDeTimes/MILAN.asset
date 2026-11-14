@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 10
     foto512x512: {fileID: -7834553348443151220, guid: c1de4b4ee5858ad4e8f32f7cf5ab8afb, type: 3}
     estrelasSkill: 3
-  - nomeJogador: Christian Pulisic
-    numeroCamisa: 12
-    foto512x512: {fileID: 7680961494173519604, guid: 89e8dd4338206b34086a1c2460cb47e6, type: 3}
-    estrelasSkill: 3
-  - nomeJogador: "Gon\xE7alo Ramos"
-    numeroCamisa: 19
-    foto512x512: {fileID: -6087837533848907137, guid: 2ef352fe8ffec9e4383097ddc1fd8c5c, type: 3}
-    estrelasSkill: 3
   sortearTitularesAleatorios: 1
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -840095638692604396, guid: 8202b86d29a5f8440aa22e0db896c3a9, type: 3}
     estrelasSkill: 5
-  - nomeJogador: "Cucho Hern\xE1ndez"
-    numeroCamisa: 17
-    foto512x512: {fileID: -2683723876619875597, guid: d6c377f42a1399940b075c87a162d6fc, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Isco
-    numeroCamisa: 19
-    foto512x512: {fileID: 4773624935651619501, guid: 66430836aeef73a4197bc0f8724f50d0, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

@@ -24,8 +24,8 @@ public class UniversalUI : MonoBehaviour
 
     [Header("Sons da Partida")]
     [Tooltip(
-        "Opcional. Se ficar vazio, procura ou cria um AudioSource " +
-        "neste objeto. Use uma fonte exclusiva para os efeitos.")]
+        "Opcional. Se ficar vazio, cria uma fonte exclusiva para os efeitos " +
+        "da partida, sem reutilizar fontes de abertura ou música.")]
     public AudioSource fonteDeAudio;
 
     public AudioClip somGol;
@@ -34,6 +34,27 @@ public class UniversalUI : MonoBehaviour
 
     [Range(0f, 1f)]
     public float volumeSons = 0.8f;
+
+    [Header("Música da partida")]
+    public AudioClip musicaPartida;
+    [Range(0f, 1f)] public float volumeMusica = .25f;
+    [Min(0f)] public float fadeInMusica = 2f;
+    [Min(0f)] public float fadeOutMusica = 2f;
+    private AudioTransicao trilhaPartida;
+
+    private void IniciarMusica()
+    {
+        if (trilhaPartida == null) trilhaPartida = gameObject.AddComponent<AudioTransicao>();
+        trilhaPartida.Tocar(musicaPartida, volumeMusica, true, fadeInMusica);
+    }
+
+    private void EncerrarMusica()
+    {
+        if (trilhaPartida != null) trilhaPartida.Encerrar(fadeOutMusica);
+    }
+
+    private AudioSource fonteAutomaticaDosEfeitos;
+    private AudioSource fontePreparadaDosEfeitos;
 
     [Header("Elementos do Topo da TV")]
     public Image escudoTimeA;
@@ -76,6 +97,11 @@ public class UniversalUI : MonoBehaviour
     private bool emProrrogacao = false;
     private bool partidaEncerrando = false;
 
+    public int GolsA { get { return golsA; } }
+    public int GolsB { get { return golsB; } }
+    public float TempoAtual { get { return tempoAtual; } }
+    public bool EmProrrogacao { get { return emProrrogacao; } }
+
     void Awake()
     {
         if (Instance == null)
@@ -95,35 +121,50 @@ public class UniversalUI : MonoBehaviour
     private void OnDisable()
     {
         CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
+        if (trilhaPartida != null) trilhaPartida.Parar();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance != this) return;
+        CancelarPartida();
+        if (fonteAutomaticaDosEfeitos != null) Destroy(fonteAutomaticaDosEfeitos);
+        Instance = null;
     }
 
     private void PrepararAudio()
     {
         if (fonteDeAudio == null)
         {
-            fonteDeAudio = GetComponent<AudioSource>();
+            // An existing source can belong to the opening or background music.
+            // Never adopt its clip, playback or cancellation lifecycle as match FX.
+            if (fonteAutomaticaDosEfeitos == null)
+                fonteAutomaticaDosEfeitos = gameObject.AddComponent<AudioSource>();
+            fonteDeAudio = fonteAutomaticaDosEfeitos;
         }
-
-        if (fonteDeAudio == null)
-        {
-            fonteDeAudio = gameObject.AddComponent<AudioSource>();
-        }
-
+        if (fontePreparadaDosEfeitos == fonteDeAudio) return;
+        PararAudioDaPartida();
+        fonteDeAudio.Stop();
+        fonteDeAudio.clip = null;
         fonteDeAudio.playOnAwake = false;
         fonteDeAudio.loop = false;
 
         // Som 2D: não depende da distância da câmera.
         fonteDeAudio.spatialBlend = 0f;
+        fontePreparadaDosEfeitos = fonteDeAudio;
+    }
+
+    private void PararAudioDaPartida()
+    {
+        if (fontePreparadaDosEfeitos != null) fontePreparadaDosEfeitos.Stop();
     }
 
     private void TocarSom(AudioClip clip)
     {
         if (clip == null) return;
 
-        if (fonteDeAudio == null)
-        {
-            PrepararAudio();
-        }
+        PrepararAudio();
 
         fonteDeAudio.PlayOneShot(
             clip,
@@ -132,9 +173,11 @@ public class UniversalUI : MonoBehaviour
 
     void Update()
     {
-        if (partidaEmAndamento && !partidaEncerrando)
+        if (partidaEmAndamento && !partidaEncerrando &&
+            (FutebolDeDiscos.PartidaDiscos.Instance == null ||
+             !FutebolDeDiscos.PartidaDiscos.Instance.EmReposicao))
         {
-            tempoAtual += Time.unscaledDeltaTime;
+            tempoAtual += PassoTempoVideo();
 
             AtualizarRelogioUI();
 
@@ -154,6 +197,8 @@ public class UniversalUI : MonoBehaviour
         List<JogadorDados> titularesB)
     {
         CancelarApresentacaoJogadores();
+        PrepararAudio();
+        PararAudioDaPartida();
         // Uma partida nova começa sem banners antigos.
         if (GoalBannerUI.Instance != null)
         {
@@ -163,6 +208,7 @@ public class UniversalUI : MonoBehaviour
         golsA = 0;
         golsB = 0;
         tempoAtual = 0f;
+        partidaEmAndamento = false;
         emProrrogacao = false;
         partidaEncerrando = false;
 
@@ -222,6 +268,17 @@ public class UniversalUI : MonoBehaviour
         if (layoutJogadorUnico != null) layoutJogadorUnico.CancelarApresentacao();
     }
 
+    private bool mostrarScannerFotos = true;
+    private float velocidadeScannerFotos = 1f;
+
+    public void ConfigurarEfeitoFotos(bool mostrar, float velocidade)
+    {
+        mostrarScannerFotos = mostrar;
+        velocidadeScannerFotos = Mathf.Clamp(velocidade, .1f, 3f);
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
+    }
+
     private void PrepararEscalacao()
     {
         // Keep serialized bindings from existing scenes, but clear every old slot.
@@ -233,6 +290,7 @@ public class UniversalUI : MonoBehaviour
         LimparTextos(numerosTitularesB);
 
         Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) canvas = GetComponentInChildren<Canvas>(true);
         if (canvas == null) return;
 
         // These two containers contain only the six old player cards.
@@ -250,6 +308,8 @@ public class UniversalUI : MonoBehaviour
                 fonte = textoCronometro.font;
             layoutJogadorUnico = LayoutJogadorUnicoUI.Criar(canvas, fonte);
         }
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
     }
 
     private static TMP_FontAsset FonteDosNomes(TextMeshProUGUI[] nomes)
@@ -293,21 +353,27 @@ public class UniversalUI : MonoBehaviour
         Time.timeScale = 1f;
 
         TocarSom(somApitoInicial);
+        IniciarMusica();
     }
 
     public void PararCronometro()
     {
         partidaEmAndamento = false;
+        EncerrarMusica();
+        PararSimulacao();
         Time.timeScale = 1f;
     }
 
     public void CancelarPartida()
     {
         StopAllCoroutines();
+        EncerrarMusica();
         CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
         partidaEmAndamento = false;
         partidaEncerrando = false;
         emProrrogacao = false;
+        PararSimulacao();
         if (GoalBannerUI.Instance != null) GoalBannerUI.Instance.LimparFila();
         Time.timeScale = 1f;
     }
@@ -365,7 +431,7 @@ public class UniversalUI : MonoBehaviour
         }
 
         float progresso =
-            Mathf.Clamp01(tempoAtual / duracaoRealEmSegundos);
+            Mathf.Clamp01(tempoAtual / Mathf.Max(0.01f, duracaoRealEmSegundos));
 
         float minutosSimulados = progresso * 90f;
 
@@ -391,6 +457,7 @@ public class UniversalUI : MonoBehaviour
 
             Debug.Log(
                 "Empate no Mata-Mata! Entrando em Golden Goal.");
+            AtualizarRelogioUI();
         }
         else
         {
@@ -412,11 +479,9 @@ public class UniversalUI : MonoBehaviour
         partidaEmAndamento = false;
 
         TocarSom(somApitoFinal);
+        EncerrarMusica();
 
-        if (AutoBallPipe.Instance != null)
-        {
-            AutoBallPipe.Instance.PararChuva();
-        }
+        PararSimulacao();
 
         Time.timeScale = 0f;
 
@@ -426,14 +491,19 @@ public class UniversalUI : MonoBehaviour
     private System.Collections.IEnumerator RotinaFimDeJogo(
         bool timeAVenceu)
     {
-        // No Golden Goal, o GoalDetector chama RegistrarGol
+        // No Golden Goal, a partida de discos chama RegistrarGol
         // antes de adicionar a comemoração ao banner.
         // Este frame permite que essa chamada seja concluída.
         yield return null;
 
         // A pausa mínima acontece enquanto os banners continuam.
-        yield return new WaitForSecondsRealtime(
-            Mathf.Max(0f, tempoCongeladoPosJogo));
+        float pausa = 0f;
+        float duracaoPausa = Mathf.Max(0f, tempoCongeladoPosJogo);
+        while (pausa < duracaoPausa)
+        {
+            pausa += PassoTempoVideo();
+            yield return null;
+        }
 
         // Não libera o próximo jogo ou a tabela enquanto
         // existir alguma comemoração sendo exibida ou na fila.
@@ -452,10 +522,7 @@ public class UniversalUI : MonoBehaviour
             bannerGol.SetActive(false);
         }
 
-        if (AutoBallPipe.Instance != null)
-        {
-            AutoBallPipe.Instance.PararChuva();
-        }
+        PararSimulacao();
 
         // O gerenciador só recebe o resultado e avança
         // depois da pausa mínima e do fim das comemorações.
@@ -466,5 +533,19 @@ public class UniversalUI : MonoBehaviour
                 golsA,
                 golsB);
         }
+    }
+
+    private static void PararSimulacao()
+    {
+        FutebolDeDiscos.PartidaDiscos partida = FutebolDeDiscos.PartidaDiscos.Instance;
+        if (partida != null) partida.PararPartida();
+    }
+
+    private static float PassoTempoVideo()
+    {
+        float captura = Time.captureDeltaTime;
+        float passo = captura > 0f && !float.IsNaN(captura) && !float.IsInfinity(captura)
+            ? captura : Time.unscaledDeltaTime;
+        return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
     }
 }

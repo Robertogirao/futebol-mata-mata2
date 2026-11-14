@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 public enum PosturaTatica
 {
-    Ataque,
-    Balanceado,
-    Defesa
+    // Explicit values preserve every existing TeamData asset.
+    [InspectorName("Ataque")] Ataque = 0,
+    [InspectorName("Balanceado")] Balanceado = 1,
+    [InspectorName("Defensivo")] Defesa = 2,
+    [InspectorName("Ultra defensivo")] UltraDefensivo = 3
 }
 
 [System.Serializable]
@@ -54,6 +56,8 @@ public class TeamData : ScriptableObject
     public Color corSecundaria = Color.white;
 
     [Header("Tática e IA")]
+    [InspectorName("Postura tática")]
+    [Tooltip("Limite de jogadores liberados para pressionar além do meio-campo: ultra defensivo 0, defensivo 1, balanceado 2 e ataque 3. A subida depende da jogada e do bloqueio geral da arena.")]
     public PosturaTatica posturaTatica = PosturaTatica.Balanceado;
 
     [Header("Elenco Completo")]

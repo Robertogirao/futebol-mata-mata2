@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 9
     foto512x512: {fileID: 2204023420469283073, guid: 4ac0084b21ba77646b56c519de048e5f, type: 3}
     estrelasSkill: 4
-  - nomeJogador: Nico Paz
-    numeroCamisa: 13
-    foto512x512: {fileID: 7793315596378033021, guid: af100bf7b7d034c47bf8db93bf9a1dc1, type: 3}
-    estrelasSkill: 4
-  - nomeJogador: Tasos Douvikas
-    numeroCamisa: 33
-    foto512x512: {fileID: 659459386218239839, guid: 1a85ded1fef0b454d8b08b37bc567b7d, type: 3}
-    estrelasSkill: 4
   sortearTitularesAleatorios: 1
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

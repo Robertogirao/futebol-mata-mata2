@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 8
     foto512x512: {fileID: 6380273042069035855, guid: 72018af83f381c8479d9da1918f7a5ee, type: 3}
     estrelasSkill: 3
-  - nomeJogador: Edon Zhegrova
-    numeroCamisa: 11
-    foto512x512: {fileID: -2028460333381964882, guid: d6008aad6853d4c458afb22b03d8ec32, type: 3}
-    estrelasSkill: 3
-  - nomeJogador: Kenan Yildiz
-    numeroCamisa: 18
-    foto512x512: {fileID: -5972405224790358813, guid: 978908ba5fbb68f4fb52f2ace7cd702e, type: 3}
-    estrelasSkill: 4
   sortearTitularesAleatorios: 1
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

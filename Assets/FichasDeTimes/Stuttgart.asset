@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -5095791129681360042, guid: 5e0fae1f3c9cf60428521b54534cfbf3, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Bilal El Khannouss
-    numeroCamisa: 17
-    foto512x512: {fileID: -6723828598758937677, guid: f43f9a829279d83488c41a06bb676189, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Ermedin Demirovic
-    numeroCamisa: 19
-    foto512x512: {fileID: 7622439041073842993, guid: b65b86b25205e33468ba782ba3132313, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

@@ -20,17 +20,9 @@ MonoBehaviour:
   corSecundaria: {r: 0.89019614, g: 0.023529414, b: 0.07450981, a: 1}
   posturaTatica: 0
   elenco:
-  - nomeJogador: "D\xE9sir\xE9 Dou\xE9"
-    numeroCamisa: 16
-    foto512x512: {fileID: -4385420354435250204, guid: 4f5342794b37e05499ba95eb8942d5af, type: 3}
-    estrelasSkill: 5
   - nomeJogador: Khvicha Kvaratskhelia
     numeroCamisa: 17
     foto512x512: {fileID: -3561702727284405713, guid: fa344438a09b9b0448297e81e288261e, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: "Ousmane Demb\xE9l\xE9"
-    numeroCamisa: 19
-    foto512x512: {fileID: -7036170600277054865, guid: cf06d7c7f34b7e74fb2f28923427cedf, type: 3}
     estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0

@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -7774244224069211199, guid: 7f0696d95884ee44da5316400b8a30ce, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Erling Haaland
-    numeroCamisa: 17
-    foto512x512: {fileID: -710731960626042704, guid: 978633e4caf982142b3b53f53c756b55, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: "J\xE9r\xE9my Doku"
-    numeroCamisa: 19
-    foto512x512: {fileID: 9107788243637124538, guid: bbaa59f6e0c49734bbd3b6a48edf551e, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

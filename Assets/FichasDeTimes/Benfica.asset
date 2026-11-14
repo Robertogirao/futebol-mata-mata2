@@ -18,7 +18,7 @@ MonoBehaviour:
   overall: 82
   corPrincipal: {r: 0.8941177, g: 0.027450982, b: 0.08235294, a: 1}
   corSecundaria: {r: 1, g: 1, b: 0.9960785, a: 1}
-  posturaTatica: 0
+  posturaTatica: 1
   elenco:
   - nomeJogador: Gianluca Prestianni
     numeroCamisa: 16

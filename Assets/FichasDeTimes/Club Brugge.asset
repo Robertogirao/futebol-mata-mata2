@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -9054246541144825828, guid: f69f18bdedda0e34bbf98ecf645a6628, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Hugo Vetlesen
-    numeroCamisa: 17
-    foto512x512: {fileID: -111636769628039591, guid: 1bafd3208b5775e41bd3492eef5fe5aa, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: "Nicol\xF2 Tresoldi"
-    numeroCamisa: 19
-    foto512x512: {fileID: -4656576885991954541, guid: 33727314ed503bb45a15167666cf481a, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

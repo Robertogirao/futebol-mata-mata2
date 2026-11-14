@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: 5542434988858685103, guid: b32aa2d99ad41f0428c48182bd370621, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Declan Rice
-    numeroCamisa: 17
-    foto512x512: {fileID: -83318345043734317, guid: 57f31386ad2f6ad418147809eb3f7e36, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Eberechi Eze
-    numeroCamisa: 19
-    foto512x512: {fileID: -5281483453031979379, guid: b02abf2ce7348d14b8238f28c1a4caa8, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

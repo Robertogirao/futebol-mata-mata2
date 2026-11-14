@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 8
     foto512x512: {fileID: 690074965785948660, guid: e77f080721660cd4bb02f1eed8e4b14a, type: 3}
     estrelasSkill: 4
-  - nomeJogador: Franco Mastantuono
-    numeroCamisa: 13
-    foto512x512: {fileID: -4878252457180255445, guid: 0d5b4698f57e39a4fbd849cce61d49a0, type: 3}
-    estrelasSkill: 4
-  - nomeJogador: "Nicol\xF2 Fagioli"
-    numeroCamisa: 19
-    foto512x512: {fileID: -803216798136103674, guid: 7146fc5fdfe591d4a91cd524cb0801e3, type: 3}
-    estrelasSkill: 4
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

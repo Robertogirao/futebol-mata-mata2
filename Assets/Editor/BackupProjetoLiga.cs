@@ -65,6 +65,7 @@ public static class BackupProjetoLiga
         bool concluido = false;
         bool temDados = false;
         bool temMataMata = false;
+        bool temDiscos = false;
         bool temVideos = false;
 
         int quantidade = 0;
@@ -105,6 +106,9 @@ public static class BackupProjetoLiga
 
             string mataMata =
                 Path.Combine(Application.persistentDataPath, "MataMata");
+
+            string discos =
+                Path.Combine(Application.persistentDataPath, "Discos");
 
             var fontes = new List<Fonte>();
 
@@ -158,6 +162,13 @@ public static class BackupProjetoLiga
             {
                 fontes.Add(new Fonte(
                     mataMata, "DadosDoMataMata/MataMata"));
+            }
+
+            temDiscos = Directory.Exists(discos);
+            if (temDiscos)
+            {
+                fontes.Add(new Fonte(
+                    discos, "DadosDoFutebolDiscos/Discos"));
             }
 
             string gravacoes =
@@ -310,7 +321,7 @@ public static class BackupProjetoLiga
                     hashes,
                     "LEIA-ME.txt",
                     Instrucoes(
-                        projeto, fontes, temDados, temMataMata, temVideos));
+                        projeto, fontes, temDados, temMataMata, temDiscos, temVideos));
 
                 var manifesto = new StringBuilder();
 
@@ -465,6 +476,8 @@ public static class BackupProjetoLiga
                 (temMataMata
                     ? "incluídos."
                     : "não encontrados neste projeto.") +
+                "\nMetadados do Futebol de Discos: " +
+                (temDiscos ? "incluídos." : "não encontrados neste projeto.") +
                 "\nRecordings: " +
                 (temVideos ? "incluída." : "não incluída.") +
                 "\n\nZIP verificado:\n" + destino;
@@ -740,11 +753,12 @@ public static class BackupProjetoLiga
         List<Fonte> fontes,
         bool temDados,
         bool temMataMata,
+        bool temDiscos,
         bool temVideos)
     {
         var texto = new StringBuilder();
 
-        texto.AppendLine("BACKUP DO PROJETO UNITY, DAS LIGAS E DO MATA-MATA");
+        texto.AppendLine("BACKUP DO FUTEBOL DE DISCOS, DAS LIGAS E DO MATA-MATA");
         texto.AppendLine(
             "Criado em: " +
             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
@@ -770,6 +784,8 @@ public static class BackupProjetoLiga
             "Dados de mata-mata encontrados: " + temMataMata);
         texto.AppendLine(
             "Pasta Recordings incluida: " + temVideos);
+        texto.AppendLine(
+            "Metadados de Futebol de Discos encontrados: " + temDiscos);
         texto.AppendLine();
 
         texto.AppendLine("RESTAURACAO:");
@@ -798,7 +814,10 @@ public static class BackupProjetoLiga
         texto.AppendLine(
             "   preservando MataMata/<competicao>/<edicao> e todos os arquivos.");
         texto.AppendLine(
-            "8. Reabra o projeto e confira calendario, IDs " +
+            "8. Restaure tambem DadosDoFutebolDiscos/Discos em " +
+            "Application.persistentDataPath/Discos, preservando todos os metadados.");
+        texto.AppendLine(
+            "9. Reabra o projeto e confira calendario, IDs " +
             "e configuracoes do Recorder.");
         texto.AppendLine();
 

@@ -53,6 +53,12 @@ public class GoalBannerUI : MonoBehaviour
         JogadorDados jogador,
         Color corDoTime)
     {
+        ExibirBannerDeGol(jogador != null ? jogador.nomeJogador : null,
+            jogador != null ? jogador.foto512x512 : null, corDoTime);
+    }
+
+    public void ExibirBannerDeGol(string nome, Sprite imagem, Color corDoTime)
+    {
         // O painel deve ser filho de um objeto que permanece ativo.
         if (PainelDesativaEsteObjeto())
         {
@@ -77,19 +83,13 @@ public class GoalBannerUI : MonoBehaviour
             return;
         }
 
-        // Copiamos os dados agora para não depender da bola,
-        // que será destruída depois do gol.
-        var comemoracao = new Comemoracao();
-
-        if (jogador != null)
+        // Snapshot the name and chosen image; queued goals never depend on
+        // the actor lifetime and never change the source player/team assets.
+        var comemoracao = new Comemoracao
         {
-            comemoracao.nome =
-                string.IsNullOrWhiteSpace(jogador.nomeJogador)
-                    ? "PLAYER"
-                    : jogador.nomeJogador.ToUpperInvariant();
-
-            comemoracao.foto = jogador.foto512x512;
-        }
+            nome = nome == null ? null : string.IsNullOrWhiteSpace(nome) ? "PLAYER" : nome.ToUpperInvariant(),
+            foto = imagem
+        };
 
         fila.Enqueue(comemoracao);
 
@@ -127,8 +127,8 @@ public class GoalBannerUI : MonoBehaviour
                 painelBanner.SetActive(true);
             }
 
-            // Continua funcionando mesmo com Time.timeScale = 0.
-            yield return new WaitForSecondsRealtime(
+            // Usa o tempo do vídeo no Recorder e continua com Time.timeScale = 0.
+            yield return AguardarTempo(
                 Mathf.Max(0.1f, tempoDeExibicao));
 
             OcultarPainel();
@@ -137,7 +137,7 @@ public class GoalBannerUI : MonoBehaviour
             // inclusive quando o mesmo jogador marca novamente.
             if (intervaloEntreBanners > 0f)
             {
-                yield return new WaitForSecondsRealtime(
+                yield return AguardarTempo(
                     intervaloEntreBanners);
             }
             else
@@ -148,6 +148,20 @@ public class GoalBannerUI : MonoBehaviour
 
         exibindo = false;
         rotinaFila = null;
+    }
+
+    private static IEnumerator AguardarTempo(float duracao)
+    {
+        double tempo = 0d;
+        while (tempo + 0.000001d < duracao)
+        {
+            yield return null;
+            float passo = Time.captureDeltaTime > 0f
+                ? Time.captureDeltaTime
+                : Time.unscaledDeltaTime;
+            if (!float.IsNaN(passo) && !float.IsInfinity(passo))
+                tempo += Mathf.Max(0f, passo);
+        }
     }
 
     public void LimparFila()

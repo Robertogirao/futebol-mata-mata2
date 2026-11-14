@@ -20,17 +20,9 @@ MonoBehaviour:
   corSecundaria: {r: 1, g: 1, b: 1, a: 1}
   posturaTatica: 1
   elenco:
-  - nomeJogador: Martin Baturina
-    numeroCamisa: 16
-    foto512x512: {fileID: -6037828338775785822, guid: a5d730b0613bfc140a97bd4c22da86e4, type: 3}
-    estrelasSkill: 5
   - nomeJogador: Nico Paz
     numeroCamisa: 17
     foto512x512: {fileID: 7793315596378033021, guid: fdfeeda92ba58f341a717f5c02670a71, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Tasos Douvikas
-    numeroCamisa: 19
-    foto512x512: {fileID: 659459386218239839, guid: b038957308b45024596bca5b02ae1e25, type: 3}
     estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0

@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: 1924972421680345951, guid: fd14a445984499147b62e89cd1dabdb6, type: 3}
     estrelasSkill: 5
-  - nomeJogador: "Pedri Gonz\xE1lez"
-    numeroCamisa: 17
-    foto512x512: {fileID: 3458334133299962068, guid: 6c652895570996c40b67e18e4dd79ed6, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Raphinha
-    numeroCamisa: 19
-    foto512x512: {fileID: -5176290526347159123, guid: f7e0e6bbdc8474444b222dc846c62dc0, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

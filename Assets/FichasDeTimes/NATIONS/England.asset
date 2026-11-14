@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7d7eeb6dbceafb4a8f8614a7cf99338, type: 3}
+  m_Name: England
+  m_EditorClassIdentifier: Assembly-CSharp::TeamData
+  nomeEquipe: England
+  sigla: ENG
+  escudoOuBandeira: {fileID: -2543243258518547574, guid: 5f4aab18d7ed9b844891262e9493c84b, type: 3}
+  overall: 90
+  corPrincipal: {r: 0.8078432, g: 0.06666667, b: 0.14117648, a: 1}
+  corSecundaria: {r: 1, g: 1, b: 1, a: 1}
+  posturaTatica: 0
+  elenco:
+  - nomeJogador: Harry Kane
+    numeroCamisa: 16
+    foto512x512: {fileID: 6127551703001658635, guid: 159c78dea1ea1d3459dce9029be99451, type: 3}
+    estrelasSkill: 5
+  sortearTitularesAleatorios: 0
+  usarSelecaoManual: 0
+  indicesTitulares: 000000000100000002000000

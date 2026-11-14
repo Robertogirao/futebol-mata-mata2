@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -1817720636796741305, guid: 7b4ad312f16a883439505182ac1061de, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Dominik Szoboszlai
-    numeroCamisa: 17
-    foto512x512: {fileID: 6056866396937255516, guid: 417f359c5165b7e4895e66a64f52fa9a, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: "Hugo Ekitik\xE9"
-    numeroCamisa: 19
-    foto512x512: {fileID: 5806599859633535656, guid: 8036e5e09a40b904f835d6e37ddf70c8, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

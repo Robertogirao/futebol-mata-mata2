@@ -1,35 +1,33 @@
-# Futebol Mata-mata — troféu e tempo das fotos
+# Futebol de Discos — áudio das partidas
 
-O centro do chaveamento, a final e o campeão usam o mesmo **Logo Competição** exibido no topo, preservando a proporção e as cores da imagem.
+Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
-## Regular as apresentações
+[**Baixar esta versão completa em ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/heads/entrega/audio-partidas.zip)
 
-Selecione **TournamentManager** na Hierarchy e encontre **Mata Mata Campeonato (Script)** no Inspector. Em **Duração das apresentações (segundos)** ficam juntos:
+Extraia o ZIP e adicione sua pasta raiz pelo Unity Hub. A pasta correta contém `Assets`, `Packages` e `ProjectSettings`. Use **Unity 6000.4.11f1**.
 
-- **Tempo Inicio**: abertura inicial da competição.
-- **Tempo Pre Jogo**: apresentação do confronto.
-- **Tempo Fotos Jogadores**: fichas ampliadas no centro (padrão: 5 segundos).
-- **Tempo Transição Fotos**: retorno das fichas aos cantos (padrão: 0,8 segundo).
-- **Tempo Final**: encerramento.
+## Cenas
 
-Altere fora do Play e salve a cena. Cronômetro, apito e bolas começam após fotos e transição. Na liga, use os controles de fotos do **TournamentManager**.
+- `Assets/Scenes/FutebolDiscos/Liga_Discos.unity`
+- `Assets/Scenes/FutebolDiscos/MataMata_Discos.unity`
+- `Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity`
+- `Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity`
 
-Para trocar o troféu, abra o asset do campo **Tema** e ajuste **Logo Competicao**, em **Imagens da transmissão**. A mesma imagem aparece no topo e no centro; **Logo Canal** permanece no outro canto.
+## Áudio
 
-## Baixar
+- **Apito inicial, apito final e gol:** configurados nas quatro cenas, usando os efeitos de `Assets/APITOS`.
+- **Abertura e prévias:** o som continua por **0,6 segundo** após a apresentação e termina com **fade out de 1,5 segundo**. A transição entre abertura geral e prévia do mata-mata preserva a saída suave.
+- **Música do jogo:** `Warpath`, já incluída no backup, toca em loop durante a partida, em **25% de volume**, com **fade in e fade out de 2 segundos**. Continua no Golden Goal e sai ao encerrar a partida.
+- Os efeitos, a abertura e a música usam fontes independentes. Os fades continuam funcionando no pós-jogo com a simulação pausada.
 
-- [**Projeto completo — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/v2026.11.10-trofeu-e-tempos/Downloads/PROJETO_CORRIGIDO.zip): extraia e abra a pasta `Projeto` no Unity Hub.
-- [**Atualização do projeto atual — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/v2026.11.10-trofeu-e-tempos/Downloads/ATUALIZACAO_BOLAS_E_ABERTURA.zip): com Unity fechado, copie `Assets` sobre a pasta correspondente do seu projeto.
-- [Página da versão](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/v2026.11.10-trofeu-e-tempos).
+Para mudar os sons e as durações, selecione o objeto com **Projeto Futebol Discos** e abra **Sons e comemoração de gol** no Inspector, fora do Play Mode. Salve a cena após alterar os valores. O clipe de abertura pertence ao tema e é compartilhado pelas cenas que usam esse tema.
 
-Os pacotes incluem também a correção das bolas inativas para **0,5 segundo**. Consulte `LEIA-ME-CORRECOES.txt` para os passos de atualização.
+Cancelar uma partida inicia a saída suave da música. Desativar ou destruir a cena interrompe suas fontes para que o áudio não continue em outra cena.
 
-## Abrir o repositório
+## Verificação
 
-Use **Unity 6000.4.11f1**. No Unity Hub, adicione a raiz deste repositório, que contém `Assets`, `Packages` e `ProjectSettings`, e aguarde a importação.
+A sintaxe dos 35 scripts C# e as referências dos quatro áudios de partida nas quatro cenas foram verificadas. **Compilação, reprodução e equilíbrio dos volumes em Play Mode ainda precisam ser conferidos no Unity**, que não está instalado no ambiente de edição.
 
-## Validação
+Confira em cada cena: abertura, início, gol, fim, próximo jogo e cancelamento; no mata-mata, confira também a abertura geral seguida da prévia e o Golden Goal.
 
-A lógica dos scripts C# foi compilada e testada com substitutos das APIs Unity e TMPro. A aparência, a física e o funcionamento em **Play Mode** ainda precisam ser conferidos no editor Unity. Mais detalhes em `docs/VALIDACAO.md`.
-
-O backup recebido não contém temporadas salvas nem gravações externas.
+Esta branch contém a versão recebida no backup e os ajustes de áudio. A branch `main` mantém sua versão anterior.

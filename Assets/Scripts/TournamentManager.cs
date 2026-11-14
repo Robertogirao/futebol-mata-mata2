@@ -43,6 +43,9 @@ public class TournamentManager : MonoBehaviour
 {
     public static TournamentManager Instance;
 
+    [Tooltip("Desligado quando ProjetoFutebolDiscos controla a inicialização e a retomada.")]
+    public bool iniciarAutomaticamente = true;
+
     [Header("Mata-mata (cenas exclusivas)")]
     public bool modoMataMata = false;
     public MataMataCampeonato mataMata;
@@ -89,12 +92,12 @@ public class TournamentManager : MonoBehaviour
     public bool jogandoFaseDeGrupos = false;
 
     [Header("Gameplay e interface")]
-    public AutoBallPipe canoAutomatizado;
+    public FutebolDeDiscos.PartidaDiscos simuladorDiscos;
     public Sprite logoCampeonato;
     public TextMeshProUGUI textoTituloFase;
     public GameObject telaTorneio;
 
-    [Header("Cores das bolas")]
+    [Header("Cores dos discos")]
     [Min(0f)]
     public float limiarCoresParecidas = 25f;
 
@@ -120,6 +123,24 @@ public class TournamentManager : MonoBehaviour
     private AberturaJogoUI aberturaEmUso;
     private bool preparandoPartida;
     private int versaoAbertura;
+
+    public bool LigaPreparada { get { return ligaPreparada; } }
+    public bool SalvamentoPendente { get { return registroPendente; } }
+
+    public bool RodadaConcluida
+    {
+        get
+        {
+            return modoLiga && ligaPreparada && rodadaAtual != null && rodadaAtual.Count > 0 &&
+                confrontoEmAndamento == null && !preparandoPartida && !registroPendente &&
+                rodadaAtual.All(c => c != null && c.concluido && c.pontosRegistrados);
+        }
+    }
+
+    public bool EncerramentoRodadaConcluido
+    {
+        get { return RodadaConcluida && !TabelaAtiva && (!UsarTabela || encerramentoExibido); }
+    }
 
     private bool UsarTabela
     {
@@ -153,12 +174,12 @@ public class TournamentManager : MonoBehaviour
 
     private void Start()
     {
-        if (Instance != this) return;
+        if (Instance != this || !iniciarAutomaticamente) return;
 
-        if (canoAutomatizado == null)
+        if (simuladorDiscos == null)
         {
-            canoAutomatizado =
-                FindAnyObjectByType<AutoBallPipe>();
+            simuladorDiscos =
+                FindAnyObjectByType<FutebolDeDiscos.PartidaDiscos>();
         }
 
         if (modoMataMata)
@@ -490,9 +511,9 @@ public class TournamentManager : MonoBehaviour
             yield break;
         }
 
-        if (canoAutomatizado != null)
+        if (simuladorDiscos != null)
         {
-            canoAutomatizado.PararChuva();
+            simuladorDiscos.PararPartida();
         }
 
         if (UniversalUI.Instance != null)
@@ -664,17 +685,11 @@ public class TournamentManager : MonoBehaviour
             return;
         }
 
-        if (UniversalUI.Instance == null ||
-            canoAutomatizado == null ||
-            canoAutomatizado.prefabBola == null ||
-            canoAutomatizado.prefabBola
-                .GetComponent<BallController>() == null ||
-            canoAutomatizado.prefabBola
-                .GetComponent<Rigidbody2D>() == null)
+        if (UniversalUI.Instance == null || simuladorDiscos == null ||
+            !UniversalUI.Instance.isActiveAndEnabled || !simuladorDiscos.isActiveAndEnabled)
         {
             Debug.LogError(
-                "Confira UniversalUI, AutoBallPipe " +
-                "e o prefab da bola.",
+                "Confira UniversalUI e PartidaDiscos ativos na cena.",
                 this);
 
             return;
@@ -686,8 +701,7 @@ public class TournamentManager : MonoBehaviour
             {
                 var encontradas =
                     UnityEngine.Object
-                        .FindObjectsByType<AberturaJogoUI>(
-                            FindObjectsSortMode.None);
+                        .FindObjectsByType<AberturaJogoUI>();
 
                 if (encontradas.Length == 1)
                 {
@@ -710,10 +724,10 @@ public class TournamentManager : MonoBehaviour
 
         // A escalação é escolhida uma única vez.
         var titularesA =
-            confronto.timeA.ObterTitularesDaPartida();
+            simuladorDiscos.SelecionarRepresentantes(confronto.timeA);
 
         var titularesB =
-            confronto.timeB.ObterTitularesDaPartida();
+            simuladorDiscos.SelecionarRepresentantes(confronto.timeB);
 
         if (titularesA.Count == 0 ||
             titularesB.Count == 0)
@@ -768,8 +782,11 @@ public class TournamentManager : MonoBehaviour
                 aberturaEmUso.CobrirTela();
             }
 
-            canoAutomatizado.PararChuva();
+            simuladorDiscos.PararPartida();
             UniversalUI.Instance.PararCronometro();
+            simuladorDiscos.PrepararPartida(
+                confronto.timeA, confronto.timeB,
+                titularesA, titularesB, corA, corB);
 
             UniversalUI.Instance.ConfigurarPartida(
                 confronto.timeA,
@@ -1099,18 +1116,18 @@ public class TournamentManager : MonoBehaviour
         try
         {
             if (UniversalUI.Instance == null ||
-                canoAutomatizado == null ||
+                simuladorDiscos == null ||
                 !UniversalUI.Instance.isActiveAndEnabled ||
-                !canoAutomatizado.isActiveAndEnabled)
+                !simuladorDiscos.isActiveAndEnabled)
             {
                 throw new InvalidOperationException(
-                    "UniversalUI ou AutoBallPipe indisponível.");
+                    "UniversalUI ou PartidaDiscos indisponível.");
             }
 
             // Mantém a ordem de início do jogo atual.
             UniversalUI.Instance.IniciarCronometro();
 
-            canoAutomatizado.IniciarChuvaDeBolas(
+            simuladorDiscos.IniciarPartida(
                 confronto.timeA,
                 confronto.timeB,
                 duracao,
@@ -1171,9 +1188,9 @@ public class TournamentManager : MonoBehaviour
         confrontoEmAndamento = null;
         registroPendente = false;
 
-        if (canoAutomatizado != null)
+        if (simuladorDiscos != null)
         {
-            canoAutomatizado.PararChuva();
+            simuladorDiscos.PararPartida();
         }
 
         if (UniversalUI.Instance != null)
@@ -1280,8 +1297,7 @@ public class TournamentManager : MonoBehaviour
 
         Debug.Log(
             modoLiga
-                ? "Rodada gravada. Confira os takes e confirme " +
-                  "a rodada pelo menu quando estiver satisfeito."
+                ? "Rodada gravada. A classificação de encerramento será exibida antes de avançar."
                 : "Rodada finalizada.",
             this);
 

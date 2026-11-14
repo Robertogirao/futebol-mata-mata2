@@ -98,6 +98,28 @@ public class LigaCampeonato : MonoBehaviour
         }
     }
 
+    /// <summary>Retoma a rodada pendente ou informa a seguinte à última confirmada.</summary>
+    public bool TentarObterProximaRodada(out int numero)
+    {
+        int proxima = 1;
+        bool ok = Tentar(() =>
+        {
+            Carregar();
+            Rodada rascunho = dados.rodadas.Where(r => !r.confirmada)
+                .OrderBy(r => r.numero).FirstOrDefault();
+            if (rascunho != null)
+            {
+                proxima = rascunho.numero;
+                return;
+            }
+            int ultimaConfirmada = dados.rodadas.Where(r => r.confirmada)
+                .Select(r => r.numero).DefaultIfEmpty(0).Max();
+            proxima = checked(ultimaConfirmada + 1);
+        });
+        numero = ok ? proxima : 0;
+        return ok;
+    }
+
     public bool PrepararRodada(
         int numero,
         List<TeamData> todos,
@@ -957,14 +979,14 @@ public List<Jogo> ObterJogosDaRodada()
                 .DefaultIfEmpty(0)
                 .Max();
 
-        Rodada r = dados.rodadas.Find(
+        Rodada selecionada = dados.rodadas.Find(
             x => x.numero == numero);
 
         Exigir(
-            r != null,
+            selecionada != null,
             "A rodada selecionada não foi salva.");
 
-        return r;
+        return selecionada;
     }
 
     private static Jogo LocalizarJogo(

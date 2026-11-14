@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: 9161516748411341627, guid: f274bc873d869b24795d1ee59b14c3d8, type: 3}
     estrelasSkill: 5
-  - nomeJogador: Bryan Mbeumo
-    numeroCamisa: 17
-    foto512x512: {fileID: -3434174016012546751, guid: 876fcce3f25ef014284f442ad067172d, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Matheus Cunha
-    numeroCamisa: 19
-    foto512x512: {fileID: -6523318787681435440, guid: 65f2ca3c5a8099f49992bc9725e20ae0, type: 3}
-    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

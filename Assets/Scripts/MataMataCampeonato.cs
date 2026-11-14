@@ -29,7 +29,6 @@ public sealed class MataMataCampeonato : MonoBehaviour
     [Header("Identidade e apresentação")]
     public TemaCompeticao tema;
     public ChaveamentoUI apresentacao;
-    public ArenaTema arena;
     public string edicaoId = "temporada_01";
 
     [Header("Participantes")]
@@ -98,6 +97,20 @@ public sealed class MataMataCampeonato : MonoBehaviour
 
     public bool Ocupado { get { return ocupado || aguardandoPartida; } }
 
+    public bool Concluido
+    {
+        get { return arquivoAtual != null && arquivoAtual.estado != null && !string.IsNullOrEmpty(arquivoAtual.estado.campeao); }
+    }
+
+    public MataMataModelo.Estado EstadoAtual
+    {
+        get
+        {
+            return arquivoAtual == null || arquivoAtual.estado == null ? null :
+                JsonUtility.FromJson<MataMataModelo.Estado>(JsonUtility.ToJson(arquivoAtual.estado));
+        }
+    }
+
     public string PastaTorneio
     {
         get
@@ -150,8 +163,6 @@ public sealed class MataMataCampeonato : MonoBehaviour
             if (apresentacao == null) apresentacao = GetComponent<ChaveamentoUI>();
             if (apresentacao == null) apresentacao = gameObject.AddComponent<ChaveamentoUI>();
             Exigir(apresentacao.isActiveAndEnabled, "Ative ChaveamentoUI.");
-            if (arena == null) arena = GetComponent<ArenaTema>();
-            if (arena != null) arena.Aplicar(tema);
             if (manager.classificacaoUI == null) manager.classificacaoUI = manager.GetComponent<ClassificacaoUI>();
             if (manager.classificacaoUI != null) manager.classificacaoUI.Ocultar();
             if (manager.telaTorneio != null) manager.telaTorneio.SetActive(false);
@@ -160,13 +171,13 @@ public sealed class MataMataCampeonato : MonoBehaviour
             manager.mostrarClassificacao = false;
             manager.mostrarAbertura = false;
             manager.logoCampeonato = tema.logoCompeticao;
-            Exigir(UniversalUI.Instance != null && manager.canoAutomatizado != null,
-                "Confira UniversalUI e o lançador da arena.");
-            Exigir(UniversalUI.Instance.isActiveAndEnabled && manager.canoAutomatizado.isActiveAndEnabled,
-                "Ative UniversalUI e AutoBallPipe antes de iniciar.");
+            Exigir(UniversalUI.Instance != null && manager.simuladorDiscos != null,
+                "Confira UniversalUI e PartidaDiscos na cena.");
+            Exigir(UniversalUI.Instance.isActiveAndEnabled && manager.simuladorDiscos.isActiveAndEnabled,
+                "Ative UniversalUI e PartidaDiscos antes de iniciar.");
             UniversalUI.Instance.ativarGoldenGoal = true;
             UniversalUI.Instance.PararCronometro();
-            manager.canoAutomatizado.PararChuva();
+            manager.simuladorDiscos.PararPartida();
             var proxima = MataMataModelo.Proxima(arquivoAtual.estado);
             faseDaGravacao = proxima != null ? proxima.fase : -1;
         }))
@@ -258,7 +269,7 @@ public sealed class MataMataCampeonato : MonoBehaviour
                     arquivoAtual.estado.fases[atual.fase].vagas);
             gerenciador.JogarConfronto(confrontoAtual, float.MaxValue);
             Exigir(gerenciador.EstaPreparandoConfronto(confrontoAtual),
-                "A partida não foi preparada. Confira a arena e o prefab da bola.");
+                "A partida não foi preparada. Confira UniversalUI e PartidaDiscos.");
             apresentacao.RevelarArena();
         }))
         {
@@ -317,7 +328,7 @@ public sealed class MataMataCampeonato : MonoBehaviour
     }
 
     [ContextMenu("Mata-mata/Continuar no Play")]
-    private void ContinuarNoPlay()
+    public void ContinuarNoPlay()
     {
         if (!Application.isPlaying || Ocupado || arquivoAtual == null) return;
         var proxima = MataMataModelo.Proxima(arquivoAtual.estado);
@@ -546,7 +557,7 @@ public sealed class MataMataCampeonato : MonoBehaviour
         partidaAtualId = null;
         if (apresentacao != null) apresentacao.Ocultar();
         if (gerenciador != null) gerenciador.CancelarConfrontoMataMata(confrontoCancelado);
-        if (gerenciador != null && gerenciador.canoAutomatizado != null) gerenciador.canoAutomatizado.PararChuva();
+        if (gerenciador != null && gerenciador.simuladorDiscos != null) gerenciador.simuladorDiscos.PararPartida();
         if (UniversalUI.Instance != null) UniversalUI.Instance.CancelarPartida();
         Time.timeScale = 1f;
         ultimoErro = mensagem;

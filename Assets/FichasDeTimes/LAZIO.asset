@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 7
     foto512x512: {fileID: 8130515032373019696, guid: a200d9d5a229c3440af930391abff833, type: 3}
     estrelasSkill: 3
-  - nomeJogador: Mattia Zaccagni
-    numeroCamisa: 9
-    foto512x512: {fileID: -4047644054488072595, guid: 2d05d30420fd2cd44b373555955aad63, type: 3}
-    estrelasSkill: 3
-  - nomeJogador: Tijjani Noslin
-    numeroCamisa: 14
-    foto512x512: {fileID: 6126808837522012851, guid: 54420a9b37494554283e33758f98b4df, type: 3}
-    estrelasSkill: 3
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

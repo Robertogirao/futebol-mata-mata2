@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tema_NationsLeague_DEMO
   m_EditorClassIdentifier: Assembly-CSharp::TemaCompeticao
   competicaoId: nations_league_demo
-  nomeCompeticao: NATIONS LEAGUE - THEME PREVIEW
+  nomeCompeticao: NATIONS LEAGUE 2026
   corPrimaria: {r: 0.015, g: 0.035, b: 0.1, a: 1}
   corSecundaria: {r: 0.06, g: 0.1, b: 0.22, a: 1}
   corDestaque: {r: 0.25, g: 0.85, b: 0.96, a: 1}

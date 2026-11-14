@@ -24,6 +24,10 @@ MonoBehaviour:
     numeroCamisa: 16
     foto512x512: {fileID: -3902058788809802688, guid: bdf4c8c81a974e446a9b81ebadf0b41f, type: 3}
     estrelasSkill: 5
+  - nomeJogador: "Mihajlo Cvetkovi\u0107"
+    numeroCamisa: 16
+    foto512x512: {fileID: -3902058788809802688, guid: bdf4c8c81a974e446a9b81ebadf0b41f, type: 3}
+    estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000

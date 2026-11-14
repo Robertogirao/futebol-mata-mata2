@@ -22,7 +22,7 @@ MonoBehaviour:
   elenco:
   - nomeJogador: Kris Zachariassen
     numeroCamisa: 16
-    foto512x512: {fileID: 813498591241845568, guid: 5b849d61cab27894fbd735d2c736ada4, type: 3}
+    foto512x512: {fileID: 3182850052100804379, guid: cdb475ecebbb6cd408686c4c9fd67f2f, type: 3}
     estrelasSkill: 5
   sortearTitularesAleatorios: 0
   usarSelecaoManual: 0

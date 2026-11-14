@@ -14,6 +14,7 @@ public sealed class MataMataEditor : Editor
 
     public override void OnInspectorGUI()
     {
+        if (FutebolDeDiscos.PainelCentralDiscosEditor.MostrarAviso(target as Component)) return;
         DrawDefaultInspector();
 
         MataMataCampeonato campeonato = (MataMataCampeonato)target;
@@ -223,7 +224,7 @@ public sealed class MataMataEditor : Editor
         MataMataCampeonato encontrado = null;
         MataMataCampeonato[] campeonatos =
             UnityEngine.Object.FindObjectsByType<MataMataCampeonato>(
-                FindObjectsInactive.Include, FindObjectsSortMode.None);
+                FindObjectsInactive.Include);
 
         foreach (MataMataCampeonato campeonato in campeonatos)
         {

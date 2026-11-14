@@ -20,17 +20,9 @@ MonoBehaviour:
   corSecundaria: {r: 1, g: 1, b: 1, a: 1}
   posturaTatica: 0
   elenco:
-  - nomeJogador: Kevin De Bruyne
-    numeroCamisa: 7
-    foto512x512: {fileID: -3591855085754807316, guid: 3ba0eccb19035534b82263e6f11646c1, type: 3}
-    estrelasSkill: 5
   - nomeJogador: "Rasmus H\xF8jlund"
     numeroCamisa: 18
     foto512x512: {fileID: -6399955886658743760, guid: fb1aa2ae2031053439534a9103eafcb4, type: 3}
-    estrelasSkill: 5
-  - nomeJogador: Scott McTominay
-    numeroCamisa: 29
-    foto512x512: {fileID: -797702918276871998, guid: e8972121023611d499c76a00bbe97a72, type: 3}
     estrelasSkill: 5
   sortearTitularesAleatorios: 1
   usarSelecaoManual: 0

@@ -24,14 +24,6 @@ MonoBehaviour:
     numeroCamisa: 3
     foto512x512: {fileID: -2681858015923208252, guid: 3aeac89ec39ee6d448446baa622ea973, type: 3}
     estrelasSkill: 3
-  - nomeJogador: Marcus Thuram
-    numeroCamisa: 14
-    foto512x512: {fileID: 1564599004273125572, guid: f9d731657596a494fad1985970d922cb, type: 3}
-    estrelasSkill: 4
-  - nomeJogador: "Nicol\xF2 Barella"
-    numeroCamisa: 18
-    foto512x512: {fileID: -5397436635310542514, guid: 2b5e81f0f1d4b9d4faa09c44c011272b, type: 3}
-    estrelasSkill: 3
   sortearTitularesAleatorios: 1
   usarSelecaoManual: 0
   indicesTitulares: 000000000100000002000000
