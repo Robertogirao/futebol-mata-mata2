@@ -1,0 +1,2 @@
+PASS 47 selected-audio dispatch and exclusive-source regression assertions using actual game sources.
+AudioClip identity and source lifecycle were observed through a facade; native Unity audio output was not executed.

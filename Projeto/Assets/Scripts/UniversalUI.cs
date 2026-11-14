@@ -24,8 +24,8 @@ public class UniversalUI : MonoBehaviour
 
     [Header("Sons da Partida")]
     [Tooltip(
-        "Opcional. Se ficar vazio, procura ou cria um AudioSource " +
-        "neste objeto. Use uma fonte exclusiva para os efeitos.")]
+        "Opcional. Se ficar vazio, cria uma fonte exclusiva para os efeitos " +
+        "da partida, sem reutilizar fontes de abertura ou música.")]
     public AudioSource fonteDeAudio;
 
     public AudioClip somGol;
@@ -34,6 +34,9 @@ public class UniversalUI : MonoBehaviour
 
     [Range(0f, 1f)]
     public float volumeSons = 0.8f;
+
+    private AudioSource fonteAutomaticaDosEfeitos;
+    private AudioSource fontePreparadaDosEfeitos;
 
     [Header("Elementos do Topo da TV")]
     public Image escudoTimeA;
@@ -100,12 +103,14 @@ public class UniversalUI : MonoBehaviour
     private void OnDisable()
     {
         CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
     }
 
     private void OnDestroy()
     {
         if (Instance != this) return;
         CancelarPartida();
+        if (fonteAutomaticaDosEfeitos != null) Destroy(fonteAutomaticaDosEfeitos);
         Instance = null;
     }
 
@@ -113,29 +118,34 @@ public class UniversalUI : MonoBehaviour
     {
         if (fonteDeAudio == null)
         {
-            fonteDeAudio = GetComponent<AudioSource>();
+            // An existing source can belong to the opening or background music.
+            // Never adopt its clip, playback or cancellation lifecycle as match FX.
+            if (fonteAutomaticaDosEfeitos == null)
+                fonteAutomaticaDosEfeitos = gameObject.AddComponent<AudioSource>();
+            fonteDeAudio = fonteAutomaticaDosEfeitos;
         }
-
-        if (fonteDeAudio == null)
-        {
-            fonteDeAudio = gameObject.AddComponent<AudioSource>();
-        }
-
+        if (fontePreparadaDosEfeitos == fonteDeAudio) return;
+        PararAudioDaPartida();
+        fonteDeAudio.Stop();
+        fonteDeAudio.clip = null;
         fonteDeAudio.playOnAwake = false;
         fonteDeAudio.loop = false;
 
         // Som 2D: não depende da distância da câmera.
         fonteDeAudio.spatialBlend = 0f;
+        fontePreparadaDosEfeitos = fonteDeAudio;
+    }
+
+    private void PararAudioDaPartida()
+    {
+        if (fontePreparadaDosEfeitos != null) fontePreparadaDosEfeitos.Stop();
     }
 
     private void TocarSom(AudioClip clip)
     {
         if (clip == null) return;
 
-        if (fonteDeAudio == null)
-        {
-            PrepararAudio();
-        }
+        PrepararAudio();
 
         fonteDeAudio.PlayOneShot(
             clip,
@@ -168,6 +178,8 @@ public class UniversalUI : MonoBehaviour
         List<JogadorDados> titularesB)
     {
         CancelarApresentacaoJogadores();
+        PrepararAudio();
+        PararAudioDaPartida();
         // Uma partida nova começa sem banners antigos.
         if (GoalBannerUI.Instance != null)
         {
@@ -335,6 +347,7 @@ public class UniversalUI : MonoBehaviour
     {
         StopAllCoroutines();
         CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
         partidaEmAndamento = false;
         partidaEncerrando = false;
         emProrrogacao = false;

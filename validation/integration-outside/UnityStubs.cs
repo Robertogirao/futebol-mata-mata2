@@ -48,7 +48,7 @@ public static class Time{public static float timeScale=1,deltaTime=.1f,unscaledD
 public static class Debug{public static List<string> errors=new List<string>();public static void Log(object s,Object o=null){}public static void LogWarning(object s,Object o=null){}public static void LogError(object s,Object o=null){errors.Add(s.ToString());}}
 public class Canvas:Behaviour{}
 public class Sprite:Object{}public class TextAsset:Object{public string text;}public class Rigidbody2D:Component{}
-public class AudioClip:Object{}public class AudioSource:Behaviour{public bool playOnAwake,loop;public float spatialBlend;public int plays;public void PlayOneShot(AudioClip clip,float v){plays++;}}
+public class AudioClip:Object{}public class AudioSource:Behaviour{public bool playOnAwake,loop;public float spatialBlend;public AudioClip clip;public int plays;public void PlayOneShot(AudioClip clip,float v){plays++;}public void Stop(){}}
 public class WaitForSecondsRealtime{public WaitForSecondsRealtime(float s){}}
 public static class Application{public static bool isPlaying=true;public static string persistentDataPath;public static void OpenURL(string s){}}
 }

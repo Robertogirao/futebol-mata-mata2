@@ -122,6 +122,76 @@ public static class ActualHarness
         manager.tempoBolaPresaNoCanto = 3f; manager.alcanceCantoBolaPresa = 1.6f; manager.pausaReposicaoBolaPresa = .8f;
         EditorGUILayout.labels.Clear(); EditorGUILayout.properties.Clear();
     }
+    static void CheckSoundSelection()
+    {
+        foreach (FormatoDiscos mode in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+        {
+            var manager = Manager(); manager.formato = mode;
+            manager.tema = ScriptableObject.CreateInstance<TemaCompeticao>();
+            var ui = manager.GetComponent<UniversalUI>();
+            var source = manager.gameObject.AddComponent<AudioSource>();
+            var old = new AudioClip { name = "Old clip" };
+            var goal = new AudioClip { name = "Selected goal" };
+            var start = new AudioClip { name = "Selected kickoff" };
+            var finish = new AudioClip { name = "Selected final whistle" };
+            var opening = new AudioClip { name = "Selected opening" };
+            source.clip = old; ui.somGol = ui.somApitoInicial = ui.somApitoFinal = old;
+            var editor = EditorFor(manager);
+            typeof(ProjetoFutebolDiscosEditor).GetField("mostrarTema", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(editor, true);
+            EditorGUILayout.objects["Som do gol"] = goal;
+            EditorGUILayout.objects["Apito de início"] = start;
+            EditorGUILayout.objects["Apito de encerramento"] = finish;
+            EditorGUILayout.objects["Fonte de áudio dos efeitos (opcional)"] = source;
+            EditorGUILayout.objects["Som das aberturas e prévias"] = opening;
+            EditorGUILayout.floats["Volume dos efeitos"] = .57f;
+            PrefabUtility.instances.Add(ui);
+            int prefabChanges = PrefabUtility.records, sceneChanges = UnityEditor.SceneManagement.EditorSceneManager.dirty;
+            EditorGUILayout.properties.Clear(); editor.OnInspectorGUI();
+            EditorGUILayout.objects.Clear(); EditorGUILayout.floats.Clear();
+            Check(ui.somGol == goal && ui.somApitoInicial == start && ui.somApitoFinal == finish && ui.fonteDeAudio == source && ui.volumeSons == .57f,
+                "central object selectors assign the actual three event clips and source in " + mode);
+            Check(manager.tema.somAbertura == opening && EditorGUILayout.properties.Count(p => p == "somAbertura") == 1,
+                "opening clip is separately editable once, even when theme foldout is open, in " + mode);
+            Check(EditorUtility.dirtyObjects.Contains(ui) && EditorUtility.dirtyObjects.Contains(manager.tema) &&
+                PrefabUtility.records > prefabChanges && UnityEditor.SceneManagement.EditorSceneManager.dirty > sceneChanges,
+                "audio edits mark their component/asset, scene and prefab override for persistence in " + mode);
+
+            FieldInfo cacheField = typeof(ProjetoFutebolDiscosEditor).GetField("dadosSons", BindingFlags.NonPublic | BindingFlags.Instance);
+            var cached = (SerializedObject)cacheField.GetValue(editor);
+            var delayedGoal = new AudioClip { name = "Retained property selection" };
+            cached.FindProperty("somGol").objectReferenceValue = delayedGoal;
+            Check(ui.somGol == goal, "facade models a queued serialized selection before Apply in " + mode);
+            editor.OnInspectorGUI();
+            Check(ReferenceEquals(cached, cacheField.GetValue(editor)) && ui.somGol == delayedGoal,
+                "retained audio property edits are applied before the next Inspector refresh in " + mode);
+            var delayedFinal = new AudioClip { name = "Selected before closing Inspector" };
+            cached.FindProperty("somApitoFinal").objectReferenceValue = delayedFinal;
+            typeof(ProjetoFutebolDiscosEditor).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+            editor = EditorFor(manager); editor.OnInspectorGUI();
+            Check(ui.somGol == delayedGoal && ui.somApitoInicial == start && ui.somApitoFinal == delayedFinal && manager.tema.somAbertura == opening,
+                "closing and rebuilding the Inspector retains all separate audio assignments in " + mode);
+
+            ui.ativarGoldenGoal = false; ui.IniciarCronometro(); ui.RegistrarGol(true, 0f);
+            Time.captureDeltaTime = 46f;
+            typeof(UniversalUI).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ui, null);
+            Time.captureDeltaTime = 0f;
+            Check(source.playedClips.SequenceEqual(new[] { start, delayedGoal, delayedFinal }),
+                "real kickoff, goal and final events dispatch the selected clips instead of the old clip in " + mode);
+            Check(source.playedVolumes.All(volume => Math.Abs(volume - .57f) < .001f),
+                "every real event applies the selected central effect volume in " + mode);
+            Check(!source.playedClips.Contains(old) && !source.playedClips.Contains(opening),
+                "match effects do not substitute a legacy or opening clip in " + mode);
+            ui.CancelarPartida();
+            EditorGUILayout.objects["Som do gol"] = null;
+            editor.OnInspectorGUI(); EditorGUILayout.objects.Clear();
+            ui.IniciarCronometro(); int played = source.playedClips.Count; ui.RegistrarGol(false, 0f);
+            Check(ui.somGol == null && source.playedClips.Count == played,
+                "clearing a central goal clip means silence without an old-clip fallback in " + mode);
+            ui.CancelarPartida(); PrefabUtility.instances.Remove(ui);
+            UnityEngine.Object.Destroy(manager.gameObject);
+        }
+        EditorGUILayout.properties.Clear(); EditorGUILayout.labels.Clear();
+    }
     public static void Main()
     {
         Application.isPlaying = false;
@@ -131,6 +201,7 @@ public static class ActualHarness
         var editor = EditorFor(manager);
         CheckSinglePanel(manager, editor);
         CheckCornerControls(manager, editor);
+        CheckSoundSelection();
         Check(manager.ValidarConfiguracao(), "actual root validates scene default count/rounds/physics: " + manager.ultimoErro);
         editor.OnInspectorGUI();
         Check(manager.quantidadeTimes == 8 && manager.participantes.Count == 8, "actual default remains eight");

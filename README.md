@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.7.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.7)
+**[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.13.8.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.13.8)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.
 
@@ -15,6 +15,8 @@ Esta versão substitui o Beat the Keeper. Cada time começa com uma quantidade f
 **Painel único e fundo externo:** [baixe a atualização](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.6/Atualizacoes/Atualizacao_Painel_Central_Fundo_Fotos.zip) · [instruções dos controles](Atualizacoes/COMO_APLICAR_PAINEL_CENTRAL.md).
 
 **Bola presa nos cantos:** [baixe a atualização de escanteio e tiro de meta](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.7/Atualizacoes/Atualizacao_Bola_Presa_Escanteio_Tiro_Meta.zip) · [guia dos controles e da instalação](Atualizacoes/COMO_APLICAR_BOLA_PRESA.md).
+
+**Sons escolhidos no painel:** [baixe a atualização dos efeitos e dos controles de áudio](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.8/Atualizacoes/Atualizacao_Sons_Painel.zip) · [instruções de instalação e configuração](Atualizacoes/COMO_APLICAR_SONS.md).
 
 ## Abrir o projeto
 
@@ -64,6 +66,14 @@ No **FutebolDiscos_Manager > Tempos da transmissão (segundos) > Textos das aber
 Os ajustes ficam em **FutebolDiscos_Manager > Projeto Futebol Discos**, com a seção **Configurações da Liga** ou **Configurações do Mata-mata**, conforme a cena. Os Inspectors internos exibem um atalho para esse painel. Os tempos de jogo, abertura, fotos, intervalo e leitura ficam ali, junto de sons e comemoração. O intervalo não é mais aplicado duas vezes na liga.
 
 Em **Identidade visual > Fundo externo da arena**, escolha uma imagem importada como Sprite. A imagem mantém a proporção e fica atrás do campo e dos gols, com opacidade e decoração opcionais. Em **Identificação dos jogadores**, a leitura luminosa da foto pode ser desligada ou ter sua velocidade ajustada; agora ela fica atrás do retrato e é mais lenta e discreta.
+
+## Sons da partida e das aberturas
+
+Em **FutebolDiscos_Manager > Projeto Futebol Discos > Sons e comemoração de gol**, escolha **Som do gol**, **Apito de início** e **Apito de encerramento**. Esses eventos usam diretamente os clipes escolhidos; deixar um campo vazio desliga aquele efeito. Salve a cena fora do Play para conservar as escolhas.
+
+**Fonte de áudio dos efeitos (opcional)** pode ficar em **None**: o jogo cria uma fonte exclusiva para a partida. Uma fonte atribuída deve ser exclusiva para esses efeitos. A fonte automática não reutiliza a fonte de música ou de abertura, e os efeitos pendentes são interrompidos ao preparar outra partida ou cancelar a atual.
+
+Com um tema atribuído, o campo **Som das aberturas e prévias** controla o áudio do tema, separado dos três efeitos da partida. Alterar esse som modifica o asset do tema e afeta as cenas que o compartilham. Duplique o tema se quiser aberturas diferentes na liga e no mata-mata.
 
 ## Bola presa nos cantos
 

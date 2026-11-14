@@ -1,0 +1,16 @@
+{
+  "assertions": 47,
+  "actual_game_sources": true,
+  "native_unity_audio_executed": false,
+  "exact_selected_clip_dispatch": true,
+  "source_isolation_and_lifecycle": true,
+  "result": "pass",
+  "version": "2026.11.13.8",
+  "central_editor_assertions": 130,
+  "patch_scripts": 2,
+  "patch_bytes": 12065,
+  "patch_sha256": "ddb8c1f561eba97d7c10184f38b4bd33edc90a64d08a658cfd60a252754b45bb",
+  "source_files": 1238,
+  "duplicate_asset_guids": 0,
+  "save_schema_changed": false
+}

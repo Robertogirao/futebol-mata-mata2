@@ -1,15 +1,13 @@
-Escanteio e tiro de meta automáticos quando a bola fica presa no canto.
+Efeitos da partida com fonte exclusiva e seleção de áudio reforçada no painel central.
 
-A reposição exige falta de progresso no mesmo canto pelo tempo configurado, com padrão de 3 segundos. Uma batida na parede ou passagem normal não interrompe a partida.
+- Gol e apitos usam os três clipes escolhidos em **Sons e comemoração de gol**. Campos vazios deixam o respectivo efeito sem som.
+- Com **Fonte de áudio dos efeitos (opcional)** em None, o jogo cria uma fonte exclusiva, sem reutilizar fontes de abertura ou música.
+- Fontes atribuídas aos efeitos são preparadas sem um clipe fixo antigo; efeitos pendentes param ao preparar outra partida, cancelar ou desativar a interface.
+- O Inspector mantém as referências de áudio entre atualizações e registra as alterações na cena ou no prefab.
+- **Som das aberturas e prévias** aparece no mesmo grupo e continua usando o asset do tema, separado do gol e dos apitos.
 
-- Último toque do defensor: escanteio para o atacante. Último toque do atacante: tiro de meta para o defensor.
-- Pequenos tremores e trocas de toque não reiniciam a espera; sair da região ou avançar com a bola reinicia.
-- Avisos CORNER KICK / GOAL KICK, pausa do cronômetro, reorganização dos discos e cobrança automática para dentro do campo.
-- Liga, mata-mata e Golden Goal usam a mesma regra, com controles próprios em cada cena no grupo **Bola presa nos cantos** do painel principal.
-- Tempo, área de detecção, pausa e opção de desligar podem ser ajustados sem criar outra temporada. Resultados e personalizações existentes ficam preservados.
+**Atualizar seu projeto:** [baixe o ZIP de dois scripts](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.8/Atualizacoes/Atualizacao_Sons_Painel.zip). Pare o Play, extraia e copie Assets para seu projeto 2026.11.13.7, aceitando as substituições. Confira os clipes e salve a cena. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.8/Atualizacoes/COMO_APLICAR_SONS.md).
 
-**Atualizar seu projeto:** [baixe o ZIP de quatro scripts](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/tags/futebol-discos-v2026.11.13.7/Atualizacoes/Atualizacao_Bola_Presa_Escanteio_Tiro_Meta.zip). Pare o Play, extraia e copie Assets para seu projeto com o painel central 2026.11.13.6, aceitando as substituições. [Instruções completas](https://github.com/Robertogirao/futebol-mata-mata2/blob/futebol-discos-v2026.11.13.7/Atualizacoes/COMO_APLICAR_BOLA_PRESA.md).
+Cenas, fontes, imagens, arquivos de áudio e resultados existentes ficam preservados. O projeto completo está em **Source code (zip)** abaixo; abra a pasta **Projeto** no Unity 6000.4.11f1.
 
-O projeto completo está em **Source code (zip)** abaixo; abra a pasta **Projeto** no Unity 6000.4.11f1.
-
-Passaram 654 verificações da nova reposição, 110 do painel e os testes anteriores de liga, mata-mata, gols e apresentação. A validação de código usa fachadas das APIs Unity; a renderização e a física nativa não foram executadas neste ambiente.
+Passaram 47 verificações de áudio, 130 do painel e os testes anteriores de liga, mata-mata, gols, bola presa e apresentação. A validação usa fachadas das APIs Unity para conferir os clipes e volumes enviados à reprodução. O áudio audível, a mixagem e a importação no Editor não foram executados neste ambiente.

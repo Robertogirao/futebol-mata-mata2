@@ -516,7 +516,19 @@ namespace UnityEngine
     public class CanvasGroup : Behaviour { public float alpha = 1; public bool interactable, blocksRaycasts; }
     public class AudioClip : Object { }
     public class AudioListener : Behaviour { }
-    public class AudioSource : Behaviour { public bool playOnAwake, loop, ignoreListenerPause; public float spatialBlend, volume = 1; public AudioClip clip; public void PlayOneShot(AudioClip clip, float volumeScale = 1) { } public void Play() { } public void Stop() { } }
+    public class AudioSource : Behaviour
+    {
+        public bool playOnAwake, loop, ignoreListenerPause, isPlaying;
+        public float spatialBlend, volume = 1;
+        public AudioClip clip;
+        public readonly List<AudioClip> oneShots = new List<AudioClip>();
+        public readonly List<float> oneShotVolumes = new List<float>();
+        public int stopCalls, playCalls;
+        public void PlayOneShot(AudioClip sound, float volumeScale = 1)
+        { oneShots.Add(sound); oneShotVolumes.Add(volumeScale); isPlaying = true; }
+        public void Play() { playCalls++; isPlaying = true; }
+        public void Stop() { stopCalls++; isPlaying = false; }
+    }
     public static class JsonUtility
     {
         public static string ToJson(object value, bool prettyPrint = false)

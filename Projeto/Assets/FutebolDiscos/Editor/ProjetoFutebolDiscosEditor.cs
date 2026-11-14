@@ -14,6 +14,7 @@ namespace FutebolDeDiscos
     {
         private bool mostrarTema;
         private bool mostrarParticipantes = true;
+        private SerializedObject dadosSons, dadosComemoracao, dadosTema;
         private static readonly int[] Vagas = { 2, 4, 8, 16, 32 };
         private static readonly string[] NomesVagas = { "2 times", "4 times", "8 times", "16 times", "32 times" };
         private static bool ConfiguracaoBloqueada { get { return EditorApplication.isPlayingOrWillChangePlaymode; } }
@@ -197,30 +198,71 @@ namespace FutebolDeDiscos
                 EditorGUILayout.HelpBox(projeto.ultimoErro, MessageType.Error);
         }
 
-        private static void DesenharSonsEComemoracao(ProjetoFutebolDiscos projeto)
+        private void DesenharSonsEComemoracao(ProjetoFutebolDiscos projeto)
         {
             Titulo("Sons e comemoração de gol");
             UniversalUI interfacePartida = projeto.GetComponent<UniversalUI>();
             if (interfacePartida != null)
             {
-                var dados = new SerializedObject(interfacePartida);
-                dados.Update();
+                SerializedObject dados = PrepararDadosInternos(ref dadosSons, interfacePartida);
                 CampoInterno(dados, "somGol", "Som do gol");
                 CampoInterno(dados, "somApitoInicial", "Apito de início");
                 CampoInterno(dados, "somApitoFinal", "Apito de encerramento");
                 CampoInterno(dados, "volumeSons", "Volume dos efeitos");
                 CampoInterno(dados, "fonteDeAudio", "Fonte de áudio dos efeitos (opcional)");
-                dados.ApplyModifiedProperties();
+                AplicarDadosInternos(dados);
             }
+            TemaCompeticao tema = P("tema").objectReferenceValue as TemaCompeticao;
+            if (tema != null)
+            {
+                SerializedObject dados = PrepararDadosInternos(ref dadosTema, tema);
+                CampoInterno(dados, "somAbertura", "Som das aberturas e prévias");
+                AplicarDadosInternos(dados);
+            }
+            EditorGUILayout.HelpBox("Gol e apitos usam os três efeitos escolhidos acima. O som das aberturas e prévias " +
+                "é separado e pertence ao tema, compartilhado pelas cenas que usam esse tema.", MessageType.None);
             GoalBannerUI banner = projeto.GetComponent<GoalBannerUI>();
             if (banner != null)
             {
-                var dados = new SerializedObject(banner);
-                dados.Update();
+                SerializedObject dados = PrepararDadosInternos(ref dadosComemoracao, banner);
                 CampoInterno(dados, "tempoDeExibicao", "Exibição do autor do gol (s)");
                 CampoInterno(dados, "intervaloEntreBanners", "Intervalo entre comemorações (s)");
-                dados.ApplyModifiedProperties();
+                AplicarDadosInternos(dados);
             }
+        }
+
+        private static SerializedObject PrepararDadosInternos(ref SerializedObject dados, UnityEngine.Object alvo)
+        {
+            if (dados == null || dados.targetObject != alvo)
+            {
+                if (dados != null) AplicarDadosInternos(dados);
+                dados = new SerializedObject(alvo);
+            }
+            // Object pickers may change a retained property between Inspector draws.
+            // Apply that edit before Update refreshes the serialized snapshot.
+            AplicarDadosInternos(dados);
+            dados.Update();
+            return dados;
+        }
+
+        private static void AplicarDadosInternos(SerializedObject dados)
+        {
+            if (dados == null || dados.targetObject == null || !dados.ApplyModifiedProperties()) return;
+            UnityEngine.Object alvo = dados.targetObject;
+            if (PrefabUtility.IsPartOfPrefabInstance(alvo))
+                PrefabUtility.RecordPrefabInstancePropertyModifications(alvo);
+            EditorUtility.SetDirty(alvo);
+            Component componente = alvo as Component;
+            if (componente != null && componente.gameObject.scene.IsValid())
+                EditorSceneManager.MarkSceneDirty(componente.gameObject.scene);
+        }
+
+        private void OnDisable()
+        {
+            AplicarDadosInternos(dadosSons);
+            AplicarDadosInternos(dadosComemoracao);
+            AplicarDadosInternos(dadosTema);
+            dadosSons = dadosComemoracao = dadosTema = null;
         }
 
         private static void CampoInterno(SerializedObject dados, string nome, string rotulo)
@@ -300,7 +342,7 @@ namespace FutebolDeDiscos
             }
             catch (Exception erro) { EditorUtility.DisplayDialog("Temporada", erro.Message, "OK"); }
         }
-        private static void DesenharTema(TemaCompeticao tema)
+        private void DesenharTema(TemaCompeticao tema)
         {
             if (tema == null)
             {
@@ -308,8 +350,7 @@ namespace FutebolDeDiscos
                 return;
             }
             EditorGUILayout.HelpBox("Estas alterações são feitas no asset do tema e valem para as cenas que usam o mesmo tema.", MessageType.None);
-            var dados = new SerializedObject(tema);
-            dados.Update();
+            SerializedObject dados = PrepararDadosInternos(ref dadosTema, tema);
             string[,] campos = {
                 { "fundoAbertura", "Fundo das aberturas" }, { "fundoChaveamento", "Fundo do chaveamento" },
                 { "logoCompeticao", "Troféu / logo da competição" }, { "logoCanal", "Logo do canal" },
@@ -317,13 +358,13 @@ namespace FutebolDeDiscos
                 { "escalaFonteTitulo", "Escala dos títulos" }, { "escalaFonteTexto", "Escala dos textos" },
                 { "corPrimaria", "Cor principal" }, { "corSecundaria", "Cor secundária" },
                 { "corDestaque", "Cor de destaque" }, { "corTexto", "Cor do texto" },
-                { "corPainel", "Cor dos painéis" }, { "somAbertura", "Som de abertura" }
+                { "corPainel", "Cor dos painéis" }
             };
             EditorGUI.indentLevel++;
             for (int i = 0; i < campos.GetLength(0); i++)
                 EditorGUILayout.PropertyField(dados.FindProperty(campos[i, 0]), new GUIContent(campos[i, 1]));
             EditorGUI.indentLevel--;
-            dados.ApplyModifiedProperties();
+            AplicarDadosInternos(dados);
         }
 
         [MenuItem("Tools/Futebol de Discos/Abrir Liga")]

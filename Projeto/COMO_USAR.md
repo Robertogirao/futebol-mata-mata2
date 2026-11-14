@@ -114,7 +114,7 @@ As escolhas das fichas antigas são preservadas: **Defesa** passa a aparecer com
 
 No mesmo painel, abra **Identidade visual > Fontes, imagens e cores da transmissão**. O tema inicial é `Assets/FutebolDiscos/Tema_Discos.asset`.
 
-Ali você encontra o fundo das aberturas, fundo do chaveamento, troféu/logo da competição, logo do canal, fontes dos títulos e dos textos, cores e som de abertura. As fontes usam assets **TextMeshPro (TMP_FontAsset)**. O logo da competição também é usado como troféu central do chaveamento.
+Ali você encontra o fundo das aberturas, fundo do chaveamento, troféu/logo da competição, logo do canal, fontes dos títulos e dos textos, cores. O som das aberturas fica em **Sons e comemoração de gol**. As fontes usam assets **TextMeshPro (TMP_FontAsset)**. O logo da competição também é usado como troféu central do chaveamento.
 
 Editar o tema altera o asset compartilhado pelas cenas que o utilizam. Para identidades independentes, duplique o tema no Project e associe uma cópia a cada cena. O nome exibido vem de **Nome na transmissão**, no controlador central.
 
@@ -153,7 +153,17 @@ Em **Identidade visual > Fundo externo da arena**, arraste um Sprite para preenc
 
 Em **Identificação dos jogadores**, a opção **Mostrar leitura luminosa atrás da foto** liga ou desliga o scanner do capitão. A linha está atrás do retrato e do texto, com brilho menor. **Velocidade da leitura luminosa** permite ajustar o movimento sem mudar a duração das fotos.
 
-Em **Sons e comemoração de gol**, configure sons, volume, duração da exibição do autor e intervalo das comemorações. Os valores antigos são preservados. O intervalo entre partidas da liga é aplicado só uma vez; uma comemoração pendente ainda pode adiar a próxima apresentação para terminar sua exibição.
+Em **Sons e comemoração de gol**, configure a duração da exibição do autor e o intervalo das comemorações. O intervalo entre partidas da liga é aplicado só uma vez; uma comemoração pendente ainda pode adiar a próxima apresentação para terminar sua exibição.
+
+### Sons escolhidos no painel
+
+No mesmo grupo, **Som do gol**, **Apito de início** e **Apito de encerramento** são os clipes usados pelos eventos da partida. Ajuste **Volume dos efeitos** e salve a cena fora do Play. Um campo de clipe vazio deixa aquele evento sem som; ele não busca um som antigo como alternativa.
+
+Deixe **Fonte de áudio dos efeitos (opcional)** em **None** para usar a fonte exclusiva criada automaticamente. O jogo não reaproveita fontes de abertura ou música. Se preferir atribuir uma fonte, use uma exclusiva para os efeitos; ao prepará-la, o jogo interrompe a reprodução anterior e limpa o clipe fixo da fonte, usando os clipes dos três campos. Ao preparar outra partida, cancelar ou desativar a interface, os efeitos pendentes são interrompidos.
+
+**Som das aberturas e prévias** aparece quando há um tema atribuído e usa `somAbertura` do tema, separado do gol e dos apitos. Esse controle altera o asset compartilhado pelas cenas que usam o tema. Duplique o tema para manter aberturas independentes na liga e no mata-mata. Sons podem ser trocados sem apagar resultados nem criar outra temporada.
+
+Veja [as instruções de atualização dos sons](../Atualizacoes/COMO_APLICAR_SONS.md).
 
 ## 7. Gravar uma rodada, continuar e retomar
 
