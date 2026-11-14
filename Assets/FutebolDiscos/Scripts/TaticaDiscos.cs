@@ -54,20 +54,25 @@ namespace FutebolDeDiscos
             // A returning player retains the crossing slot until fully back home.
             // Never admit a replacement just because its predecessor is retreating.
             var fora = equipe.Where(a => sinal * a.Corpo.position.x + raio > .02f).ToList();
-            var escolhidos = fora.OrderBy(a => Prioridade(a, bola)).ThenBy(a => a.Indice)
+            var escolhidos = fora.OrderBy(a => Prioridade(a, bola, cfg)).ThenBy(a => a.Indice)
                 .Take(desejada).ToList();
             int novasVagas = Mathf.Min(desejada - escolhidos.Count, Mathf.Max(0, limite - fora.Count));
             escolhidos.AddRange(equipe.Where(a => !fora.Contains(a))
-                .OrderBy(a => Prioridade(a, bola)).ThenBy(a => a.Indice).Take(novasVagas));
+                .OrderBy(a => Prioridade(a, bola, cfg)).ThenBy(a => a.Indice).Take(novasVagas));
             foreach (DiscoAtleta atleta in equipe)
                 atleta.DefinirPressao(escolhidos.Contains(atleta),
                     !cfg.limitarDiscosNaMetade && fora.Contains(atleta) && !escolhidos.Contains(atleta));
         }
 
-        private static float Prioridade(DiscoAtleta atleta, BolaDiscos bola)
+        private static float Prioridade(DiscoAtleta atleta, BolaDiscos bola, ProjetoFutebolDiscos cfg)
         {
             // Prefer the existing role unless another player is clearly better placed.
-            return Vector2.Distance(atleta.Corpo.position, bola.Corpo.position) - (atleta.Pressionando ? 1f : 0f);
+            float prioridade = Vector2.Distance(atleta.Corpo.position, bola.Corpo.position) - (atleta.Pressionando ? 1f : 0f);
+            if (!atleta.Capitao || !cfg.usarCapitaesConvidados) return prioridade;
+            PosicaoCapitao posicao = cfg.ObterPosicaoCapitao(atleta.Equipe);
+            // É uma preferência, não uma autorização para ignorar a postura do time.
+            // Defesa mantém a regra antiga; ataque ganha mais iniciativa que meio.
+            return prioridade - (posicao == PosicaoCapitao.Ataque ? 1.6f : posicao == PosicaoCapitao.Meio ? .5f : 0f);
         }
     }
 }

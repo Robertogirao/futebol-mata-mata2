@@ -211,7 +211,8 @@ namespace FutebolDeDiscos
             if (!P("usarCapitaesConvidados").boolValue) return;
 
             EditorGUILayout.HelpBox("Para cadastrar um personagem, use Project > Create > Futebol de Discos > Capitão convidado. " +
-                "Na ficha, escolha nome, foto e overall de 1 a 100. O overall individual afeta apenas o disco desse capitão. " +
+                "Na ficha, escolha nome, foto, overall de 1 a 100 e posição: Defesa, Meio ou Ataque. " +
+                "O overall individual afeta a velocidade, a potência e a variação adicional da mira apenas desse capitão. " +
                 "Os modelos incluídos são exemplos; substitua-os ou remova-os desta lista para usar seus personagens.", MessageType.Info);
             Campo("catalogoCapitaes", "Capitães disponíveis", "Cadastre pelo menos um capitão diferente por time. Os que não tiverem associação fixa são sorteados sem repetição.");
             if (GUILayout.Button("Carregar capitães do catálogo")) CarregarCapitaes();
@@ -220,6 +221,9 @@ namespace FutebolDeDiscos
             int total = P("discosPorTime").intValue + (P("capitaoExtra").boolValue ? 1 : 0);
             EditorGUILayout.HelpBox("Total por time: " + total + " discos. O sorteio dos capitães é salvo com a temporada e se mantém entre Play e Stop. " +
                 "Use Nova temporada para sortear outra combinação. As associações fixas são respeitadas.", MessageType.None);
+            EditorGUILayout.HelpBox("O OVR e a posição do capitão aparecem na ficha da partida e junto ao disco. " +
+                "A posição muda sua vaga na formação, respeitando a postura do time e o limite da metade do campo. " +
+                "Escolha overall e posição antes do sorteio. Para alterá-los numa temporada já salva, use Nova temporada.", MessageType.Info);
 
             Titulo("Sorteio na tela");
             Campo("mostrarSorteioCapitaes", "Mostrar sorteio antes do campeonato", "As marbles dos capitães passam pelos obstáculos antes da liga ou do mata-mata começar.");

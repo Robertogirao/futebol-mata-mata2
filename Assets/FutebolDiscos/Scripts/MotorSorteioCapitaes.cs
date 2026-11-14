@@ -93,6 +93,10 @@ namespace FutebolDeDiscos
                     TeamData fixo;
                     if (destinosFixos.TryGetValue(registro.capitaoId, out fixo) && fixo.name != registro.timeId)
                         throw new ArgumentException("O sorteio salvo difere das associações fixas.");
+                    if (!PosicoesCapitao.Valida(registro.posicao) ||
+                        registro.posicao != porCapitao[registro.capitaoId].posicao ||
+                        registro.overall != porCapitao[registro.capitaoId].overall)
+                        throw new ArgumentException("Overall ou posição de um capitão diferem do sorteio salvo. Restaure a ficha ou use Nova temporada.");
                     registrosSalvos.Add(registro.capitaoId, CopiarRegistro(registro));
                     destinosFixos[registro.capitaoId] = porTime[registro.timeId];
                 }
@@ -366,11 +370,13 @@ namespace FutebolDeDiscos
             m.Velocidade = Vector2.zero;
             RegistroCapitaoConvidado salvo;
             resultados.Add(repeticao && registrosSalvos.TryGetValue(m.Capitao.Identificador, out salvo) ? CopiarRegistro(salvo)
-                : new RegistroCapitaoConvidado { timeId = time.name, capitaoId = m.Capitao.Identificador, nomeCapitao = m.Capitao.nomeCapitao.Trim(), overall = m.Capitao.overall });
+                : new RegistroCapitaoConvidado { timeId = time.name, capitaoId = m.Capitao.Identificador,
+                    nomeCapitao = m.Capitao.nomeCapitao.Trim(), overall = m.Capitao.overall, posicao = m.Capitao.posicao });
         }
 
         private static RegistroCapitaoConvidado CopiarRegistro(RegistroCapitaoConvidado registro)
-        { return new RegistroCapitaoConvidado { timeId = registro.timeId, capitaoId = registro.capitaoId, nomeCapitao = registro.nomeCapitao, overall = registro.overall }; }
+        { return new RegistroCapitaoConvidado { timeId = registro.timeId, capitaoId = registro.capitaoId,
+            nomeCapitao = registro.nomeCapitao, overall = registro.overall, posicao = registro.posicao }; }
         private static float Dot(Vector2 a, Vector2 b) { return a.x * b.x + a.y * b.y; }
         private static Vector2 Limitar(Vector2 v, float maximo) { return v.magnitude > maximo ? v.normalized * maximo : v; }
         private static void Embaralhar<T>(IList<T> itens, System.Random random)

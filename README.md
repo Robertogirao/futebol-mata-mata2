@@ -1,8 +1,23 @@
-# Futebol de Discos — áudio das partidas
+# Futebol de Discos — capitães, posições e áudio
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
-## Baixar apenas a atualização
+## Atualização dos capitães
+
+[**BAIXAR SOMENTE A ATUALIZAÇÃO DOS CAPITÃES — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_CAPITAES.zip)
+
+São apenas **10 scripts** para aplicar sobre o projeto que já recebeu a última atualização de áudio/toque na bola. Com o Unity fechado, copie a pasta `Assets` do ZIP sobre a do projeto e substitua os scripts. O pacote não substitui cenas, músicas ou fotos.
+
+- O overall e a posição do capitão convidado ficam visíveis na ficha da partida, junto ao disco e no anúncio de revelação do sorteio.
+- Na ficha do capitão no Project, ajuste `Overall` (1 a 100) e `Posicao`: **Defesa, Meio ou Ataque**. Configure antes do sorteio; numa temporada já salva, use **Nova temporada** para mudar esses valores.
+- A posição muda sua vaga de base e a preferência para pressionar. Outro disco cobre sua antiga vaga defensiva quando há companheiros. A IA continua reagindo à bola e respeitando a postura do time e a restrição à própria metade.
+- Fichas e temporadas antigas sem posição mantêm **Defesa**, como antes.
+
+O overall já influencia a velocidade de movimento, a potência do chute e a variação adicional da mira; os multiplicadores anteriores foram preservados. Valor maior dá vantagem individual, sem garantir vitória. O capitão convidado usa seu overall mesmo quando o overall dos times está desligado.
+
+Detalhes e conferência no Unity: [docs/CAPITAES.md](docs/CAPITAES.md).
+
+## Atualização anterior de áudio
 
 [**ATUALIZAÇÃO DE ÁUDIO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_AUDIO.zip)
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FutebolDeDiscos;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +18,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         public Image faixa;
         public Image escudo;
         public Image foto;
+        public Image molduraFoto;
+        public Image faixaAtributos;
+        public TextMeshProUGUI atributos;
         public TextMeshProUGUI equipe;
         public TextMeshProUGUI jogador;
         public TextMeshProUGUI semFoto;
@@ -172,7 +176,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         PosicionarFicha(ficha, centro - new Vector2(0f, .12f * (1f - p)), 0f);
         ficha.retangulo.localScale *= Mathf.Lerp(.72f, 1f, p);
         ficha.grupo.alpha = p;
-        float y = .24f + .55f * (.5f + .5f * Mathf.Sin(tempo * velocidadeScanner));
+        float baseFoto = ficha.foto.rectTransform.anchorMin.y;
+        float y = baseFoto + (.79f - baseFoto) * (.5f + .5f * Mathf.Sin(tempo * velocidadeScanner));
         ficha.scanner.anchorMin = new Vector2(.07f, y);
         ficha.scanner.anchorMax = new Vector2(.93f, y + .008f);
         ficha.scanner.gameObject.SetActive(mostrarScanner);
@@ -231,6 +236,7 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
 
         Image moldura = CriarImagem("Fundo_Foto", bloco,
             new Vector2(0.07f, 0.24f), new Vector2(0.93f, 0.81f));
+        ficha.molduraFoto = moldura;
         moldura.color = new Color(0.07f, 0.105f, 0.17f, 1f);
         ficha.semFoto = CriarTexto("Sem_Foto", bloco,
             new Vector2(0.09f, 0.28f), new Vector2(0.91f, 0.77f), 46.4f);
@@ -247,6 +253,17 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         // Keep the scan above the photo frame but behind the portrait/fallback text.
         ficha.scanner.SetSiblingIndex(ficha.semFoto.transform.GetSiblingIndex());
         ficha.scanner.gameObject.SetActive(false);
+
+        // A faixa ocupa uma área própria abaixo do retrato, sem cobrir foto ou nome.
+        ficha.faixaAtributos = CriarImagem("Forca_Posicao", bloco,
+            new Vector2(.07f, .24f), new Vector2(.93f, .35f));
+        ficha.faixaAtributos.color = new Color(.10f, .085f, .025f, 1f);
+        ficha.atributos = CriarTexto("Overall_Posicao", ficha.faixaAtributos.transform,
+            new Vector2(.035f, .04f), new Vector2(.965f, .96f), 17f);
+        ficha.atributos.fontSizeMin = 12f;
+        ficha.atributos.textWrappingMode = TextWrappingModes.NoWrap;
+        ficha.atributos.color = new Color(1f, .85f, .35f, 1f);
+        ficha.faixaAtributos.gameObject.SetActive(false);
 
         TextMeshProUGUI legenda = CriarTexto("Legenda", bloco,
             new Vector2(0.07f, 0.181f), new Vector2(0.93f, 0.23f), 12.8f);
@@ -278,6 +295,25 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.semFoto.enabled = ficha.foto.sprite == null;
         ficha.jogador.text = jogador != null && !string.IsNullOrWhiteSpace(jogador.nomeJogador)
             ? jogador.nomeJogador.Trim() : "PLAYER NOT SET";
+
+        ProjetoFutebolDiscos configuracao = UniversalUI.Instance != null
+            ? UniversalUI.Instance.GetComponent<ProjetoFutebolDiscos>() : null;
+        if (configuracao == null && PartidaDiscos.Instance != null)
+            configuracao = PartidaDiscos.Instance.Configuracao;
+        int overall = 0;
+        bool individual = configuracao != null && configuracao.TentarObterOverallCapitao(time, out overall);
+        ficha.faixaAtributos.gameObject.SetActive(individual);
+        if (individual)
+        {
+            ficha.atributos.text = "OVR " + overall + "  |  " +
+                PosicoesCapitao.Nome(configuracao.ObterPosicaoCapitao(time)).ToUpperInvariant();
+        }
+        float baseFoto = individual ? .37f : .24f;
+        ficha.molduraFoto.rectTransform.anchorMin = new Vector2(.07f, baseFoto);
+        ficha.foto.rectTransform.anchorMin = new Vector2(.07f, baseFoto);
+        ficha.semFoto.rectTransform.anchorMin = new Vector2(.09f, baseFoto + .04f);
+        ficha.scanner.anchorMin = new Vector2(.07f, baseFoto);
+        ficha.scanner.anchorMax = new Vector2(.93f, baseFoto + .008f);
     }
 
     private static Color CorVisivel(Color cor)

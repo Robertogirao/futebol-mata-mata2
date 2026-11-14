@@ -11,6 +11,7 @@ namespace FutebolDeDiscos
     {
         public string timeId, capitaoId, nomeCapitao;
         public int overall;
+        public PosicaoCapitao posicao;
     }
 
     [Serializable]
@@ -110,7 +111,8 @@ namespace FutebolDeDiscos
                     timeId = id,
                     capitaoId = porTime[id].capitaoId,
                     nomeCapitao = porTime[id].nomeCapitao,
-                    overall = porTime[id].overall
+                    overall = porTime[id].overall,
+                    posicao = porTime[id].posicao
                 }).ToList()
             };
             ValidarDados(nova, ids, catalogo, manuais, semente, capitaoExtra);
@@ -153,8 +155,9 @@ namespace FutebolDeDiscos
             var unicos = new HashSet<string>(StringComparer.Ordinal);
             foreach (CapitaoConvidado capitao in catalogo)
                 Exigir(capitao != null && IdValido(capitao.Identificador) && unicos.Add(capitao.Identificador) &&
-                    !string.IsNullOrWhiteSpace(capitao.nomeCapitao) && capitao.overall >= 1 && capitao.overall <= 100,
-                    "Confira os nomes, identificadores e overall dos capitães. Os nomes dos assets devem ser únicos.");
+                    !string.IsNullOrWhiteSpace(capitao.nomeCapitao) && capitao.overall >= 1 && capitao.overall <= 100 &&
+                    PosicoesCapitao.Valida(capitao.posicao),
+                    "Confira os nomes, identificadores, overall e posição dos capitães. Os nomes dos assets devem ser únicos.");
             var timesManuais = new HashSet<string>(StringComparer.Ordinal);
             var capitaesManuais = new HashSet<string>(StringComparer.Ordinal);
             foreach (VinculoCapitaoConvidado vinculo in manuais ?? new List<VinculoCapitaoConvidado>())
@@ -181,10 +184,13 @@ namespace FutebolDeDiscos
                 CapitaoConvidado capitao;
                 Exigir(registro != null && registro.timeId == ids[i] && IdValido(registro.capitaoId) &&
                     usados.Add(registro.capitaoId) && porId.TryGetValue(registro.capitaoId, out capitao) &&
-                    !string.IsNullOrWhiteSpace(registro.nomeCapitao) && registro.overall >= 1 && registro.overall <= 100,
+                    !string.IsNullOrWhiteSpace(registro.nomeCapitao) && registro.overall >= 1 && registro.overall <= 100 &&
+                    PosicoesCapitao.Valida(registro.posicao),
                     "O sorteio salvo contém capitães ausentes, repetidos ou inválidos. O arquivo foi preservado.");
                 Exigir(registro.overall == porId[registro.capitaoId].overall,
                     "O overall de um capitão mudou durante a temporada. Restaure o valor ou use Nova temporada.");
+                Exigir(registro.posicao == porId[registro.capitaoId].posicao,
+                    "A posição de um capitão mudou durante a temporada. Restaure a posição ou use Nova temporada.");
             }
             List<RegistroVinculoManualCapitao> esperados = ManuaisOrdenados(manuais);
             Exigir(dados.vinculosManuais.Count == esperados.Count, "Os vínculos manuais diferem do sorteio salvo. Use Nova temporada.");
@@ -223,7 +229,8 @@ namespace FutebolDeDiscos
                 CapitaoConvidado capitao = manual != null ? porId[manual.capitaoId] : restantes[proximo++];
                 resultado.atribuicoes.Add(new RegistroCapitaoConvidado
                 {
-                    timeId = id, capitaoId = capitao.Identificador, nomeCapitao = capitao.nomeCapitao.Trim(), overall = capitao.overall
+                    timeId = id, capitaoId = capitao.Identificador, nomeCapitao = capitao.nomeCapitao.Trim(),
+                    overall = capitao.overall, posicao = capitao.posicao
                 });
             }
             return resultado;
@@ -237,8 +244,8 @@ namespace FutebolDeDiscos
 
         private static bool MesmoSorteio(DadosCapitaesConvidados a, DadosCapitaesConvidados b)
         {
-            return a.atribuicoes.Select(v => v.timeId + "\0" + v.capitaoId + "\0" + v.nomeCapitao + "\0" + v.overall)
-                .SequenceEqual(b.atribuicoes.Select(v => v.timeId + "\0" + v.capitaoId + "\0" + v.nomeCapitao + "\0" + v.overall));
+            return a.atribuicoes.Select(v => v.timeId + "\0" + v.capitaoId + "\0" + v.nomeCapitao + "\0" + v.overall + "\0" + (int)v.posicao)
+                .SequenceEqual(b.atribuicoes.Select(v => v.timeId + "\0" + v.capitaoId + "\0" + v.nomeCapitao + "\0" + v.overall + "\0" + (int)v.posicao));
         }
 
         private void GravarNovoArquivo(string json)

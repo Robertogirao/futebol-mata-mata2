@@ -309,7 +309,9 @@ namespace FutebolDeDiscos
             voos.Add(new Flight { marble = marble, equipe = equipe, inicio = inicio,
                 distanciaHorizontal = horizontal, distanciaVertical = vertical, distanciaFinal = final,
                 duracao = Mathf.Clamp((horizontal + vertical + final) / 1600f, .65f, 1.5f) });
-            anuncio.text = Nome(marble.estado.Capitao.nomeCapitao) + "  →  " + Nome(equipe.equipe.nomeEquipe) + (marble.estado.Fixa ? "  /  LOCKED" : "");
+            anuncio.text = Nome(registro.nomeCapitao) + "  ·  OVR " + registro.overall + "  ·  " +
+                PosicoesCapitao.Nome(registro.posicao).ToUpperInvariant() + "  →  " +
+                Nome(equipe.equipe.nomeEquipe) + (marble.estado.Fixa ? "  /  LOCKED" : "");
             contador.text = (QuantidadeRevelada + 1) + " / " + equipePorId.Count;
             progresso.fillAmount = (QuantidadeRevelada + 1f) / equipePorId.Count;
         }

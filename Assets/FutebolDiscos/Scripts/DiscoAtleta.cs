@@ -90,14 +90,23 @@ namespace FutebolDeDiscos
                 if (partida.Configuracao.mostrarTagsJogadores)
                 {
                     float largura = Mathf.Clamp(partida.Configuracao.larguraTags, 1f, 4f);
-                    float y = -d * .5f - .31f;
+                    bool mostrarAtributos = Capitao && TemOverallIndividual;
+                    float y = -d * .5f - (mostrarAtributos ? .46f : .31f);
                     var fundo = new GameObject("Player Tag Background"); fundo.transform.SetParent(transform, false);
                     fundo.transform.localPosition = new Vector3(0f, y, 0f);
                     var image = fundo.AddComponent<SpriteRenderer>(); image.sprite = circulo; image.sharedMaterial = material;
                     image.color = new Color(.005f, .02f, .03f, .88f); image.sortingOrder = 21;
-                    fundo.transform.localScale = new Vector3(largura, .46f, 1f);
-                    TextoMundo("Player Name Tag", NomeExibicao, new Vector2(0f, y), largura * .92f, .43f,
+                    fundo.transform.localScale = new Vector3(largura, mostrarAtributos ? .76f : .46f, 1f);
+                    TextoMundo("Player Name Tag", NomeExibicao, new Vector2(0f, y + (mostrarAtributos ? .15f : 0f)), largura * .92f, .43f,
                         Mathf.Clamp(partida.Configuracao.tamanhoFonteTags, 2f, 8f), Color.white, fonte, 22);
+                    if (mostrarAtributos)
+                    {
+                        string atributos = "OVR " + OverallEfetivo + " | " +
+                            PosicoesCapitao.Sigla(partida.Configuracao.ObterPosicaoCapitao(Equipe));
+                        TextoMundo("Captain Overall Position", atributos, new Vector2(0f, y - .20f),
+                            largura * .92f, .30f, Mathf.Clamp(partida.Configuracao.tamanhoFonteTags * .72f, 2f, 5f),
+                            ouro, fonte, 22);
+                    }
                 }
             }
             Corpo.simulated = false;

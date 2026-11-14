@@ -334,10 +334,41 @@ namespace FutebolDeDiscos
         public Vector2 Formacao(bool equipeA, int index)
         {
             float side = equipeA ? -1f : 1f;
-            if (config.TotalDiscosPorTime == 1) return new Vector2(side * 5.5f, 0f);
-            if (config.TotalDiscosPorTime == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
+            int total = config.TotalDiscosPorTime;
+            bool capitao = index == 0;
+            PosicaoCapitao posicao = config.ObterPosicaoCapitao(equipeA ? timeA : timeB);
+            if (total == 1)
+            {
+                float profundidade = posicao == PosicaoCapitao.Ataque ? 2.8f : posicao == PosicaoCapitao.Meio ? 4.8f : 5.5f;
+                return new Vector2(side * profundidade, 0f);
+            }
+
+            if (posicao != PosicaoCapitao.Defesa)
+            {
+                // Troca de vaga: outro disco cobre a antiga posição do capitão.
+                // A mesma base é usada na saída e na movimentação durante a partida.
+                int vaga = 1;
+                float alvo = posicao == PosicaoCapitao.Ataque ? 3.7f : 5.7f;
+                float melhor = float.MaxValue;
+                for (int i = 1; i < total; i++)
+                {
+                    float distancia = Mathf.Abs(Mathf.Abs(FormacaoOriginal(side, total, i).x) - alvo);
+                    if (distancia < melhor) { melhor = distancia; vaga = i; }
+                }
+                if (index == 0) index = vaga;
+                else if (index == vaga) index = 0;
+            }
+            Vector2 baseDaVaga = FormacaoOriginal(side, total, index);
+            // Com apenas dois discos, não existe uma vaga intermediária original.
+            if (total == 2 && capitao && posicao == PosicaoCapitao.Meio) baseDaVaga.x = side * 5.2f;
+            return baseDaVaga;
+        }
+
+        private static Vector2 FormacaoOriginal(float side, int total, int index)
+        {
+            if (total == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
             if (index == 0) return new Vector2(side * 8.5f, 0f);
-            float lane = (index - 1f) / Mathf.Max(1f, config.TotalDiscosPorTime - 2f);
+            float lane = (index - 1f) / Mathf.Max(1f, total - 2f);
             return new Vector2(side * (index % 2 == 0 ? 3.7f : 5.7f), Mathf.Lerp(-3f, 3f, lane));
         }
 

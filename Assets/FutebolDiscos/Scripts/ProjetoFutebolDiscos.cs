@@ -84,6 +84,7 @@ namespace FutebolDeDiscos
         private readonly Dictionary<TeamData, CapitaoConvidado> capitaesEmUso = new Dictionary<TeamData, CapitaoConvidado>();
         private readonly Dictionary<TeamData, JogadorDados> representantesConvidados = new Dictionary<TeamData, JogadorDados>();
         private readonly Dictionary<TeamData, int> overallDosCapitaes = new Dictionary<TeamData, int>();
+        private readonly Dictionary<TeamData, PosicaoCapitao> posicoesDosCapitaes = new Dictionary<TeamData, PosicaoCapitao>();
         private bool rodadaConfirmada, aguardandoContinuar, rodadaEncerrada;
         private float espera;
 
@@ -195,7 +196,7 @@ namespace FutebolDeDiscos
 
         private void PrepararCapitaesConvidados(bool possuiResultados)
         {
-            capitaesEmUso.Clear(); representantesConvidados.Clear(); overallDosCapitaes.Clear();
+            capitaesEmUso.Clear(); representantesConvidados.Clear(); overallDosCapitaes.Clear(); posicoesDosCapitaes.Clear();
             var repositorio = new RepositorioCapitaesConvidados(PastaDaTemporada, new SerializadorCapitaesUnity());
             if (!usarCapitaesConvidados)
             {
@@ -214,6 +215,7 @@ namespace FutebolDeDiscos
                 capitaesEmUso.Add(time, capitao);
                 representantesConvidados.Add(time, capitao.CriarJogador());
                 overallDosCapitaes.Add(time, registro.overall);
+                posicoesDosCapitaes.Add(time, registro.posicao);
             }
         }
 
@@ -237,6 +239,13 @@ namespace FutebolDeDiscos
         {
             overall = 0;
             return usarCapitaesConvidados && equipe != null && overallDosCapitaes.TryGetValue(equipe, out overall);
+        }
+
+        public PosicaoCapitao ObterPosicaoCapitao(TeamData equipe)
+        {
+            PosicaoCapitao posicao;
+            return usarCapitaesConvidados && equipe != null && posicoesDosCapitaes.TryGetValue(equipe, out posicao)
+                ? posicao : PosicaoCapitao.Defesa;
         }
 
         private void ObterComponentes()

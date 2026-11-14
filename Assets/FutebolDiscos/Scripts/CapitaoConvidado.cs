@@ -3,6 +3,21 @@ using UnityEngine;
 
 namespace FutebolDeDiscos
 {
+    // O valor zero preserva fichas e sorteios antigos, sem posição cadastrada.
+    public enum PosicaoCapitao { Defesa = 0, Meio = 1, Ataque = 2 }
+
+    public static class PosicoesCapitao
+    {
+        public static bool Valida(PosicaoCapitao posicao)
+        { return posicao == PosicaoCapitao.Defesa || posicao == PosicaoCapitao.Meio || posicao == PosicaoCapitao.Ataque; }
+
+        public static string Nome(PosicaoCapitao posicao)
+        { return posicao == PosicaoCapitao.Ataque ? "Ataque" : posicao == PosicaoCapitao.Meio ? "Meio" : "Defesa"; }
+
+        public static string Sigla(PosicaoCapitao posicao)
+        { return posicao == PosicaoCapitao.Ataque ? "ATA" : posicao == PosicaoCapitao.Meio ? "MEI" : "DEF"; }
+    }
+
     [CreateAssetMenu(fileName = "NovoCapitao", menuName = "Futebol de Discos/Capitão convidado", order = 20)]
     public sealed class CapitaoConvidado : ScriptableObject
     {
@@ -11,6 +26,8 @@ namespace FutebolDeDiscos
         [Range(1, 100)]
         [Tooltip("Força individual do capitão. Não altera o overall nem os jogadores do time.")]
         public int overall = 75;
+        [Tooltip("Posição de base do capitão e preferência na pressão. Respeita a postura do time e a limitação à própria metade.")]
+        public PosicaoCapitao posicao = PosicaoCapitao.Defesa;
 
         // Match the existing TeamData convention: asset file names identify saved participants.
         public string Identificador { get { return name; } }
