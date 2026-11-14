@@ -2,6 +2,20 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
+## Editor de retratos dos capitães
+
+[**BAIXAR O EDITOR HTML — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/CAPTAIN_PORTRAIT_EDITOR.zip)
+
+Extraia e abra `CAPTAIN_PORTRAIT_EDITOR.html` no Chrome ou Edge. É uma ferramenta independente em um único arquivo HTML, que funciona offline. [Ver o código HTML](Tools/CAPTAIN_PORTRAIT_EDITOR.html).
+
+- Arraste uma ou várias fotos, selecione cada retrato e ajuste posição e zoom na prévia.
+- Gire, centralize, encaixe a imagem inteira ou restaure o enquadramento.
+- Baixe um PNG ou todas as imagens em ZIP. Cada imagem mantém seu próprio ajuste enquanto a página estiver aberta.
+- A saída é sempre **PNG de 512 × 512**, com recorte circular e cantos transparentes. As guias e o quadriculado não são exportados.
+- A interface é em inglês. Não há bibliotecas externas, servidor ou upload das fotos.
+
+O recorte preserva o fundo existente dentro do círculo. Para os PNGs no Unity, selecione **Sprite (2D and UI)** e use o campo **Foto** da ficha do capitão. Este download é uma ferramenta separada; não substitui scripts ou cenas do jogo.
+
 ## Correção dos textos em inglês
 
 [**BAIXAR SOMENTE A CORREÇÃO DE IDIOMA — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_TEXTOS_INGLES.zip)
