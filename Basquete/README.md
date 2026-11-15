@@ -1,50 +1,55 @@
-# Basquete de Discos — atualização das 4 cenas
+# Basquete — bola livre e arremesso ao entrar no garrafão
 
-[**Baixar somente a atualização**](ATUALIZACAO_BASQUETE_4_CENAS.zip)
+[**Baixar a atualização mais recente**](ATUALIZACAO_BASQUETE_BOLA_LIVRE.zip)
 
-Adaptação automática de basquete arcade para a cópia do projeto Unity 6000.4.11f1 enviada no backup de quatro partes. O pacote contém apenas os arquivos novos e alterados; inclui também o ajuste anterior de capitão e posições do elenco.
+Mecânica revisada conforme o pedido: **discos e bola com física semelhante à do futebol; o disco entra no garrafão adversário com a bola próxima e faz o arremesso automático**.
+
+## O que mudou
+
+- Bola solta, batidas, colisões e disputas. Ela não fica presa ao disco e não há sequência programada de posse e passes.
+- O disco precisa estar no **garrafão do lado que está atacando**, com a bola ao alcance. A bola entrar sozinha, ou o disco entrar sem ela, não inicia um arremesso.
+- Uma breve confirmação de proximidade evita arremessos por uma passagem instantânea. Se um defensor estiver mais perto da bola, o atacante precisa recuperar a disputa.
+- O arremesso segue um arco até o aro. Acerto soma **2 pontos**; erro devolve a bola à física para disputar o rebote.
+- Os arremessos de **3 pontos são opcionais e começam desligados**, para respeitar o gatilho do garrafão. Se você ligar a opção, um disco com a bola próxima fora da linha pode tentar de longe; os pontos usam a posição real do arremesso.
+- Retirado o relógio de posse. A transmissão mostra `FREE BALL` e `ENTER THE PAINT WITH THE BALL`, em inglês.
+- Especial mantido somente nas duas cenas de capitães: contatos distintos carregam a barra; a roleta é usada no próximo arremesso elegível.
+- Permanecem o placar, os sons, a música, a apresentação final, a liga/mata-mata e a prorrogação. Um arremesso já iniciado pode terminar após o buzzer.
 
 ## Instalação
 
-1. Abra **a cópia destinada ao basquete**. Saia do Play e feche o Unity antes de copiar os arquivos.
-2. Extraia o ZIP. Copie a pasta `Assets` para a raiz dessa cópia, junto das pastas `Packages` e `ProjectSettings`. **Mescle as pastas e substitua os arquivos de mesmo nome**. Preserve os arquivos `.meta` do pacote.
-3. Reabra no Unity 6000.4.11f1 e aguarde a importação/compilação.
-4. Abra uma das quatro cenas abaixo. No objeto `FutebolDiscos_Manager`, use **Validar configuração** e depois Play.
+O ZIP contém **somente arquivos novos ou alterados**, de forma cumulativa. Pode ser aplicado na cópia de basquete que já recebeu a atualização anterior ou na cópia do último backup enviado. Não inclui o projeto completo.
 
-As quatro cenas são substituídas pelas versões baseadas no backup enviado. Os caminhos e GUIDs foram mantidos para preservar as referências do projeto.
+1. Saia do Play e feche o Unity.
+2. Extraia o ZIP e copie a pasta `Assets` para a raiz da **cópia destinada ao basquete**, junto de `Packages` e `ProjectSettings`.
+3. **Mescle as pastas e substitua os arquivos de mesmo nome**, incluindo os `.meta`. Preserve os demais arquivos do seu projeto.
+4. Reabra no Unity **6000.4.11f1**, aguarde a compilação e abra uma das quatro cenas abaixo.
+5. No manager, use **Validar configuração** e depois Play.
 
-| Cena existente | Formato | Configuração inicial | Especial |
-| --- | --- | --- | --- |
-| `Assets/Scenes/FutebolDiscos/Liga_Discos.unity` | Liga | 3 jogadores por time | Desligado |
-| `Assets/Scenes/FutebolDiscos/MataMata_Discos.unity` | Mata-mata | 3 jogadores por time | Desligado |
-| `Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity` | Liga | 2 jogadores + 1 capitão convidado por time | Ligado |
-| `Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity` | Mata-mata | 2 jogadores + 1 capitão convidado por time | Ligado |
+As quatro cenas do pacote substituem as versões baseadas no backup. Os caminhos e GUIDs permanecem os mesmos:
 
-## Como funciona
+| Cena | Especial | Configuração inicial |
+| --- | --- | --- |
+| `Assets/Scenes/FutebolDiscos/Liga_Discos.unity` | Não | 3 jogadores por time |
+| `Assets/Scenes/FutebolDiscos/MataMata_Discos.unity` | Não | 3 jogadores por time |
+| `Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity` | Sim | 2 jogadores + 1 capitão por time |
+| `Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity` | Sim | 2 jogadores + 1 capitão por time |
 
-- Quadra de madeira, garrafões, linhas de 3 pontos, tabelas, aros e redes vistos de cima.
-- A IA controla posse, drible, passes, marcação, roubos e rebotes. A bola acompanha o portador e percorre um arco nos arremessos.
-- Cestas valem **2 ou 3 pontos pela posição do disco no momento do arremesso**. Encostar na linha vale 2. O resultado do lance é influenciado pelo overall, distância e marcação.
-- Partida inicial de **120 segundos**, com **12 segundos de posse**. Reposição e preparação do especial pausam o relógio. Há sons próprios de drible, cesta e buzzer.
-- Empate leva a **20 segundos de prorrogação**, repetidos se necessário, inclusive na liga. Uma bola arremessada antes do buzzer termina o lance antes da decisão. A primeira cesta da prorrogação não encerra a partida.
-- Nas cenas `Capitaes`, ações espaçadas do capitão carregam a barra. Ao completar a carga, o próximo arremesso elegível usa a roleta e uma chance de acerto maior. O especial continua valendo 2 ou 3 pontos pela origem do lance.
-- A liga usa aproveitamento (`PCT`), jogos, vitórias, derrotas, pontos a favor e saldo. O mata-mata recebe os pontos completos do placar.
-- Textos gerados na transmissão em inglês: `SHOT CLOCK`, `POSSESSION`, `BASKET`, `OVERTIME`, entre outros.
+As fichas, fotos, nomes e escudos que você cadastrou continuam sendo usados. Nas cenas normais, escolha o capitão pelo nome e a função dos jogadores na ficha. As vagas restantes sem nome mostram a abreviatura e o número do disco. Nas cenas de convidados, o capitão usa a própria ficha.
 
-## Onde ajustar
+## Ajustes no Inspector
 
-Selecione o manager da cena. A seção **Regras e ritmo do basquete** permite alterar relógio de arremesso, prorrogação, duração do voo, passe, reposição e intervalo do drible. Para usar posse de 24 segundos, ajuste **Relógio de arremesso = 24**. A duração regulamentar fica em **Tempo real de jogo**.
+Selecione `FutebolDiscos_Manager`. Em **Bola livre e arremesso automático**:
 
-Em **Sons e apresentação das cestas**, troque os efeitos e ajuste os volumes. Música da partida, fades, música do sorteio e continuação/fade da abertura continuam disponíveis. Os três efeitos novos ficam em `Assets/BasqueteDiscos/Audio` e foram sintetizados para esta atualização.
+- **Alcance extra para pegar a bola:** aumenta ou diminui a tolerância de proximidade. Inicial: `0.35` unidade além dos raios do disco e da bola.
+- **Tempo junto da bola para arremessar:** rapidez de confirmação ao entrar no garrafão. Inicial: `0.12 s`.
+- **Força das batidas na bola** e **Velocidade máxima da bola:** controlam o ritmo físico, como no futebol.
+- **Voo do arremesso**, **Pausa de reposição** e **Prorrogação:** duração das etapas.
+- **Permitir arremessos automáticos de 3:** opção independente; desligada inicialmente.
 
-Nas fichas dos times, escolha o capitão das cenas normais pelo nome e a função de cada jogador: **Pivô / Center**, **Armador / Guard** ou **Ala / Wing**. A prévia da ficha usa as posições iniciais do basquete. Nas cenas de convidados, a função e o overall do capitão vêm da ficha dele. As vagas sem jogador continuam usando a abreviatura do time e o número do disco. As cenas normais ainda precisam de um representante cadastrado; nas de convidados, o elenco do time pode ficar vazio.
+A duração inicial continua em 120 segundos, com prorrogações de 20 segundos. Os controles de música e efeitos permanecem no mesmo painel. Há novos identificadores `basquete_livre_*` e temporada `bola_livre_01`, separados das temporadas anteriores.
 
-As fichas, nomes, fotos e escudos cadastrados no backup foram mantidos. Você pode substituí-los pelos times e jogadores da NBA que quiser usar. O novo tema `Assets/BasqueteDiscos/Tema_Basquete.asset` usa cores de basquete e deixa livres os campos de logo e fundos da competição.
+## Validação
 
-Foram definidos novos identificadores `basquete_*` e temporada `basket_2026_01`, separados dos resultados de futebol. Use **Nova temporada** para reiniciar o sorteio ou mudar participantes/estrutura de uma temporada já salva.
+Foram usados testes C# com os arquivos reais do jogo e substitutos das APIs Unity para conferir gatilho, atores, bola, pontuação, especial, encerramento, rebote, HUD, campos do Inspector e quadra. Também foram verificados os quatro arquivos de cena e a aplicação cumulativa do ZIP.
 
-## Verificação e limites
-
-Compilação C# e testes com as classes reais e substitutos das APIs Unity: 50 partidas simuladas do motor, 12 jogos completos integrando relógio e simulador, 8 jogos da ponte de atores, pontuação de 2/3, roleta, rebotes, encerramento, prorrogações, cancelamento, liga/mata-mata, banners e seleção do capitão. Também foram conferidos os quatro arquivos de cena, GUIDs, referências e áudios.
-
-**O Unity Editor não estava disponível neste ambiente. A aparência e o comportamento em Play Mode ainda precisam de conferência no seu Unity.** É uma adaptação arcade com período curto; faltas, lances livres, substituições e todas as regras oficiais da NBA não fazem parte desta atualização.
+**O Unity Editor não está disponível neste ambiente. A sensação das colisões, o visual e a execução em Play Mode ainda precisam de conferência no seu Unity.**
