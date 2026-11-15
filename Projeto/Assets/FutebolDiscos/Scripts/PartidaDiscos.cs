@@ -56,6 +56,7 @@ namespace FutebolDeDiscos
         private Color inicioRastroOriginal, fimRastroOriginal;
         private float larguraRastroOriginal, tempoRastroOriginal;
 
+        public bool EspecialHabilitado { get { return config != null && config.usarCapitaesConvidados; } }
         public int CargaCapitao(bool equipeA) { return cargaCapitaes[equipeA ? 0 : 1]; }
         public bool RoletaAtiva(bool equipeA) { return capitaoEspecial != null && capitaoEspecial.TimeA == equipeA; }
         public float ProgressoRoleta { get { return Mathf.Clamp01(tempoEspecial / 2.5f); } }
@@ -67,7 +68,7 @@ namespace FutebolDeDiscos
 
         public void RegistrarToqueCapitao(DiscoAtleta atleta)
         {
-            if (!EmAndamento || EmReposicao || !golLiberado || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
+            if (!EspecialHabilitado || !EmAndamento || EmReposicao || !golLiberado || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
             int i = atleta.TimeA ? 0 : 1;
             if (resultadosArmados[i] != 0)
             {
@@ -82,7 +83,7 @@ namespace FutebolDeDiscos
 
         private void AtualizarEspecial(float dt)
         {
-            if (!EmAndamento || EmReposicao || !golLiberado) return;
+            if (!EspecialHabilitado || !EmAndamento || EmReposicao || !golLiberado) return;
             if (capitaoEspecial == null)
             {
                 capitaoEspecial = atletas.FirstOrDefault(a => a.Capitao && !EspecialArmado(a.TimeA) && CargaCapitao(a.TimeA) >= ToquesParaEspecial);
@@ -101,7 +102,7 @@ namespace FutebolDeDiscos
 
         private void IniciarChuteEspecial(DiscoAtleta autor, bool acertar)
         {
-            if (bola == null || autorChuteEspecial != null) return;
+            if (!EspecialHabilitado || bola == null || autorChuteEspecial != null) return;
             autorChuteEspecial = autor;
             chuteEspecialAcerta = acertar;
             tempoChuteEspecial = 0f;
@@ -524,11 +525,52 @@ namespace FutebolDeDiscos
 
         public Vector2 Formacao(bool equipeA, int index)
         {
+            if (!config.usarCapitaesConvidados) return FormacaoCapitaoDoElenco(equipeA, index);
             float side = equipeA ? -1f : 1f;
             if (config.TotalDiscosPorTime == 1) return new Vector2(side * 5.5f, 0f);
             if (config.TotalDiscosPorTime == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
             if (index == 0) return new Vector2(side * 8.5f, 0f);
             float lane = (index - 1f) / Mathf.Max(1f, config.TotalDiscosPorTime - 2f);
+            return new Vector2(side * (index % 2 == 0 ? 3.7f : 5.7f), Mathf.Lerp(-3f, 3f, lane));
+        }
+
+        private Vector2 FormacaoCapitaoDoElenco(bool equipeA, int index)
+        {
+            float side = equipeA ? -1f : 1f;
+            int total = config.TotalDiscosPorTime;
+            TeamData equipe = equipeA ? timeA : timeB;
+            PosicaoCapitaoDiscos posicao = equipe != null ? equipe.posicaoCapitaoDiscos : PosicaoCapitaoDiscos.Defesa;
+            if (posicao != PosicaoCapitaoDiscos.Meio && posicao != PosicaoCapitaoDiscos.Ataque)
+                posicao = PosicaoCapitaoDiscos.Defesa;
+            if (total == 1)
+            {
+                float profundidade = posicao == PosicaoCapitaoDiscos.Ataque ? 2.8f : posicao == PosicaoCapitaoDiscos.Meio ? 4.8f : 5.5f;
+                return new Vector2(side * profundidade, 0f);
+            }
+            bool capitao = index == 0;
+            if (posicao != PosicaoCapitaoDiscos.Defesa)
+            {
+                int vaga = 1;
+                float alvo = posicao == PosicaoCapitaoDiscos.Ataque ? 3.7f : 5.7f;
+                float melhor = float.MaxValue;
+                for (int i = 1; i < total; i++)
+                {
+                    float distancia = Mathf.Abs(Mathf.Abs(FormacaoPadraoDoElenco(side, total, i).x) - alvo);
+                    if (distancia < melhor) { melhor = distancia; vaga = i; }
+                }
+                if (index == 0) index = vaga;
+                else if (index == vaga) index = 0;
+            }
+            Vector2 destino = FormacaoPadraoDoElenco(side, total, index);
+            if (total == 2 && capitao && posicao == PosicaoCapitaoDiscos.Meio) destino.x = side * 5.2f;
+            return destino;
+        }
+
+        private static Vector2 FormacaoPadraoDoElenco(float side, int total, int index)
+        {
+            if (total == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
+            if (index == 0) return new Vector2(side * 8.5f, 0f);
+            float lane = (index - 1f) / Mathf.Max(1f, total - 2f);
             return new Vector2(side * (index % 2 == 0 ? 3.7f : 5.7f), Mathf.Lerp(-3f, 3f, lane));
         }
 

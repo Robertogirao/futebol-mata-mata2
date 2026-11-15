@@ -1,54 +1,70 @@
-Captain charge and roulette V5 validation — 2026-11-15
+Captain charge and roulette V6 validation — 2026-11-15
 
 Published source branch baseline:
 Robertogirao/futebol-mata-mata2, entrega/futebol-discos-2026-11-13
-Baseline commit: a30a1586531474a7325479827b58b5e59166beb8
-Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with the V5 captain-special update applied.
+Baseline commit: 893a5c7994273c6bd8efb3f1923261e91e1460ab
+Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with the V6 mode-isolation and normal-position update applied.
 
 Command: DOTNET=/path/to/dotnet bash validation/captain-special/run.sh
 PASS compilation of all 31 actual runtime source files against the extended existing Unity/TMP facade.
-PASS FeatureHarness: 310 assertions.
+PASS FeatureHarness: 1870 assertions.
 PASS RuntimeHarness: 45 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
 PASS GuestCaptainsHarness: 222 assertions.
 PASS HudHarness: 2345 assertions.
-TOTAL: 3962 passing assertions.
+TOTAL: 5522 passing executable assertions + 4 read-only scene assertions = 5526.
 
 Uploaded BACKUP source set:
 All 32 runtime C# scripts from BACKUP.part1.rar/part2.rar/part3.rar, with the same V4 captain-special update applied while preserving the backup's newer position, audio, final-score and configuration behavior.
 Command:
 TEST_SOURCE=/path/to/backup/Projeto DOTNET=/path/to/dotnet bash validation/captain-special/run.sh FeatureHarness GoalResetHarness CaptainHarness CornerRestartHarness GuestCaptainsHarness HudHarness
 PASS compilation of all 32 actual runtime source files.
-PASS FeatureHarness: 310 assertions.
+PASS FeatureHarness: 1874 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
 PASS GuestCaptainsHarness: 222 assertions.
 PASS HudHarness: 2345 assertions.
-TOTAL: 3917 passing assertions for the backup feature and applicable regressions.
+TOTAL: 5481 passing executable assertions + 4 read-only scene assertions = 5485 for the backup feature and applicable regressions.
 
 Previously established baseline compatibility:
-The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' against the newer uploaded BACKUP. Running that same test on the UNMODIFIED BACKUP source baseline produced the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This incompatibility predates the captain-special feature. V5 keeps the backup's unrelated final-score timing unchanged; the applicable backup regressions above pass.
+The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' against the newer uploaded BACKUP. Running that same test on the UNMODIFIED BACKUP source baseline produced the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This incompatibility predates the captain-special feature. V6 keeps the backup's unrelated final-score timing unchanged; the applicable backup regressions above pass.
 
-What was executed:
+V6 mode and position coverage:
+108 actual normal fixtures cover both Liga/MataMata formats, every disc count from 1 to 6 and all 9 independent captain-role combinations for both teams. Tests verify selected role depth, distinct slots, mirror symmetry, default defense slots, restart return positions, independence of the opponent's formation, no roster/overall mutation, invalid enum fallback, and no charge/spin/armed result/shot/automatic goal/special banner or visible special panels after many normal contacts and updates. Existing special-feature cases now explicitly prepare actual catalog-backed guest identities and saved mappings; they do not bypass the new gate. Both guest formats still complete the charge→roulette→next-touch→HIT→special-banner flow. In the newer backup, four extra assertions prove the guest-specific selected position still controls guest formation and ignores the new normal-team field.
+
+Read-only scene audit:
+Liga_Discos.unity and MataMata_Discos.unity omit usarCapitaesConvidados, retaining its default false. Capitaes/Liga_Capitaes.unity and Capitaes/MataMata_Capitaes.unity explicitly serialize it as 1. The runner locates the actual ProjetoFutebolDiscos component by script GUID and checks all four flags without writing scene files. Git diff contains no scene change.
+
+Retained executable coverage:
 Actual production C# classes through the established repository Unity/TMP API facade, with injected contact/clock/goal callbacks. Coverage includes continuous-contact deduplication, rapid separated contacts, noncaptain exclusion, independent charge, setpiece attribution, five-touch cap, spin completion at exactly 2.5 seconds arming HIT/MISS without scoring, sustained fifth-contact rejection, next distinct captain contact launching, real match-ball position changes along the flight, paused clock, visual scale pulse and aura/trail cleanup, HIT scoring once, MISS finishing outside goalmouth with no score, mid-flight cancellation, new-match reset, monotonic overall odds, generated mesh sector areas and opaque alpha, native Image inheritance with CanvasRenderer/white texture, stopped pointer/result consistency, opaque lowered external panel, English labels, configurable bar color and animated fill/shimmer. Retained V3 coverage verifies HIT remains in flight at the old 0.7s finish and completes at 1.4s, MISS remains in flight at the old 0.45s finish and completes at 0.9s, and waiting-only background pulse is static when uncharged/spinning, gradually rises to its peak at 1.3s, returns to base at 2.6s, keeps alpha exactly 1, and stops/resets on next touch or hide. Both HIT and MISS ready states are covered. V4 adds actual normalized 1920x1080 panel geometry checks for horizontal width, mirror symmetry and clearance of the portraits, arena and reserved central footer. It also executes all custom title/subtitle enabled combinations, both format types, both legacy format-details flag values, blank fields and null configuration: only exact configured enabled text appears, with no injected KNOCKOUT/LEAGUE/N v N or missing-config fallback. The existing HUD and guest-captain harness expectations were updated for this requested footer behavior; those full suites pass against actual runtime sources. V5 verifies shaded HIT/MISS triangle areas against overall odds while excluding gold/dark decorative rings, ticks and hub; opaque vertex colors and mesh bounds; stopped pointer consistency; special goals routed only after completed HIT flight; no early celebration at roulette, next touch or midflight; mixed normal-special-normal queue snapshots with distinct identity/status; gold FX activation only for special items; complete restoration of position, scale, photo/text/background colors and original alpha; no overlay leaks into normal goals; captured timing at 0/30/60 fps while timeScale=0; short durations; cancel, disable and panel rebuild; duplicate singleton destruction cannot hide the active owner's panel.
 
-Existing facade support (unchanged in V5):
+Existing facade support (unchanged in V6):
 RequireComponent dependencies are now honored when adding components, CanvasRenderer and Graphic.mainTexture/canvasRenderer API contracts are present, and Graphic.color starts white as Unity's serialized default. The new wheel's actual production creation and RequireComponent attribute provide the renderer that the assertions check.
 
 Limit:
 The Unity editor, native physics solver/collision dispatch, TMP rendering and GPU output were not executed in this environment. These checks verify executable gameplay/UI state, required renderer setup and generated geometry; they do not certify the final pixels or real collision dispatch in Unity. In-editor visual and contact validation remains complementary.
 
 Tested feature source SHA-256:
-branch 12cd90ac1d79ee3b179115e5baeb4a08703b8fb226efced22cffd3a607c9ce91 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+branch bc099f329fc7cc640630314488cc5e3ff537bcec71fee61b0fc67afb3b6d44b0 Assets/Scripts/TeamData.cs
+branch dba24bc649e97e7e3c10b257fb738521d44c8df28717bcdacd561c0a3aea763f Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+branch 0cca080c16b212f66d48d5f13c7dcc5de0d190dc36d312128fed87482d730d0e Assets/Scripts/LayoutJogadorUnicoUI.cs
 branch da3250c9ff023c5d13cb7510468ef274222439f85f2da5f4390a4294f556a51b Assets/Scripts/GoalBannerUI.cs
-branch 54033cd6abd09aa972a130ae5e71dbbeca004d7a67dff20c17fc4f6dbac4fc1b Assets/Scripts/LayoutJogadorUnicoUI.cs
 branch e05c4966126f21b7344d387c4a4244fc8a7ae60c4a5f3844f467c08e948eae85 Assets/Scripts/RoletaCapitaoUI.cs
 branch 2c15ce92bd48ab8568230667d571b8c92a3458cd0083b45cd5fcbfaac3f6d870 Assets/FutebolDiscos/Scripts/HudFutebolDiscos.cs
-backup 01b6f77f710213736598dc27c6b3aed2fe18051cf6e9e5bfc6b9660872148cda Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+branch scene(read-only) 7693788058c7671355a16c1ea13399077bd30f7620a0f95f58e3c89c0fa398d4 Assets/Scenes/FutebolDiscos/Liga_Discos.unity
+branch scene(read-only) bb2bafdd5c8a9fa3995206f86fb3197a464f37f5f3b01beb44708b1e56cfdb7d Assets/Scenes/FutebolDiscos/MataMata_Discos.unity
+branch scene(read-only) 3c6b0caaff358e90fd77d25421cf75b0ac18902b06b0eb112bd0e63368f7b560 Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity
+branch scene(read-only) 5131c0437c48d325c0b595de57f2e01691c574110d9b3ae397ef1490ecd1b471 Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity
+backup bc099f329fc7cc640630314488cc5e3ff537bcec71fee61b0fc67afb3b6d44b0 Assets/Scripts/TeamData.cs
+backup 45ae78c6e389bc6826ac5488d5439a708221a0b2dd6e5032d40d72bc2128be2f Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+backup f399743b1e8004273ba8cf11cb000639903a9afaa17f593676cffb9312b4b13a Assets/Scripts/LayoutJogadorUnicoUI.cs
 backup da3250c9ff023c5d13cb7510468ef274222439f85f2da5f4390a4294f556a51b Assets/Scripts/GoalBannerUI.cs
-backup 5d63582e169ccf20563ad1732c7be8b1841c9514badca6267287d9d2b12507b2 Assets/Scripts/LayoutJogadorUnicoUI.cs
 backup e05c4966126f21b7344d387c4a4244fc8a7ae60c4a5f3844f467c08e948eae85 Assets/Scripts/RoletaCapitaoUI.cs
 backup bfc87cf2a4fd5b1d9e12fd6a04e0b00e98a601288d13b72d8d0f0bf03f48a923 Assets/FutebolDiscos/Scripts/HudFutebolDiscos.cs
+backup scene(read-only) 8bdd6a40519830065762e62632ae732c0e41b5896cd1d1a313d83aa8398be505 Assets/Scenes/FutebolDiscos/Liga_Discos.unity
+backup scene(read-only) 4279c0b7a40b3d2ff2a5d374238385f62231af401f39c7807fbfced9d541a39c Assets/Scenes/FutebolDiscos/MataMata_Discos.unity
+backup scene(read-only) 16e233779137a56f572bf6e837b4ee7cc32fca802a49a293e3e5c82d31f48c5f Assets/Scenes/FutebolDiscos/Capitaes/Liga_Capitaes.unity
+backup scene(read-only) ec987cab84357dcd0eddd781f8ee8adbab1c40ac1d9d4db96a036e54ebadb341 Assets/Scenes/FutebolDiscos/Capitaes/MataMata_Capitaes.unity

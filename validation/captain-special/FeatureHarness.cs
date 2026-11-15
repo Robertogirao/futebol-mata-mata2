@@ -6,7 +6,20 @@ static object Call(object obj,string name,params object[] args){var m=obj.GetTyp
 static void Reset(){foreach(var go in GameObject.All.Where(g=>g.transform.parent==null&&!g.destroyed).ToArray())UnityEngine.Object.Destroy(go);GameObject.All.Clear();Scheduler.Reset();Time.captureDeltaTime=0;Debug.Errors.Clear();Debug.Warnings.Clear();Debug.Messages.Clear();}
 static TeamData Team(string id,Color color){var t=ScriptableObject.CreateInstance<TeamData>();t.name=id;t.nomeEquipe=id.ToUpperInvariant();t.sigla=id;t.corPrincipal=color;t.corSecundaria=Color.white;t.elenco.Add(new JogadorDados{nomeJogador=id+" Player",foto512x512=new Sprite()});t.elenco.Add(new JogadorDados{nomeJogador=id+" Second"});return t;}
 sealed class Match {public GameObject root;public ProjetoFutebolDiscos config;public PartidaDiscos engine;public CampoDiscos campo;public HudFutebolDiscos hud;public UniversalUI ui;public GoalBannerUI banner;public TeamData a,b;public List<JogadorDados> repsA,repsB;public GolDiscos left,right;
- public Match(){root=new GameObject("RuntimeFixture");config=root.AddComponent<ProjetoFutebolDiscos>();config.tema=ScriptableObject.CreateInstance<TemaCompeticao>();config.tema.fonteTexto=config.tema.fonteTitulo=TMPro.TMP_Settings.defaultFontAsset;ui=root.AddComponent<UniversalUI>();ui.ativarGoldenGoal=false;ui.duracaoRealEmSegundos=45;ui.tempoCongeladoPosJogo=0;banner=root.AddComponent<GoalBannerUI>();banner.tempoDeExibicao=.06f;banner.intervaloEntreBanners=0;campo=root.AddComponent<CampoDiscos>();hud=root.AddComponent<HudFutebolDiscos>();engine=root.AddComponent<PartidaDiscos>();campo.Construir(config);hud.Construir(config,ui,banner);engine.Configurar(config,campo,hud);a=Team("home",Color.blue);b=Team("away",Color.red);repsA=a.ObterTitularesDaPartida();repsB=b.ObterTitularesDaPartida();left=root.GetComponentsInChildren<GolDiscos>().Single(g=>g.esquerda);right=root.GetComponentsInChildren<GolDiscos>().Single(g=>!g.esquerda);}
+ public Match(bool special = false){root=new GameObject("RuntimeFixture");config=root.AddComponent<ProjetoFutebolDiscos>();config.tema=ScriptableObject.CreateInstance<TemaCompeticao>();config.tema.fonteTexto=config.tema.fonteTitulo=TMPro.TMP_Settings.defaultFontAsset;ui=root.AddComponent<UniversalUI>();ui.ativarGoldenGoal=false;ui.duracaoRealEmSegundos=45;ui.tempoCongeladoPosJogo=0;banner=root.AddComponent<GoalBannerUI>();banner.tempoDeExibicao=.06f;banner.intervaloEntreBanners=0;campo=root.AddComponent<CampoDiscos>();hud=root.AddComponent<HudFutebolDiscos>();engine=root.AddComponent<PartidaDiscos>();campo.Construir(config);hud.Construir(config,ui,banner);engine.Configurar(config,campo,hud);a=Team("home",Color.blue);b=Team("away",Color.red);repsA=a.ObterTitularesDaPartida();repsB=b.ObterTitularesDaPartida();left=root.GetComponentsInChildren<GolDiscos>().Single(g=>g.esquerda);right=root.GetComponentsInChildren<GolDiscos>().Single(g=>!g.esquerda);
+if (special)
+{
+    config.usarCapitaesConvidados = true; config.capitaoExtra = false;
+    config.temporadaId = "feature_" + Guid.NewGuid().ToString("N");
+    config.participantes = new List<TeamData> { a, b };
+    var heroA = ScriptableObject.CreateInstance<CapitaoConvidado>(); heroA.name = "home_hero"; heroA.nomeCapitao = "Home Guest"; heroA.overall = 75; heroA.foto = new Sprite();
+    var heroB = ScriptableObject.CreateInstance<CapitaoConvidado>(); heroB.name = "away_hero"; heroB.nomeCapitao = "Away Guest"; heroB.overall = 75; heroB.foto = new Sprite();
+    config.catalogoCapitaes = new List<CapitaoConvidado> { heroA, heroB };
+    config.capitaesFixos = new List<VinculoCapitaoConvidado> { new VinculoCapitaoConvidado { time = a, capitao = heroA }, new VinculoCapitaoConvidado { time = b, capitao = heroB } };
+    Call(config, "PrepararCapitaesConvidados", false);
+    repsA = config.SelecionarRepresentantes(a); repsB = config.SelecionarRepresentantes(b);
+}
+}
  public void Prepare(){engine.PrepararPartida(a,b,repsA,repsB,a.corPrincipal,b.corPrincipal);ui.ConfigurarPartida(a,b,null,repsA,repsB);}
  public void Start(){Prepare();ui.IniciarCronometro();engine.IniciarPartida(a,b,float.MaxValue,repsA,repsB,a.corPrincipal,b.corPrincipal);Call(engine,"FixedUpdate");Call(engine,"FixedUpdate");}
  public void ResetAfterGoal(){Time.captureDeltaTime=.25f;for(int i=0;i<6;i++){Call(engine,"Update");Scheduler.Tick(.001f);}Call(engine,"FixedUpdate");Call(engine,"FixedUpdate");Time.captureDeltaTime=0;}
@@ -18,7 +31,7 @@ sealed class FixedRandom:System.Random {readonly double value;public FixedRandom
 static void Contact(Match m,DiscoAtleta a){var c=new Collision2D{collider=a.GetComponent<CircleCollider2D>()};Call(m.engine.Bola,"OnCollisionEnter2D",c);}
 static void Exit(Match m,DiscoAtleta a){var c=new Collision2D{collider=a.GetComponent<CircleCollider2D>()};Call(m.engine.Bola,"OnCollisionExit2D",c);}
 static void Charge(Match m,DiscoAtleta a){for(int i=0;i<PartidaDiscos.ToquesParaEspecial;i++){Contact(m,a);Exit(m,a);}}
-static void Contacts(){caseName="contact counting";var m=new Match();m.Start();var a=m.engine.Atletas.First(x=>x.TimeA&&x.Capitao);var b=m.engine.Atletas.First(x=>!x.TimeA&&x.Capitao);var other=m.engine.Atletas.First(x=>x.TimeA&&!x.Capitao);
+static void Contacts(){caseName="contact counting";var m=new Match(true);m.Start();var a=m.engine.Atletas.First(x=>x.TimeA&&x.Capitao);var b=m.engine.Atletas.First(x=>!x.TimeA&&x.Capitao);var other=m.engine.Atletas.First(x=>x.TimeA&&!x.Capitao);
 Contact(m,other);Check(m.engine.CargaCapitao(true)==0,"noncaptain contacts do not charge");
 Contact(m,a);m.engine.Bola.RegistrarToque(a);Call(m.engine.Bola,"OnCollisionStay2D",new Collision2D{collider=a.GetComponent<CircleCollider2D>()});Check(m.engine.CargaCapitao(true)==1,"enter, shot, stay on same contact count once");
 for(int i=0;i<15;i++)m.engine.Bola.RegistrarToque(a);Check(m.engine.CargaCapitao(true)==1,"sustained contact cannot charge to full");
@@ -39,7 +52,7 @@ static void Arm(Match m, DiscoAtleta captain, bool hit, bool leaveLastContact = 
 static void Roulette()
 {
     caseName = "armed result waits for distinct next touch";
-    var m = new Match(); m.Start();
+    var m = new Match(true); m.Start();
     var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
     var b = m.engine.Atletas.First(x => !x.TimeA && x.Capitao);
     Set(m.engine, "random", new FixedRandom(0));
@@ -90,7 +103,7 @@ static void Roulette()
 static void Cancellation()
 {
     caseName = "armed and animated special cancellation";
-    var m = new Match(); m.Start(); var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    var m = new Match(true); m.Start(); var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
     Arm(m, a, true); m.engine.PararPartida();
     Check(!m.engine.EspecialArmado(true) && !m.engine.RoletaAtiva(true) && !m.engine.ChuteEspecialEmAndamento, "stop discards armed and pending outcomes");
     m.Start(); a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
@@ -147,7 +160,7 @@ static object Get(object obj,string name){return obj.GetType().GetField(name,Bin
 static void Cards()
 {
     caseName = "external captain cards and visible roulette";
-    var m = new Match(); m.config.corBarraCapitao = new Color(.1f, .2f, .8f, .2f); m.Start();
+    var m = new Match(true); m.config.corBarraCapitao = new Color(.1f, .2f, .8f, .2f); m.Start();
     var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().FirstOrDefault();
     Check(layout != null, "existing external portrait layout exists");
     var ficha = Get(layout, "fichaA");
@@ -195,7 +208,7 @@ static void WaitingPulse()
     caseName = "slow opaque background pulse while waiting for next touch";
     foreach (bool hit in new[] { true, false })
     {
-        var m = new Match(); m.Start();
+        var m = new Match(true); m.Start();
         var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
         var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().First();
         var ficha = Get(layout, "fichaA");
@@ -226,7 +239,7 @@ static void WaitingPulse()
 static void WidePanelsAndFooter()
 {
     caseName = "wide horizontal mirrored panels and reserved footer gap";
-    var m = new Match(); m.Start();
+    var m = new Match(true); m.Start();
     var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().First();
     var fichaA = Get(layout, "fichaA"); var fichaB = Get(layout, "fichaB");
     var cardA = (RectTransform)Get(fichaA, "retangulo"); var cardB = (RectTransform)Get(fichaB, "retangulo");
@@ -364,5 +377,91 @@ static void BannerCancellationAndTiming()
     Check(ordinary.ui.GolsA == 1 && ordinary.banner.textoDados.text.Contains("GOAL!") && !ordinary.banner.textoDados.text.Contains("SPECIAL GOAL!"), "ordinary captain goal continues to use normal goal banner");
     Reset();
 }
-public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();WidePanelsAndFooter();CustomFooterOnly();MixedGoalBanners();BannerCancellationAndTiming();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse, wider mirrored panels/custom-only footer, decorated wheel sectors and distinct queued special-goal celebration lifecycle.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
+static Vector2 LegacyNormalSlot(bool home, int total, int index)
+{
+    float side = home ? -1f : 1f;
+    if (total == 1) return new Vector2(side * 5.5f, 0f);
+    if (total == 2) return new Vector2(side * (index == 0 ? 7f : 3.6f), index == 0 ? -1.8f : 1.8f);
+    if (index == 0) return new Vector2(side * 8.5f, 0f);
+    return new Vector2(side * (index % 2 == 0 ? 3.7f : 5.7f), Mathf.Lerp(-3f, 3f, (index - 1f) / Mathf.Max(1f, total - 2f)));
+}
+static void NormalModesAndPositions()
+{
+    caseName = "normal league/knockout positions and complete special isolation";
+    Check((int)PosicaoCapitaoDiscos.Defesa == 0 && (int)PosicaoCapitaoDiscos.Meio == 1 && (int)PosicaoCapitaoDiscos.Ataque == 2, "position enum preserves zero/default defense serialization");
+    foreach (FormatoDiscos format in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+    for (int count = 1; count <= 6; count++)
+    foreach (PosicaoCapitaoDiscos positionA in new[] { PosicaoCapitaoDiscos.Defesa, PosicaoCapitaoDiscos.Meio, PosicaoCapitaoDiscos.Ataque })
+    foreach (PosicaoCapitaoDiscos positionB in new[] { PosicaoCapitaoDiscos.Defesa, PosicaoCapitaoDiscos.Meio, PosicaoCapitaoDiscos.Ataque })
+    {
+        var m = new Match(false); m.config.formato = format; m.config.discosPorTime = count;
+        m.a.posicaoCapitaoDiscos = positionA; m.b.posicaoCapitaoDiscos = positionB;
+        var rosterA = m.a.elenco.ToArray(); var rosterB = m.b.elenco.ToArray(); int overallA = m.a.overall, overallB = m.b.overall;
+        m.Start();
+        Check(!m.config.usarCapitaesConvidados && !m.engine.EspecialHabilitado && m.engine.Atletas.Count == count * 2, "normal mode uses only configured football discs without special feature");
+        foreach (bool home in new[] { true, false })
+        {
+            PosicaoCapitaoDiscos position = home ? positionA : positionB;
+            var slots = Enumerable.Range(0, count).Select(i => m.engine.Formacao(home, i)).ToArray();
+            float expectedDepth = count == 1 ? (position == PosicaoCapitaoDiscos.Ataque ? 2.8f : position == PosicaoCapitaoDiscos.Meio ? 4.8f : 5.5f)
+                : count == 2 ? (position == PosicaoCapitaoDiscos.Ataque ? 3.6f : position == PosicaoCapitaoDiscos.Meio ? 5.2f : 7f)
+                : position == PosicaoCapitaoDiscos.Ataque ? 3.7f : position == PosicaoCapitaoDiscos.Meio ? 5.7f : 8.5f;
+            Check(Math.Abs(Math.Abs(slots[0].x) - expectedDepth) < .001f, "normal captain uses selected defense/midfield/attack depth");
+            Check(slots.All(p => home ? p.x < 0f : p.x > 0f), "normal formation remains on team's own side");
+            Check(slots.SelectMany((p, i) => slots.Skip(i + 1).Select(q => Vector2.Distance(p, q))).All(d => d > .01f), "moving captain swaps into a distinct slot without stacking discs");
+            if (position == PosicaoCapitaoDiscos.Defesa)
+                Check(slots.Where((p, i) => Vector2.Distance(p, LegacyNormalSlot(home, count, i)) > .001f).Count() == 0, "default defense preserves legacy normal formation slots");
+            if (positionA == positionB)
+                Check(slots.Select((p, i) => { var mirror = m.engine.Formacao(!home, i); return Math.Abs(p.x + mirror.x) < .001f && Math.Abs(p.y - mirror.y) < .001f; }).All(v => v), "equal selected roles mirror across the center line");
+        }
+        var bBefore = Enumerable.Range(0, count).Select(i => m.engine.Formacao(false, i)).ToArray();
+        m.a.posicaoCapitaoDiscos = positionA == PosicaoCapitaoDiscos.Ataque ? PosicaoCapitaoDiscos.Defesa : PosicaoCapitaoDiscos.Ataque;
+        Check(bBefore.Select((p, i) => Vector2.Distance(p, m.engine.Formacao(false, i)) < .001f).All(v => v), "changing home captain role never changes away formation");
+        m.a.posicaoCapitaoDiscos = positionA;
+        foreach (var actor in m.engine.Atletas) actor.Corpo.position += new Vector2(.4f, .7f);
+        Call(m.engine, "Reposicionar", true); Call(m.engine, "FixedUpdate"); Call(m.engine, "FixedUpdate");
+        Check(m.engine.Atletas.All(actor => Vector2.Distance(actor.Corpo.position, m.engine.Formacao(actor.TimeA, actor.Indice)) < .001f), "restart returns all normal discs to selected position-aware formation");
+        var captain = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+        for (int i = 0; i < 20; i++) { Contact(m, captain); Exit(m, captain); Call(m.engine, "AtualizarEspecial", 10f); }
+        var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().First(); Call(layout, "Update");
+        Check(m.engine.CargaCapitao(true) == 0 && m.engine.CargaCapitao(false) == 0 && !m.engine.RoletaAtiva(true) && !m.engine.EspecialArmado(true) && !m.engine.ChuteEspecialEmAndamento && m.ui.GolsA == 0 && !m.banner.TemBannersPendentes, "many normal contacts and updates cannot charge, spin, shoot, score or show special banner");
+        Check(!((RectTransform)Get(Get(layout, "fichaA"), "painelEspecial")).gameObject.activeSelf && !((RectTransform)Get(Get(layout, "fichaB"), "painelEspecial")).gameObject.activeSelf, "both special panels remain hidden in normal modes");
+        m.Cross(false);
+        Check(m.ui.GolsA == 1 && !m.banner.textoDados.text.Contains("SPECIAL GOAL"), "normal football goal still scores using ordinary celebration");
+        Check(m.a.overall == overallA && m.b.overall == overallB && m.a.elenco.SequenceEqual(rosterA) && m.b.elenco.SequenceEqual(rosterB) && m.a.posicaoCapitaoDiscos == positionA && m.b.posicaoCapitaoDiscos == positionB, "normal role changes never mutate either roster, overall or selected role");
+        Reset();
+    }
+    var invalid = new Match(false); invalid.a.posicaoCapitaoDiscos = (PosicaoCapitaoDiscos)999; invalid.Start();
+    Check(Vector2.Distance(invalid.engine.Formacao(true, 0), LegacyNormalSlot(true, invalid.config.discosPorTime, 0)) < .001f, "invalid serialized normal role safely falls back to defense"); Reset();
+}
+static void GuestModePositionIsolation()
+{
+    caseName = "guest mode keeps existing selected guest position and special mechanics";
+    foreach (FormatoDiscos format in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+    {
+        var m = new Match(true); m.config.formato = format; m.Start();
+        Check(m.engine.EspecialHabilitado && m.config.ObterCapitaoConvidado(m.a) != null && m.engine.Atletas.First(x => x.TimeA && x.Capitao).NomeExibicao == m.config.ObterCapitaoConvidado(m.a).nomeCapitao, "guest fixture prepares actual catalog-backed captain identity");
+        var original = Enumerable.Range(0, m.config.TotalDiscosPorTime).Select(i => m.engine.Formacao(true, i)).ToArray();
+        foreach (PosicaoCapitaoDiscos position in new[] { PosicaoCapitaoDiscos.Defesa, PosicaoCapitaoDiscos.Meio, PosicaoCapitaoDiscos.Ataque })
+        {
+            m.a.posicaoCapitaoDiscos = position;
+            Check(original.Select((p, i) => Vector2.Distance(p, m.engine.Formacao(true, i)) < .001f).All(v => v), "new normal-team role is ignored by guest scenes");
+        }
+        MethodInfo guestPositionApi = typeof(ProjetoFutebolDiscos).GetMethod("ObterPosicaoCapitao");
+        if (guestPositionApi != null)
+        {
+            var positions = typeof(ProjetoFutebolDiscos).GetField("posicoesDosCapitaes", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(m.config) as System.Collections.IDictionary;
+            Type guestPositionType = guestPositionApi.ReturnType;
+            positions[m.a] = Enum.ToObject(guestPositionType, 2);
+            Vector2 attackSlot = m.engine.Formacao(true, 0);
+            Check(Math.Abs(attackSlot.x + 3.7f) < .001f && (int)guestPositionApi.Invoke(m.config, new object[] { m.a }) == 2, "backup guest-specific attack position still controls guest formation");
+            m.a.posicaoCapitaoDiscos = PosicaoCapitaoDiscos.Meio;
+            Check(Vector2.Distance(attackSlot, m.engine.Formacao(true, 0)) < .001f, "normal midfield field cannot override selected guest attack position");
+        }
+        var captain = m.engine.Atletas.First(x => x.TimeA && x.Capitao); Arm(m, captain, true); Contact(m, captain); Call(m.engine, "AtualizarChuteEspecial", 1.4f);
+        Check(m.ui.GolsA == 1 && m.banner.textoDados.text.Contains("SPECIAL GOAL!"), "actual guest identity still completes full charge/roulette/next-touch/HIT/banner flow");
+        Reset();
+    }
+}
+public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();WidePanelsAndFooter();CustomFooterOnly();MixedGoalBanners();BannerCancellationAndTiming();NormalModesAndPositions();GuestModePositionIsolation();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse, wider mirrored panels/custom-only footer, decorated wheel sectors and distinct queued special-goal celebration lifecycle, normal-scene special isolation and independent normal captain roles.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
 }

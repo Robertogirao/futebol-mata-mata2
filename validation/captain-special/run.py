@@ -34,6 +34,7 @@ sources = [str(p) for directory in ('FutebolDiscos/Scripts', 'Scripts')
            for p in sorted((SOURCE / 'Assets' / directory).glob('*.cs'))]
 if not sources:
     raise SystemExit('No game sources found under ' + str(SOURCE))
+subprocess.run([sys.executable, str(HERE / 'scene_mode_audit.py'), str(SOURCE)], check=True)
 
 with tempfile.TemporaryDirectory(prefix='captain-special-') as temp:
     out = Path(temp)

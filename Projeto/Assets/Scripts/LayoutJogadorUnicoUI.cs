@@ -402,7 +402,7 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
     private void AtualizarEspecial(Ficha ficha, PartidaDiscos partida, bool timeA)
     {
         if (ficha == null) return;
-        bool aoVivo = partida != null && partida.EmAndamento && !apresentacaoPreparada;
+        bool aoVivo = partida != null && partida.EspecialHabilitado && partida.EmAndamento && !apresentacaoPreparada;
         ficha.painelEspecial.gameObject.SetActive(aoVivo);
         bool girando = aoVivo && !partida.EmReposicao && partida.RoletaAtiva(timeA);
         bool armado = aoVivo && !partida.EmReposicao && partida.EspecialArmado(timeA);

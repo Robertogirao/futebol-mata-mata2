@@ -10,6 +10,14 @@ public enum PosturaTatica
     [InspectorName("Ultra defensivo")] UltraDefensivo = 3
 }
 
+// Independente do catálogo de convidados: só as cenas normais leem esta posição.
+public enum PosicaoCapitaoDiscos
+{
+    [InspectorName("Defesa")] Defesa = 0,
+    [InspectorName("Meio-campo")] Meio = 1,
+    [InspectorName("Ataque")] Ataque = 2
+}
+
 [System.Serializable]
 public class JogadorDados
 {
@@ -59,6 +67,11 @@ public class TeamData : ScriptableObject
     [InspectorName("Postura tática")]
     [Tooltip("Limite de jogadores liberados para pressionar além do meio-campo: ultra defensivo 0, defensivo 1, balanceado 2 e ataque 3. A subida depende da jogada e do bloqueio geral da arena.")]
     public PosturaTatica posturaTatica = PosturaTatica.Balanceado;
+
+    [Header("Capitão nas cenas normais de discos")]
+    [InspectorName("Posição do capitão (cenas normais)")]
+    [Tooltip("Posição de base do representante deste time na Liga e no Mata-mata normais: defesa, meio-campo ou ataque. Não altera as cenas da pasta Capitaes, que usam a posição do próprio convidado.")]
+    public PosicaoCapitaoDiscos posicaoCapitaoDiscos = PosicaoCapitaoDiscos.Defesa;
 
     [Header("Elenco Completo")]
     public List<JogadorDados> elenco = new List<JogadorDados>();
