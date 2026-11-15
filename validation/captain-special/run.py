@@ -12,7 +12,7 @@ HERE = Path(__file__).resolve().parent
 REPOSITORY = HERE.parents[1]
 SOURCE = Path(os.environ.get('TEST_SOURCE', str(REPOSITORY / 'Projeto'))).resolve()
 HARNESSES = sys.argv[1:] or ['FeatureHarness', 'RuntimeHarness', 'GoalResetHarness',
-                            'CaptainHarness', 'CornerRestartHarness']
+                            'CaptainHarness', 'CornerRestartHarness', 'GuestCaptainsHarness', 'HudHarness']
 DOTNET = os.environ.get('DOTNET') or shutil.which('dotnet')
 if not DOTNET:
     raise SystemExit('Install a .NET SDK (8 or newer), or set DOTNET to its dotnet executable.')
@@ -47,7 +47,9 @@ with tempfile.TemporaryDirectory(prefix='captain-special-') as temp:
                     + references + [str(HERE.parent / 'runtime/UnityContract.cs')] + sources)
     print('Compiled %d actual game runtime sources.' % len(sources), flush=True)
     for name in HARNESSES:
-        harness = HERE / (name + '.cs') if name == 'FeatureHarness' else HERE.parent / 'runtime' / (name + '.cs')
+        harness = (HERE / (name + '.cs') if name == 'FeatureHarness' else
+                   HERE.parent / 'hud/Harness.cs' if name == 'HudHarness' else
+                   HERE.parent / 'runtime' / (name + '.cs'))
         if not harness.is_file():
             raise SystemExit('Unknown harness: ' + name)
         assembly = out / (name + '.dll')
@@ -56,4 +58,4 @@ with tempfile.TemporaryDirectory(prefix='captain-special-') as temp:
         (out / (name + '.runtimeconfig.json')).write_text(json.dumps({
             'runtimeOptions': {'tfm': framework.name,
                                'framework': {'name': 'Microsoft.NETCore.App', 'version': runtimes[-1].name}}}), encoding='utf-8')
-        subprocess.run([str(DOTNET), str(assembly)], check=True, cwd=out)
+        subprocess.run([str(DOTNET), str(assembly)], check=True, cwd=REPOSITORY if name == 'HudHarness' else out)

@@ -130,7 +130,6 @@ namespace FutebolDeDiscos
                 Campo("tituloRodape", "Título do rodapé", "Texto maior abaixo do campo. Vazio: oculto.");
                 Campo("mostrarSubtituloRodape", "Mostrar subtítulo do rodapé");
                 Campo("subtituloRodape", "Subtítulo do rodapé", "Substitui Automatic Disc Football. Vazio: oculto.");
-                Campo("mostrarDetalhesFormato", "Mostrar formato e quantidade de discos", "Controla os detalhes Liga/Mata-mata e 3 v 3 separadamente do subtítulo.");
 
                 Titulo("Identificação dos jogadores");
                 bool capitaesConvidados = P("usarCapitaesConvidados").boolValue;

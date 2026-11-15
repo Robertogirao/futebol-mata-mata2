@@ -85,18 +85,14 @@ namespace FutebolDeDiscos
 
             estado = Texto(raiz, "Match State", "READY FOR KICKOFF", 350f, 151f, 1220f, 28f,
                 18f, destaque, false, TextAlignmentOptions.Center);
-            string tituloRodape = config == null ? "DISC FOOTBALL" : TextoOpcional(config.tituloRodape);
-            if ((config == null || config.mostrarTituloRodape) && tituloRodape.Length > 0)
-                Texto(raiz, "Broadcast Signature", tituloRodape, 530f, 976f, 860f, 40f,
+            // Leave the footer entirely to the configured copy, between the wider captain panels.
+            string tituloRodape = config != null && config.mostrarTituloRodape ? TextoOpcional(config.tituloRodape) : "";
+            if (tituloRodape.Length > 0)
+                Texto(raiz, "Broadcast Signature", tituloRodape, 800f, 976f, 320f, 40f,
                     31f, Color.white, true, TextAlignmentOptions.Center);
-            string formato = config != null && config.formato == FormatoDiscos.MataMata ? "KNOCKOUT" : "LEAGUE";
-            int discos = config != null ? Mathf.Max(1, config.TotalDiscosPorTime) : 3;
-            string linhaRodape = config == null || config.mostrarDetalhesFormato ? formato + "  ·  " + discos + " v " + discos : "";
-            string subtitulo = config == null ? "AUTOMATIC DISC FOOTBALL" :
-                config.mostrarSubtituloRodape ? TextoOpcional(config.subtituloRodape) : "";
-            if (subtitulo.Length > 0) linhaRodape += (linhaRodape.Length > 0 ? "  ·  " : "") + subtitulo;
-            if (linhaRodape.Length > 0)
-                Texto(raiz, "Broadcast Format", linhaRodape, 530f, 1021f, 860f, 26f, 17f,
+            string subtitulo = config != null && config.mostrarSubtituloRodape ? TextoOpcional(config.subtituloRodape) : "";
+            if (subtitulo.Length > 0)
+                Texto(raiz, "Broadcast Format", subtitulo, 800f, 1021f, 320f, 26f, 17f,
                     new Color(0.62f, 0.81f, 0.82f), false, TextAlignmentOptions.Center);
 
             RectTransform avisoGol = Caixa(raiz, "Goal Celebration", 640f, 198f, 640f, 124f, escuro);

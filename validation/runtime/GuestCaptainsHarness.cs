@@ -146,7 +146,7 @@ public static class GuestCaptainsHarness
                 foreach (var actor in actors)
                     Check(actor.GetComponentsInChildren<TextMeshPro>(true).Any(t => t.text == actor.NomeExibicao), "name tags show each actual captain/footballer");
             }
-            Check(fixture.Root.GetComponentsInChildren<TextMeshProUGUI>(true).Any(t => t.gameObject.name == "Broadcast Format" && t.text.Contains(expectedCount + " v " + expectedCount)), "broadcast count includes the guest extra disc");
+            Check(fixture.Root.GetComponentsInChildren<TextMeshProUGUI>(true).Where(t => t.gameObject.name == "Broadcast Format").All(t => !t.text.Contains(expectedCount + " v " + expectedCount)), "guest disc count remains gameplay-only and is not injected into footer");
             var captain = fixture.Match.Atletas.Single(a => a.TimeA && a.Capitao);
             fixture.Goal(captain, false);
             Check(fixture.Ui.GolsA == 1 && fixture.Banner.fotoJogador.sprite == captain.Jogador.foto512x512 && fixture.Banner.textoDados.text.Contains(captain.NomeExibicao.ToUpperInvariant()), "guest goal uses the guest name and portrait");

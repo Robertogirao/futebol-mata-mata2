@@ -73,7 +73,7 @@ public static class Harness
         Check(root.GetComponent<Canvas>().sortingOrder == 100, "live scoreboard sorting order");
         foreach (string filename in new [] { "ClassificacaoUI.cs", "AberturaJogoUI.cs", "ChaveamentoUI.cs" })
         {
-            string source = File.ReadAllText("Projeto/Assets/Scripts/" + filename);
+            string source = File.ReadAllText(Path.Combine(Environment.GetEnvironmentVariable("TEST_SOURCE") ?? "Projeto", "Assets/Scripts", filename));
             Match assignment = Regex.Match(source, @"canvas\.sortingOrder\s*=\s*(\d+)");
             Check(assignment.Success && root.GetComponent<Canvas>().sortingOrder < int.Parse(assignment.Groups[1].Value), "broadcast below actual " + filename);
         }
@@ -87,7 +87,7 @@ public static class Harness
         Check(ui.logoCampeonato.sprite == cup, "competition logo binding");
         Check(Rect(header, "Channel Logo").GetComponent<Image>().sprite == channel, "channel logo binding");
         Check(ui.placarTimeA.text == "0" && ui.placarTimeB.text == "0" && ui.textoCronometro.text == "00:00", "live fields initialized");
-        Check(Text(root, "Broadcast Format").text.Contains("KNOCKOUT") && Text(root, "Broadcast Format").text.Contains("3 v 3"), "match format label");
+        Check(Text(root, "Broadcast Format").text == config.subtituloRodape, "footer shows only configured subtitle without automatic format or count");
         Check(ui.fotosTitularesA.Length == 0 && ui.nomesTitularesB.Length == 0 && ui.numerosTitularesA.Length == 0, "old six-player bindings cleared");
         Check(banner.painelBanner == ui.bannerGol && !banner.painelBanner.activeSelf, "goal panel linked and initially hidden");
         Check(!owner.transform.IsChildOf(banner.painelBanner.transform), "hiding goal panel never disables controller");
@@ -125,9 +125,9 @@ public static class Harness
         banner.ExibirBannerDeGol(null, Color.white);
         Check(owner.activeInHierarchy && banner.painelBanner.activeSelf, "real queued celebration leaves controller alive");
         Check(banner.fotoJogador.sprite == scorer.foto512x512 && banner.textoDados.text.Contains("GOAL SCORER"), "real banner score data");
-        Scheduler.Tick(); Scheduler.Tick();
+        Scheduler.Tick(.1f); Scheduler.Tick(.1f);
         Check(banner.painelBanner.activeSelf && !banner.fotoJogador.enabled && banner.textoDados.text == "<color=yellow>GOAL!</color>", "queued scorer fallback");
-        Scheduler.Tick(); Scheduler.Tick();
+        Scheduler.Tick(.1f); Scheduler.Tick(.1f);
         Check(!banner.TemBannersPendentes && !banner.painelBanner.activeSelf, "queued celebrations finish");
 
         var cards = LayoutJogadorUnicoUI.Criar(root.GetComponent<Canvas>(), body);
@@ -175,7 +175,7 @@ public static class Harness
         hud.Construir(config, ui, banner);
         Check(root.gameObject.destroyed && !root.gameObject.activeSelf && root.parent == null, "retired canvas detached before deferred destroy");
         var replacement = (RectTransform)Field(hud, "raiz");
-        Check(owner.transform.children.Count == 1 && replacement != root, "single discoverable child canvas after rebuild");
+        Check(owner.transform.childCount == 1 && replacement != root, "single discoverable child canvas after rebuild");
         Check(!cup.destroyed && !channel.destroyed && !title.destroyed && !body.destroyed, "shared assets never destroyed");
         hud.ConfigurarEquipes(null, null, Color.white, Color.white);
         Check(Text(Rect(Rect(replacement,"Scoreboard"),"Home Team"),"Home Name").text == "HOME TEAM", "missing team fallback");
@@ -188,7 +188,7 @@ public static class Harness
         config.tema = null; config.formato = FormatoDiscos.Liga;
         hud.Construir(config,ui,banner);
         Check(Text(Rect((RectTransform)Field(hud,"raiz"),"Scoreboard"),"Championship").font == TMP_Settings.defaultFontAsset, "default TMP font fallback");
-        Check(Text((RectTransform)Field(hud,"raiz"),"Broadcast Format").text.Contains("LEAGUE"), "league label");
+        Check(Text((RectTransform)Field(hud,"raiz"),"Broadcast Format").text == config.subtituloRodape, "league format never injects automatic footer text");
         ValidateStandings(((RectTransform)Field(hud,"raiz")).GetComponent<Canvas>().sortingOrder);
         ValidateRecordingTiming(banner);
         ValidateEditableBranding(hud, config, ui, banner);
@@ -206,7 +206,7 @@ public static class Harness
         var root = (RectTransform)Field(hud, "raiz");
         Check(Text(root, "Broadcast Signature").text == "YOUR SQUAD", "custom footer heading replaces fixed branding");
         string description = Text(root, "Broadcast Format").text;
-        Check(description.Contains("KNOCKOUT") && description.Contains("5 v 5") && description.EndsWith("Every disc has a story"), "custom footer subtitle retains independent format details");
+        Check(description == "Every disc has a story", "custom footer subtitle is exact user text without automatic format details");
         Check(!description.Contains("AUTOMATIC DISC FOOTBALL"), "custom footer never retains old automatic-disc branding");
         config.mostrarDetalhesFormato = false;
         hud.Construir(config, ui, banner);
@@ -220,7 +220,7 @@ public static class Harness
         config.mostrarDetalhesFormato = true;
         hud.Construir(config, ui, banner);
         root = (RectTransform)Field(hud, "raiz");
-        Check(Text(root, "Broadcast Format").text == "KNOCKOUT  ·  5 v 5", "format details stay visible without the subtitle");
+        Check(root.Find("Broadcast Format") == null, "legacy format-details flag does not restore automatic footer text");
         config.mostrarTituloRodape = config.mostrarSubtituloRodape = true;
         config.mostrarDetalhesFormato = false;
         foreach (string empty in new [] { "", "  ", null })
@@ -233,7 +233,7 @@ public static class Harness
                 Check(!text.text.Contains("DISC FOOTBALL"), "cleared branding does not leak elsewhere in HUD / " + text.gameObject.name);
         }
         Check(ui.placarTimeA != null && ui.placarTimeB != null && ui.textoCronometro != null, "branding visibility never removes live match bindings");
-        Console.WriteLine("PASS editable footer heading/subtitle, independent format details, toggles and empty-field hiding");
+        Console.WriteLine("PASS editable footer heading/subtitle, no automatic format labels, toggles and empty-field hiding");
     }
 
     private static void ValidateRecordingTiming(GoalBannerUI banner)
@@ -269,7 +269,7 @@ public static class Harness
             var table = new List<LigaCampeonato.Linha> { new LigaCampeonato.Linha { POS = 1, TEAM = "FIRST" } };
             foreach (bool closing in new [] { false, true })
             {
-                Scheduler.Start(standings.ExibirTabela(table,null,null,1,closing));
+                standings.StartCoroutine(standings.ExibirTabela(table,null,null,1,closing));
                 ticks = 0;
                 int expected = (int)Math.Round(1.5f / step);
                 while (standings.EstaExibindo && ticks < expected + 3) { Scheduler.Tick(.1f); ticks++; }
@@ -281,7 +281,7 @@ public static class Harness
             Scheduler.Tick(.1f); banner.LimparFila();
             for (int i = 0; i < 100; i++) Scheduler.Tick(.1f);
             Check(!banner.TemBannersPendentes && !banner.painelBanner.activeSelf, "capture queue cancellation has no late banner / " + rate);
-            Scheduler.Start(standings.ExibirTabela(table,null,null,2,true));
+            standings.StartCoroutine(standings.ExibirTabela(table,null,null,2,true));
             Scheduler.Tick(.1f); standings.Ocultar();
             for (int i = 0; i < 100; i++) Scheduler.Tick(.1f);
             Check(!standings.UltimaExibicaoConcluida && !standings.EstaExibindo, "capture standings cancellation does not complete / " + rate);
@@ -311,7 +311,7 @@ public static class Harness
             for (int i = 0; i < count / 2; i++)
                 fixtures.Add(new LigaCampeonato.Jogo { a = teams[i * 2].name, b = teams[i * 2 + 1].name,
                     nomeA = teams[i * 2].nomeEquipe, nomeB = teams[i * 2 + 1].nomeEquipe, registrado = true, golsA = 1 });
-            Scheduler.Start(standings.ExibirTabela(table, null, teams, 1, true, fixtures));
+            standings.StartCoroutine(standings.ExibirTabela(table, null, teams, 1, true, fixtures));
             Check(!standings.EstaExibindo && standings.UltimaExibicaoConcluida, "round closing completes / " + count);
             var canvas = (GameObject)Field(standings, "raiz");
             Check(canvas.GetComponent<Canvas>().sortingOrder > broadcastOrder, "real standings cover broadcast / " + count);
@@ -338,7 +338,7 @@ public static class Harness
             }
             standings.Ocultar();
             Check(!canvas.activeSelf, "next match releases opaque standings background / " + count);
-            Scheduler.Start(standings.ExibirTabela(table, table, teams, 2, false, fixtures));
+            standings.StartCoroutine(standings.ExibirTabela(table, table, teams, 2, false, fixtures));
             Check(standings.UltimaExibicaoConcluida && !standings.EstaExibindo, "following round can open / " + count);
             standings.Ocultar();
         }

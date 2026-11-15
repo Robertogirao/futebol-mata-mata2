@@ -186,5 +186,65 @@ static void WaitingPulse()
         Time.captureDeltaTime = 0f; Time.unscaledDeltaTime = .02f; Reset();
     }
 }
-public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
+static void WidePanelsAndFooter()
+{
+    caseName = "wide horizontal mirrored panels and reserved footer gap";
+    var m = new Match(); m.Start();
+    var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().First();
+    var fichaA = Get(layout, "fichaA"); var fichaB = Get(layout, "fichaB");
+    var cardA = (RectTransform)Get(fichaA, "retangulo"); var cardB = (RectTransform)Get(fichaB, "retangulo");
+    var panelA = (RectTransform)Get(fichaA, "painelEspecial"); var panelB = (RectTransform)Get(fichaB, "painelEspecial");
+    float cardAWidth = (cardA.anchorMax.x - cardA.anchorMin.x) * 1920f;
+    float cardBWidth = (cardB.anchorMax.x - cardB.anchorMin.x) * 1920f;
+    float aLeft = cardA.anchorMin.x * 1920f + panelA.anchorMin.x * cardAWidth;
+    float aRight = cardA.anchorMin.x * 1920f + panelA.anchorMax.x * cardAWidth;
+    float bLeft = cardB.anchorMin.x * 1920f + panelB.anchorMin.x * cardBWidth;
+    float bRight = cardB.anchorMin.x * 1920f + panelB.anchorMax.x * cardBWidth;
+    float aBottom = (cardA.anchorMin.y + panelA.anchorMin.y * (cardA.anchorMax.y - cardA.anchorMin.y)) * 1080f;
+    float aTop = (cardA.anchorMin.y + panelA.anchorMax.y * (cardA.anchorMax.y - cardA.anchorMin.y)) * 1080f;
+    float bBottom = (cardB.anchorMin.y + panelB.anchorMin.y * (cardB.anchorMax.y - cardB.anchorMin.y)) * 1080f;
+    float bTop = (cardB.anchorMin.y + panelB.anchorMax.y * (cardB.anchorMax.y - cardB.anchorMin.y)) * 1080f;
+    Check(aRight - aLeft >= 450f && bRight - bLeft >= 450f, "both special panels are substantially wider in 1920px layout");
+    Check(aRight - aLeft > (aTop - aBottom) * 2.5f && bRight - bLeft > (bTop - bBottom) * 2.5f, "special panels extend horizontally");
+    Check(Math.Abs(aLeft - (1920f - bRight)) < .1f && Math.Abs(aRight - (1920f - bLeft)) < .1f, "left and right expanded panels mirror across screen center");
+    Check(aLeft >= cardA.anchorMax.x * 1920f && bRight <= cardB.anchorMin.x * 1920f, "expanded panels clear their external portrait cards");
+    Check(aRight <= 800f && bLeft >= 1120f, "expanded panels leave central x800..1120 footer region unobstructed");
+    Check(aLeft >= 0f && bRight <= 1920f && aBottom >= 0f && bBottom >= 0f, "panels remain inside broadcast viewport");
+    Check(Math.Abs(aBottom - bBottom) < .1f && Math.Abs(aTop - bTop) < .1f && aTop < (8.3f - 5.2f) / (8.3f * 2f) * 1080f, "mirrored panels retain low vertical placement below arena");
+    var wheelA = (RoletaCapitaoUI)Get(fichaA, "roleta"); var resultA = (TMPro.TextMeshProUGUI)Get(fichaA, "resultado");
+    Check(resultA.transform.parent == ((RectTransform)Get(fichaA, "especial")) && wheelA.rectTransform.anchorMax.x - wheelA.rectTransform.anchorMin.x < .5f, "wider panel separates wheel region from result text");
+    Reset();
+}
+static void CustomFooterOnly()
+{
+    caseName = "footer contains only explicitly enabled configured text";
+    var m = new Match();
+    foreach (bool legacyDetails in new[] { false, true })
+    foreach (FormatoDiscos format in new[] { FormatoDiscos.Liga, FormatoDiscos.MataMata })
+    foreach (bool titleEnabled in new[] { false, true })
+    foreach (bool subtitleEnabled in new[] { false, true })
+    {
+        m.config.mostrarDetalhesFormato = legacyDetails; m.config.formato = format; m.config.discosPorTime = 5;
+        m.config.tituloRodape = "My Custom Title"; m.config.subtituloRodape = "My custom subtitle";
+        m.config.mostrarTituloRodape = titleEnabled; m.config.mostrarSubtituloRodape = subtitleEnabled;
+        m.hud.Construir(m.config, m.ui, m.banner);
+        var text = m.root.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true).Where(t => t.gameObject.name == "Broadcast Signature" || t.gameObject.name == "Broadcast Format").ToArray();
+        Check(text.Length == (titleEnabled ? 1 : 0) + (subtitleEnabled ? 1 : 0), "footer flags exclusively control configured text visibility");
+        Check(text.All(t => t.text == (t.gameObject.name == "Broadcast Signature" ? "My Custom Title" : "My custom subtitle")), "footer preserves exact custom text for both legacy format-flag values");
+        Check(text.All(t => !t.text.Contains("KNOCKOUT") && !t.text.Contains("LEAGUE") && !t.text.Contains(" v ")), "no automatic format or player count is added");
+        Check(text.All(t => t.rectTransform.anchoredPosition.x >= 800f && t.rectTransform.sizeDelta.x <= 320f && t.rectTransform.anchoredPosition.x + t.rectTransform.sizeDelta.x <= 1120f), "configured footer fits reserved central gap between wide panels");
+    }
+    m.config.mostrarTituloRodape = m.config.mostrarSubtituloRodape = true;
+    foreach (bool legacyDetails in new[] { false, true })
+    foreach (string blank in new[] { "", "  ", null })
+    {
+        m.config.mostrarDetalhesFormato = legacyDetails; m.config.tituloRodape = m.config.subtituloRodape = blank;
+        m.hud.Construir(m.config, m.ui, m.banner);
+        Check(!m.root.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true).Any(t => t.gameObject.name == "Broadcast Signature" || t.gameObject.name == "Broadcast Format"), "blank footer fields remain absent even if legacy format-details flag is true");
+    }
+    m.hud.Construir(null, m.ui, m.banner);
+    Check(!m.root.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true).Any(t => t.gameObject.name == "Broadcast Signature" || t.gameObject.name == "Broadcast Format"), "missing config does not create automatic footer fallback");
+    Reset();
+}
+public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();WidePanelsAndFooter();CustomFooterOnly();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse, wider mirrored panels and custom-only footer.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
 }
