@@ -172,7 +172,7 @@ namespace FutebolDeDiscos
             Vector2 final = destinoChuteEspecial;
             LimparAnimacaoChuteEspecial();
             EmReposicao = false;
-            if (acertou) MarcarGol(autor.TimeA, autor, !autor.TimeA);
+            if (acertou) MarcarGol(autor.TimeA, autor, !autor.TimeA, especial: true);
             else
             {
                 Congelar(false);
@@ -481,7 +481,7 @@ namespace FutebolDeDiscos
             MarcarGol(pontoA, ultimo, golEsquerdo);
         }
 
-        private void MarcarGol(bool pontoA, DiscoAtleta ultimo, bool golEsquerdo)
+        private void MarcarGol(bool pontoA, DiscoAtleta ultimo, bool golEsquerdo, bool especial = false)
         {
             UniversalUI ui = UniversalUI.Instance;
             if (!EmAndamento || EmReposicao || !golLiberado || ui == null || !ui.partidaEmAndamento) return;
@@ -495,10 +495,13 @@ namespace FutebolDeDiscos
             saidaA = !pontoA;
             reposicaoRestante = config.pausaAposGol;
             campo.CelebrarGol(golEsquerdo);
-            if (hud != null) hud.MostrarEstado("GOAL — " + equipe.nomeEquipe.ToUpperInvariant());
+            if (hud != null) hud.MostrarEstado((especial ? "SPECIAL GOAL — " : "GOAL — ") + equipe.nomeEquipe.ToUpperInvariant());
             ui.RegistrarGol(pontoA, ui.TempoAtual);
             if (GoalBannerUI.Instance != null)
-                GoalBannerUI.Instance.ExibirBannerDeGol(nomeAutor, imagemAutor, pontoA ? corA : corB);
+            {
+                if (especial) GoalBannerUI.Instance.ExibirBannerDeGolEspecial(nomeAutor, imagemAutor, pontoA ? corA : corB);
+                else GoalBannerUI.Instance.ExibirBannerDeGol(nomeAutor, imagemAutor, pontoA ? corA : corB);
+            }
             if (!ui.partidaEmAndamento) PararPartida();
         }
 

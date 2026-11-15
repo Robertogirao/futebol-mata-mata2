@@ -349,9 +349,20 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.roleta.color = Color.white;
         ficha.roleta.raycastTarget = false;
         ficha.ponteiro = CriarRetangulo("Pointer", disco, Vector2.zero, Vector2.one);
+        Image sombraAgulha = CriarImagem("Needle_Shadow", ficha.ponteiro,
+            new Vector2(.503f, .49f), new Vector2(.529f, .91f));
+        sombraAgulha.color = new Color(.025f, .035f, .055f, 1f);
         Image agulha = CriarImagem("Needle", ficha.ponteiro,
-            new Vector2(.48f, .48f), new Vector2(.52f, .97f));
-        agulha.color = Color.white;
+            new Vector2(.488f, .50f), new Vector2(.512f, .91f));
+        agulha.color = new Color(1f, .89f, .51f, 1f);
+        Image pontaAgulha = CriarImagem("Needle_Tip", ficha.ponteiro,
+            new Vector2(.475f, .875f), new Vector2(.525f, .925f));
+        pontaAgulha.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        pontaAgulha.color = new Color(1f, .94f, .7f, 1f);
+        Image eixoAgulha = CriarImagem("Needle_Cap", ficha.ponteiro,
+            new Vector2(.464f, .464f), new Vector2(.536f, .536f));
+        eixoAgulha.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 45f);
+        eixoAgulha.color = new Color(1f, .89f, .51f, 1f);
         ficha.resultado = CriarTexto("Result", ficha.especial,
             new Vector2(conteudoMin, .025f), new Vector2(conteudoMax, .25f), 17f);
         ficha.resultado.richText = true;

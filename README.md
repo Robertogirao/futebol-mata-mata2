@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**Barra e roleta dos capitães — v4:** [baixar somente a atualização visual sobre a v3](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes_v4.zip) · [como aplicar](Atualizacoes/LEIA-ME-Barra-Roleta-Capitaes-v4.md). Painéis laterais ampliados e rodapé apenas com seu título/subtítulo, sem KNOCKOUT ou 5 v 5 automáticos. [Atualização anterior v3](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes_v3.zip).
+**Barra e roleta dos capitães — v5:** [baixar somente a atualização sobre a v4](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes_v5.zip) · [como aplicar](Atualizacoes/LEIA-ME-Barra-Roleta-Capitaes-v5.md). Roleta com acabamento dourado e banner animado exclusivo SPECIAL GOAL! para gols do especial. [Atualização anterior v4](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes_v4.zip).
 
 **[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.3)
 

@@ -50,6 +50,7 @@ static void Roulette()
     Check(m.ui.GolsA == 0 && m.engine.ProgressoRoleta == 1f && m.engine.EspecialArmado(true), "spin completion at 2.5s arms result without awarding a goal");
     Call(m.engine, "AtualizarEspecial", .8f);
     Check(m.engine.EspecialArmado(true) && m.engine.AcertoArmado(true) && !m.engine.RoletaAtiva(true) && !m.engine.ChuteEspecialEmAndamento, "spin completion only arms HIT");
+    Check(!m.banner.TemBannersPendentes, "roulette outcome never shows a goal banner before a shot");
     Check(m.ui.GolsA == 0 && m.ui.GolsB == 0 && m.engine.CargaCapitao(true) == 5 && !m.engine.EmReposicao, "armed result preserves full charge and live gameplay without score");
     for (int i = 0; i < 4; i++) { Call(m.engine.Bola, "OnCollisionStay2D", new Collision2D { collider = a.GetComponent<CircleCollider2D>() }); m.engine.Bola.RegistrarToque(a); }
     Check(m.engine.EspecialArmado(true) && !m.engine.ChuteEspecialEmAndamento, "sustained fifth contact cannot consume armed result");
@@ -60,14 +61,17 @@ static void Roulette()
     Exit(m, a); Contact(m, a);
     Check(m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao && !m.engine.EspecialArmado(true) && m.engine.CargaCapitao(true) == 0, "next distinct captain touch consumes charge and launches animated HIT");
     Check(m.ui.GolsA == 0 && m.engine.Atletas.All(x => !x.Corpo.simulated) && !m.engine.Bola.Corpo.simulated, "power shot begins with actors frozen and score unchanged");
+    Check(!m.banner.TemBannersPendentes, "starting special flight does not celebrate prematurely");
     Check(m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "HIT creates visible power aura");
     float clock = m.ui.TempoAtual; Time.captureDeltaTime = .25f; Call(m.ui, "Update"); Time.captureDeltaTime = 0f;
     Check(m.ui.TempoAtual == clock, "match clock pauses during visual special shot");
     Call(m.engine, "AtualizarChuteEspecial", .7f);
     Check(Vector2.Distance(start, m.engine.Bola.Corpo.position) > .1f && m.ui.GolsA == 0 && m.engine.ChuteEspecialEmAndamento, "slower HIT remains in flight at old 0.7s finish time");
     Check(m.engine.Bola.transform.localScale.x > originalBallScale.x && a.transform.localScale.x > originalCaptainScale.x, "HIT visibly pulses ball and captain");
+    Check(!m.banner.TemBannersPendentes, "midflight special shot still has no goal banner");
     Call(m.engine, "AtualizarChuteEspecial", .7f);
     Check(m.ui.GolsA == 1 && m.ui.GolsB == 0 && !m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao, "HIT completes at 1.4s and scores once for correct captain team");
+    Check(m.banner.TemBannersPendentes && m.banner.textoDados.text.Contains("SPECIAL GOAL!") && m.banner.textoDados.text.Contains(a.NomeExibicao.ToUpperInvariant()), "completed special HIT routes to distinct special goal banner with scorer snapshot");
     Check(a.transform.localScale == originalCaptainScale && m.engine.Bola.transform.localScale == originalBallScale && !m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "finished HIT restores scales and removes power aura");
     Call(m.engine, "AtualizarChuteEspecial", 10f); Call(m.engine, "AtualizarEspecial", 10f);
     Check(m.ui.GolsA == 1, "late callbacks cannot duplicate special goal");
@@ -105,7 +109,40 @@ static void Cancellation()
     Reset();
 }
 
-static void OddsAndMesh(){caseName="odds and wheel geometry";float last=0;for(int i=1;i<=100;i++){float chance=PartidaDiscos.ChanceEspecial(i);Check(chance>=last&&Math.Abs(chance-i/100f)<.00001f,"chance rises with overall "+i);last=chance;}Check(PartidaDiscos.ChanceEspecial(-20)==.01f&&PartidaDiscos.ChanceEspecial(500)==1f,"out of range overall clamps to valid probability");var wheel=new GameObject("wheel",typeof(RectTransform)).AddComponent<RoletaCapitaoUI>();wheel.rectTransform.sizeDelta=new Vector2(100,100);foreach(float chance in new[]{.01f,.25f,.5f,.85f,1f}){wheel.DefinirChance(chance);var vh=new UnityEngine.UI.VertexHelper();Call(wheel,"OnPopulateMesh",vh);double green=0,total=0;for(int i=0;i<vh.indices.Count;i+=3){int n=vh.indices[i];Vector3 a=vh.vertices[n],b=vh.vertices[vh.indices[i+1]],c=vh.vertices[vh.indices[i+2]];double area=Math.Abs((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x))*.5;total+=area;if(vh.colors[n].g>vh.colors[n].r)green+=area;}Check(total>0&&Math.Abs(green/total-chance)<.002,"drawn green sector matches actual chance "+chance);}Reset();}
+static bool IsHitSector(Color color) { return color.g > .45f && color.r < .2f; }
+static bool IsMissSector(Color color) { return color.r > .6f && color.g < .3f; }
+static void OddsAndMesh()
+{
+    caseName = "overall odds and decorated roulette mesh";
+    float last = 0f;
+    for (int i = 1; i <= 100; i++)
+    {
+        float chance = PartidaDiscos.ChanceEspecial(i);
+        Check(chance >= last && Math.Abs(chance - i / 100f) < .00001f, "chance rises with overall " + i); last = chance;
+    }
+    Check(PartidaDiscos.ChanceEspecial(-20) == .01f && PartidaDiscos.ChanceEspecial(500) == 1f, "overall endpoints clamp to valid probability");
+    var wheel = new GameObject("decorated wheel", typeof(RectTransform)).AddComponent<RoletaCapitaoUI>();
+    wheel.rectTransform.sizeDelta = new Vector2(100f, 100f);
+    foreach (float chance in new[] { .01f, .25f, .5f, .85f, 1f })
+    {
+        wheel.DefinirChance(chance); var vh = new UnityEngine.UI.VertexHelper(); Call(wheel, "OnPopulateMesh", vh);
+        double hit = 0d, sectors = 0d, decor = 0d;
+        for (int i = 0; i < vh.indices.Count; i += 3)
+        {
+            int n = vh.indices[i]; Vector3 a = vh.vertices[n], b = vh.vertices[vh.indices[i + 1]], c = vh.vertices[vh.indices[i + 2]];
+            double area = Math.Abs((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) * .5d;
+            Color color = vh.colors[n];
+            if (IsHitSector(color)) { hit += area; sectors += area; }
+            else if (IsMissSector(color)) sectors += area;
+            else decor += area;
+        }
+        Check(sectors > 0d && Math.Abs(hit / sectors - chance) < .002d, "actual shaded HIT/MISS sector areas match chance while decoration is excluded: " + chance);
+        Check(decor > sectors * .1d && vh.vertices.Count > 1000 && vh.vertices.Count < 65536, "wheel includes substantial rings, ticks and hub within safe mesh size");
+        Check(vh.colors.All(c => c.a == 1f) && vh.vertices.All(v => v.x >= -.001f && v.x <= 100.001f && v.y >= -.001f && v.y <= 100.001f), "decorated wheel mesh stays opaque and inside its rect");
+        Check(vh.vertices.Any(v => Vector2.Distance(v, new Vector2(50f, 50f)) > 43f), "outer decorative rings extend beyond the colored probability sectors");
+    }
+    Reset();
+}
 static object Get(object obj,string name){return obj.GetType().GetField(name,BindingFlags.NonPublic|BindingFlags.Public|BindingFlags.Instance).GetValue(obj);}
 static void Cards()
 {
@@ -246,5 +283,86 @@ static void CustomFooterOnly()
     Check(!m.root.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true).Any(t => t.gameObject.name == "Broadcast Signature" || t.gameObject.name == "Broadcast Format"), "missing config does not create automatic footer fallback");
     Reset();
 }
-public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();WidePanelsAndFooter();CustomFooterOnly();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse, wider mirrored panels and custom-only footer.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
+static void TickUntil(Func<bool> condition, string message, int limit = 400)
+{
+    for (int i = 0; !condition() && i < limit; i++) Scheduler.Tick(.05f);
+    Check(condition(), message);
+}
+static void MixedGoalBanners()
+{
+    caseName = "normal-special-normal banner queue snapshots and style restoration";
+    var m = new Match(); m.Start();
+    m.banner.tempoDeExibicao = .4f; m.banner.intervaloEntreBanners = .05f;
+    var panel = (RectTransform)m.banner.painelBanner.transform;
+    panel.anchoredPosition += new Vector2(12f, -8f); panel.localScale = new Vector3(.93f, 1.04f, 1f);
+    m.banner.fotoJogador.transform.localScale = new Vector3(.9f, 1.05f, 1f);
+    var image = panel.GetComponent<UnityEngine.UI.Image>(); image.color = new Color(.04f, .11f, .18f, .92f);
+    m.banner.fotoJogador.color = new Color(.83f, .91f, .98f, .96f); m.banner.textoDados.color = new Color(.95f, .94f, .93f, .97f);
+    var group = panel.gameObject.AddComponent<CanvasGroup>(); group.alpha = .86f;
+    Vector2 originalPosition = panel.anchoredPosition; Vector3 originalScale = panel.localScale, originalPhotoScale = m.banner.fotoJogador.transform.localScale;
+    Color originalBackground = image.color, originalPhoto = m.banner.fotoJogador.color, originalText = m.banner.textoDados.color;
+    var firstSprite = new Sprite { name = "normal first portrait" }; var specialSprite = new Sprite { name = "special second portrait" }; var lastSprite = new Sprite { name = "normal last portrait" };
+    var first = new JogadorDados { nomeJogador = "First Normal", foto512x512 = firstSprite };
+    var last = new JogadorDados { nomeJogador = "Last Normal", foto512x512 = lastSprite };
+    Time.captureDeltaTime = .05f; Time.timeScale = 0f;
+    m.banner.ExibirBannerDeGol(first, Color.blue);
+    m.banner.ExibirBannerDeGolEspecial("Special Second", specialSprite, Color.red);
+    m.banner.ExibirBannerDeGol(last, Color.green);
+    first.nomeJogador = "Changed First"; first.foto512x512 = null; last.nomeJogador = "Changed Last"; last.foto512x512 = null;
+    Check(m.banner.textoDados.text.Contains("FIRST NORMAL") && !m.banner.textoDados.text.Contains("SPECIAL GOAL") && m.banner.fotoJogador.sprite == firstSprite, "first normal goal keeps its snapshotted name and portrait");
+    TickUntil(() => m.banner.painelBanner.activeSelf && m.banner.textoDados.text.Contains("SPECIAL GOAL!"), "queued special goal starts after preceding normal goal");
+    Check(m.banner.textoDados.text.Contains("SPECIAL SECOND") && m.banner.fotoJogador.sprite == specialSprite, "special queue item carries distinct metadata and identity snapshot");
+    Check(panel.gameObject.GetComponentsInChildren<Transform>(true).Any(t => t.gameObject.name == "Special_Goal_FX" && t.gameObject.activeInHierarchy), "special item owns an active distinct gold celebration overlay");
+    Scheduler.Tick(.05f); Scheduler.Tick(.05f);
+    Check(!SameColor(image.color, originalBackground) || panel.localScale != originalScale || Vector2.Distance(panel.anchoredPosition, originalPosition) > .1f, "special celebration visibly animates its panel style");
+    TickUntil(() => m.banner.painelBanner.activeSelf && m.banner.textoDados.text.Contains("LAST NORMAL"), "normal goal queued after special starts normally");
+    Check(!m.banner.textoDados.text.Contains("SPECIAL GOAL") && m.banner.fotoJogador.sprite == lastSprite, "last normal item does not inherit special status and keeps identity snapshot");
+    Check(!panel.gameObject.GetComponentsInChildren<Transform>(true).Any(t => t.gameObject.name == "Special_Goal_FX" && t.gameObject.activeInHierarchy), "normal item after special has no active special overlay");
+    Check(Vector2.Distance(panel.anchoredPosition, originalPosition) < .0001f && panel.localScale == originalScale && m.banner.fotoJogador.transform.localScale == originalPhotoScale, "normal after special restores panel/photo geometry");
+    Check(SameColor(image.color, originalBackground) && SameColor(m.banner.fotoJogador.color, originalPhoto) && SameColor(m.banner.textoDados.color, originalText) && Math.Abs(group.alpha - .86f) < .0001f, "normal after special restores background, photo, text and opacity");
+    TickUntil(() => !m.banner.TemBannersPendentes, "mixed queue completes while timeScale is zero");
+    Check(!m.banner.painelBanner.activeSelf && panel.localScale == originalScale && SameColor(image.color, originalBackground), "completed mixed queue hides cleanly without special style leak");
+    Time.captureDeltaTime = 0f; Time.timeScale = 1f; Reset();
+}
+static void BannerCancellationAndTiming()
+{
+    caseName = "special banner cancellation, short timing, disable and HUD rebuild";
+    foreach (int rate in new[] { 0, 30, 60 })
+    {
+        var m = new Match(); m.Start();
+        var panel = (RectTransform)m.banner.painelBanner.transform; Vector2 originalPosition = panel.anchoredPosition; Vector3 originalScale = panel.localScale;
+        Color originalBackground = panel.GetComponent<UnityEngine.UI.Image>().color;
+        m.banner.tempoDeExibicao = .1f; m.banner.intervaloEntreBanners = 0f;
+        Time.captureDeltaTime = rate == 0 ? 0f : 1f / rate; Time.timeScale = 0f;
+        m.banner.ExibirBannerDeGolEspecial("Short Special", null, Color.blue);
+        Check(m.banner.TemBannersPendentes && m.banner.textoDados.text.Contains("SPECIAL GOAL!") && !m.banner.fotoJogador.enabled, "short special supports missing portrait and starts with English title");
+        var duplicateOwner = new GameObject("duplicate goal banner owner"); duplicateOwner.SetActive(false);
+        var duplicate = duplicateOwner.AddComponent<GoalBannerUI>(); duplicate.painelBanner = m.banner.painelBanner; duplicateOwner.SetActive(true);
+        Check(duplicateOwner.destroyed && GoalBannerUI.Instance == m.banner && m.banner.painelBanner.activeSelf, "duplicate singleton destruction cannot hide the active owner's special banner");
+        int expected = (int)Math.Ceiling(.1d / (rate == 0 ? .05d : 1d / rate));
+        for (int i = 0; i < expected - 1; i++) Scheduler.Tick(.05f);
+        Check(m.banner.painelBanner.activeSelf, "special duration does not end early at capture rate " + rate);
+        for (int i = 0; i < 4; i++) Scheduler.Tick(.05f);
+        Check(!m.banner.TemBannersPendentes && !m.banner.painelBanner.activeSelf && panel.localScale == originalScale && SameColor(panel.GetComponent<UnityEngine.UI.Image>().color, originalBackground), "short special finishes and restores base style at capture rate " + rate);
+        m.banner.tempoDeExibicao = 1f;
+        m.banner.ExibirBannerDeGolEspecial("Cancel Me", new Sprite(), Color.red); Scheduler.Tick(.05f);
+        m.banner.ExibirBannerDeGol("Queued Normal", null, Color.blue); m.banner.LimparFila();
+        Check(!m.banner.TemBannersPendentes && !panel.gameObject.activeSelf && panel.localScale == originalScale && Vector2.Distance(panel.anchoredPosition, originalPosition) < .0001f, "clearing special queue restores transforms and hides panel");
+        Check(!panel.gameObject.GetComponentsInChildren<Transform>(true).Any(t => t.gameObject.name == "Special_Goal_FX"), "clearing queue destroys owned special overlay");
+        m.banner.ExibirBannerDeGolEspecial("Disable Me", new Sprite(), Color.red); Scheduler.Tick(.05f); m.banner.enabled = false;
+        Check(!m.banner.TemBannersPendentes && !panel.gameObject.activeSelf && SameColor(panel.GetComponent<UnityEngine.UI.Image>().color, originalBackground), "disabling component cancels special and restores normal colors");
+        m.banner.enabled = true;
+        m.banner.ExibirBannerDeGolEspecial("Rebuild Me", new Sprite(), Color.red); Scheduler.Tick(.05f);
+        var oldPanel = m.banner.painelBanner; m.hud.Construir(m.config, m.ui, m.banner);
+        Check(oldPanel.destroyed && !m.banner.TemBannersPendentes && m.banner.painelBanner != oldPanel && !m.banner.painelBanner.activeSelf, "HUD rebuild disposes active special panel and its queued work");
+        m.banner.ExibirBannerDeGol("Normal After Rebuild", null, Color.blue);
+        Check(m.banner.textoDados.text.Contains("NORMAL AFTER REBUILD") && !m.banner.textoDados.text.Contains("SPECIAL GOAL") && ((RectTransform)m.banner.painelBanner.transform).localScale == Vector3.one, "new HUD starts subsequent normal goal with unmodified style");
+        m.banner.LimparFila(); Time.captureDeltaTime = 0f; Time.timeScale = 1f; Reset();
+    }
+    var ordinary = new Match(); ordinary.Start(); var captain = ordinary.engine.Atletas.First(x => x.Capitao && x.TimeA);
+    ordinary.engine.Bola.RegistrarToque(captain); ordinary.Cross(false);
+    Check(ordinary.ui.GolsA == 1 && ordinary.banner.textoDados.text.Contains("GOAL!") && !ordinary.banner.textoDados.text.Contains("SPECIAL GOAL!"), "ordinary captain goal continues to use normal goal banner");
+    Reset();
+}
+public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();WidePanelsAndFooter();CustomFooterOnly();MixedGoalBanners();BannerCancellationAndTiming();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse, wider mirrored panels/custom-only footer, decorated wheel sectors and distinct queued special-goal celebration lifecycle.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
 }
