@@ -153,7 +153,7 @@ namespace FutebolDeDiscos
         {
             if (autorChuteEspecial == null || bola == null) return;
             tempoChuteEspecial += Mathf.Max(0f, dt);
-            float duracao = chuteEspecialAcerta ? .7f : .45f;
+            float duracao = chuteEspecialAcerta ? 1.4f : .9f;
             float p = Mathf.Clamp01(tempoChuteEspecial / duracao);
             // Pequena preparação e aceleração tornam o chute vencedor legível no vídeo.
             float voo = chuteEspecialAcerta ? Mathf.Clamp01((p - .18f) / .82f) : p;

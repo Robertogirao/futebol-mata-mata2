@@ -13,7 +13,7 @@ sealed class Match {public GameObject root;public ProjetoFutebolDiscos config;pu
  public void Cross(bool leftGoal){engine.Bola.Corpo.position=new Vector2((leftGoal?-1:1)*(CampoDiscos.MeioComprimento+config.tamanhoBola*.5f+.03f),0);Call(leftGoal?left:right,"OnTriggerEnter2D",engine.Bola.GetComponent<CircleCollider2D>());}
 }
 
-static void Set(object obj,string name,object value){var f=obj.GetType().GetField(name,BindingFlags.NonPublic|BindingFlags.Instance);if(f==null)throw new Exception("Missing field "+name);f.SetValue(obj,value);}
+static void Set(object obj,string name,object value){var f=obj.GetType().GetField(name,BindingFlags.NonPublic|BindingFlags.Public|BindingFlags.Instance);if(f==null)throw new Exception("Missing field "+name);f.SetValue(obj,value);}
 sealed class FixedRandom:System.Random {readonly double value;public FixedRandom(double d){value=d;}public override double NextDouble(){return value;}}
 static void Contact(Match m,DiscoAtleta a){var c=new Collision2D{collider=a.GetComponent<CircleCollider2D>()};Call(m.engine.Bola,"OnCollisionEnter2D",c);}
 static void Exit(Match m,DiscoAtleta a){var c=new Collision2D{collider=a.GetComponent<CircleCollider2D>()};Call(m.engine.Bola,"OnCollisionExit2D",c);}
@@ -63,11 +63,11 @@ static void Roulette()
     Check(m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "HIT creates visible power aura");
     float clock = m.ui.TempoAtual; Time.captureDeltaTime = .25f; Call(m.ui, "Update"); Time.captureDeltaTime = 0f;
     Check(m.ui.TempoAtual == clock, "match clock pauses during visual special shot");
-    Call(m.engine, "AtualizarChuteEspecial", .35f);
-    Check(Vector2.Distance(start, m.engine.Bola.Corpo.position) > .1f && m.ui.GolsA == 0 && m.engine.ChuteEspecialEmAndamento, "real match ball travels during HIT before score resolves");
+    Call(m.engine, "AtualizarChuteEspecial", .7f);
+    Check(Vector2.Distance(start, m.engine.Bola.Corpo.position) > .1f && m.ui.GolsA == 0 && m.engine.ChuteEspecialEmAndamento, "slower HIT remains in flight at old 0.7s finish time");
     Check(m.engine.Bola.transform.localScale.x > originalBallScale.x && a.transform.localScale.x > originalCaptainScale.x, "HIT visibly pulses ball and captain");
-    Call(m.engine, "AtualizarChuteEspecial", .36f);
-    Check(m.ui.GolsA == 1 && m.ui.GolsB == 0 && !m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao, "completed HIT scores once for correct captain team");
+    Call(m.engine, "AtualizarChuteEspecial", .7f);
+    Check(m.ui.GolsA == 1 && m.ui.GolsB == 0 && !m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao, "HIT completes at 1.4s and scores once for correct captain team");
     Check(a.transform.localScale == originalCaptainScale && m.engine.Bola.transform.localScale == originalBallScale && !m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "finished HIT restores scales and removes power aura");
     Call(m.engine, "AtualizarChuteEspecial", 10f); Call(m.engine, "AtualizarEspecial", 10f);
     Check(m.ui.GolsA == 1, "late callbacks cannot duplicate special goal");
@@ -76,10 +76,10 @@ static void Roulette()
     Check(m.engine.EspecialArmado(false) && !m.engine.AcertoArmado(false) && m.ui.GolsA == 1 && m.ui.GolsB == 0, "away MISS is armed with no immediate goal");
     Contact(m, b);
     Check(m.engine.ChuteEspecialEmAndamento && !m.engine.EspecialArmado(false), "next away captain contact launches MISS animation");
-    Call(m.engine, "AtualizarChuteEspecial", .2f);
-    Check(m.engine.ChuteEspecialEmAndamento && m.ui.GolsB == 0, "MISS also animates before resolving");
-    Call(m.engine, "AtualizarChuteEspecial", .3f);
-    Check(!m.engine.ChuteEspecialEmAndamento && !m.engine.EmReposicao && m.ui.GolsA == 1 && m.ui.GolsB == 0 && m.engine.Bola.Corpo.simulated, "completed MISS resumes real ball without awarding a goal");
+    Call(m.engine, "AtualizarChuteEspecial", .45f);
+    Check(m.engine.ChuteEspecialEmAndamento && m.ui.GolsB == 0, "slower MISS remains in flight at old 0.45s finish time");
+    Call(m.engine, "AtualizarChuteEspecial", .45f);
+    Check(!m.engine.ChuteEspecialEmAndamento && !m.engine.EmReposicao && m.ui.GolsA == 1 && m.ui.GolsB == 0 && m.engine.Bola.Corpo.simulated, "MISS completes at 0.9s and resumes ball without awarding a goal");
     Check(Math.Abs(m.engine.Bola.Corpo.position.y) > CampoDiscos.MeioGol && m.engine.CargaCapitao(false) == 0, "MISS ends outside goal mouth and consumes charge once");
     Reset();
 }
@@ -149,5 +149,42 @@ static void Cards()
     Reset();
 }
 
-public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
+static bool SameColor(Color a, Color b)
+{
+    return Math.Abs(a.r - b.r) < .0001f && Math.Abs(a.g - b.g) < .0001f && Math.Abs(a.b - b.b) < .0001f && Math.Abs(a.a - b.a) < .0001f;
+}
+static void WaitingPulse()
+{
+    caseName = "slow opaque background pulse while waiting for next touch";
+    foreach (bool hit in new[] { true, false })
+    {
+        var m = new Match(); m.Start();
+        var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+        var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().First();
+        var ficha = Get(layout, "fichaA");
+        var background = (UnityEngine.UI.Image)Get(ficha, "fundoEspecial");
+        Call(layout, "Update"); Color normal = background.color;
+        Time.captureDeltaTime = 1.3f; Call(layout, "Update");
+        Check(SameColor(normal, background.color), "uncharged panel background does not pulse");
+        Set(m.engine, "random", new FixedRandom(hit ? 0d : .999999d)); Charge(m, a); Call(m.engine, "AtualizarEspecial", .1f);
+        Call(layout, "Update");
+        Check(m.engine.RoletaAtiva(true) && SameColor(normal, background.color), "spinning panel background does not pulse before a result is armed");
+        Call(m.engine, "AtualizarEspecial", 2.4f);
+        Set(ficha, "tempoEsperaEspecial", 0f); Time.captureDeltaTime = 0f; Time.unscaledDeltaTime = 0f; Call(layout, "Update");
+        Color baseColor = background.color;
+        Check(m.engine.EspecialArmado(true) && SameColor(normal, baseColor), "armed result starts pulse at base background luminance");
+        Time.captureDeltaTime = .65f; Call(layout, "Update"); Color rising = background.color;
+        Time.captureDeltaTime = .65f; Call(layout, "Update"); Color peak = background.color;
+        Check(peak.r > rising.r && rising.r > baseColor.r && peak.g > rising.g && rising.g > baseColor.g && peak.b > rising.b && rising.b > baseColor.b, "background brightens gradually to peak after 1.3 seconds while HIT or MISS waits");
+        Check(baseColor.a == 1f && rising.a == 1f && peak.a == 1f, "pulse changes luminance without fading panel alpha");
+        Time.captureDeltaTime = 1.3f; Call(layout, "Update");
+        Check(SameColor(baseColor, background.color), "2.6 second pulse cycle returns to opaque base color");
+        Contact(m, a); Call(layout, "Update");
+        Check(m.engine.ChuteEspecialEmAndamento && SameColor(normal, background.color) && (float)Get(ficha, "tempoEsperaEspecial") == 0f, "next touch stops background pulse and resets its local waiting timer");
+        m.engine.PararPartida(); Call(layout, "Update");
+        Check((float)Get(ficha, "tempoEsperaEspecial") == 0f, "hidden panel keeps waiting pulse timer reset");
+        Time.captureDeltaTime = 0f; Time.unscaledDeltaTime = .02f; Reset();
+    }
+}
+public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();WaitingPulse();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel, slower HIT/MISS and opaque waiting-only background pulse.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
 }

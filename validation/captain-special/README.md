@@ -14,6 +14,8 @@ Por padrão executa a suíte nova e as regressões de partida, reposição após
 bash validation/captain-special/run.sh FeatureHarness
 ```
 
-A suíte nova verifica contatos contínuos contados uma vez, recontatos rápidos, atribuição de cobrança sem carga, capitães independentes, limite de cinco toques, resultado HIT/MISS armado exatamente ao parar a roleta, espera pelo próximo contato distinto, voo animado da bola, pontuação única, cancelamento durante o voo, restauração de escalas/rastro, fim e reinício da partida, probabilidades por overall, áreas/alpha da malha, Image e CanvasRenderer, textura branca, painel opaco, texto em inglês e barra configurável com preenchimento suave e brilho móvel.
+Nesta atualização, o voo HIT dura 1,4 s e o MISS dura 0,9 s. O fundo do painel pulsa lentamente em um ciclo de 2,6 s somente enquanto um resultado está armado esperando o próximo toque, mantendo alpha 1.
+
+A suíte nova verifica contatos contínuos contados uma vez, recontatos rápidos, atribuição de cobrança sem carga, capitães independentes, limite de cinco toques, resultado HIT/MISS armado exatamente ao parar a roleta, espera pelo próximo contato distinto, voo animado da bola, pontuação única, cancelamento durante o voo, restauração de escalas/rastro, fim e reinício da partida, probabilidades por overall, áreas/alpha da malha, Image e CanvasRenderer, textura branca, painel opaco, pulso suave de espera (base, pico aos 1,3 s e retorno aos 2,6 s), interrupção do pulso no próximo toque, texto em inglês e barra configurável com preenchimento suave e brilho móvel.
 
 **Limite:** são testes dos scripts reais contra uma facade de API em C#, com callbacks injetados. Não executam o editor Unity, o solver nativo de física, a renderização TMP ou a GPU. Uma verificação visual e de colisões dentro do Unity continua sendo complementar.

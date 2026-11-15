@@ -1,48 +1,48 @@
-Captain charge and roulette V2 validation — 2026-11-15
+Captain charge and roulette V3 validation — 2026-11-15
 
 Published source branch baseline:
 Robertogirao/futebol-mata-mata2, entrega/futebol-discos-2026-11-13
-Baseline commit: 131011a0cd23339da8f11d50aa57162d6fbcff6c
-Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with the V2 captain-special update applied.
+Baseline commit: 2446bec3737e8e1ffb97db0177dfd1925a072591
+Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with the V3 captain-special update applied.
 
 Command: DOTNET=/path/to/dotnet bash validation/captain-special/run.sh
 PASS compilation of all 31 actual runtime source files against the extended existing Unity/TMP facade.
-PASS FeatureHarness: 156 assertions.
+PASS FeatureHarness: 172 assertions.
 PASS RuntimeHarness: 45 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
-TOTAL: 1241 passing assertions.
+TOTAL: 1257 passing assertions.
 
 Uploaded BACKUP source set:
-All 32 runtime C# scripts from BACKUP.part1.rar/part2.rar/part3.rar, with the same V2 captain-special update applied while preserving the backup's newer position, audio, final-score and configuration behavior.
+All 32 runtime C# scripts from BACKUP.part1.rar/part2.rar/part3.rar, with the same V3 captain-special update applied while preserving the backup's newer position, audio, final-score and configuration behavior.
 Command:
 TEST_SOURCE=/path/to/backup/Projeto DOTNET=/path/to/dotnet bash validation/captain-special/run.sh FeatureHarness GoalResetHarness CaptainHarness CornerRestartHarness
 PASS compilation of all 32 actual runtime source files.
-PASS FeatureHarness: 156 assertions.
+PASS FeatureHarness: 172 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
-TOTAL: 1196 passing assertions for the backup feature and applicable regressions.
+TOTAL: 1212 passing assertions for the backup feature and applicable regressions.
 
 Previously established baseline compatibility:
-The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' against the newer uploaded BACKUP. Running that same test on the UNMODIFIED BACKUP source baseline produced the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This incompatibility predates the captain-special feature. V2 keeps the backup's unrelated final-score timing unchanged; the applicable backup regressions above pass.
+The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' against the newer uploaded BACKUP. Running that same test on the UNMODIFIED BACKUP source baseline produced the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This incompatibility predates the captain-special feature. V3 keeps the backup's unrelated final-score timing unchanged; the applicable backup regressions above pass.
 
 What was executed:
-Actual production C# classes through the established repository Unity/TMP API facade, with injected contact/clock/goal callbacks. Coverage includes continuous-contact deduplication, rapid separated contacts, noncaptain exclusion, independent charge, setpiece attribution, five-touch cap, spin completion at exactly 2.5 seconds arming HIT/MISS without scoring, sustained fifth-contact rejection, next distinct captain contact launching, real match-ball position changes along the flight, paused clock, visual scale pulse and aura/trail cleanup, HIT scoring once, MISS finishing outside goalmouth with no score, mid-flight cancellation, new-match reset, monotonic overall odds, generated mesh sector areas and opaque alpha, native Image inheritance with CanvasRenderer/white texture, stopped pointer/result consistency, opaque lowered external panel, English labels, configurable bar color and animated fill/shimmer.
+Actual production C# classes through the established repository Unity/TMP API facade, with injected contact/clock/goal callbacks. Coverage includes continuous-contact deduplication, rapid separated contacts, noncaptain exclusion, independent charge, setpiece attribution, five-touch cap, spin completion at exactly 2.5 seconds arming HIT/MISS without scoring, sustained fifth-contact rejection, next distinct captain contact launching, real match-ball position changes along the flight, paused clock, visual scale pulse and aura/trail cleanup, HIT scoring once, MISS finishing outside goalmouth with no score, mid-flight cancellation, new-match reset, monotonic overall odds, generated mesh sector areas and opaque alpha, native Image inheritance with CanvasRenderer/white texture, stopped pointer/result consistency, opaque lowered external panel, English labels, configurable bar color and animated fill/shimmer. V3 additionally verifies HIT remains in flight at the old 0.7s finish and completes at 1.4s, MISS remains in flight at the old 0.45s finish and completes at 0.9s, and waiting-only background pulse is static when uncharged/spinning, gradually rises to its peak at 1.3s, returns to base at 2.6s, keeps alpha exactly 1, and stops/resets on next touch or hide. Both HIT and MISS ready states are covered.
 
-Facade additions for V2:
+Existing facade support (unchanged in V3):
 RequireComponent dependencies are now honored when adding components, CanvasRenderer and Graphic.mainTexture/canvasRenderer API contracts are present, and Graphic.color starts white as Unity's serialized default. The new wheel's actual production creation and RequireComponent attribute provide the renderer that the assertions check.
 
 Limit:
 The Unity editor, native physics solver/collision dispatch, TMP rendering and GPU output were not executed in this environment. These checks verify executable gameplay/UI state, required renderer setup and generated geometry; they do not certify the final pixels or real collision dispatch in Unity. In-editor visual and contact validation remains complementary.
 
 Tested feature source SHA-256:
-branch 7c7bae15b8c92a0660e01108f067409b41c55aad29da91d3829f42c0f76fe982 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+branch afde3a07ff230f7aa992779fd4cec9812059753a0aff9d9070ad530d0d196d52 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
 branch 09254f9d15222b9a7cd602b667579248dabeadf843994cbef40a04532c141229 Assets/FutebolDiscos/Scripts/ProjetoFutebolDiscos.cs
-branch 0999a52fedf1e45f2e6a8da744cc4a6f8079f0015fa6442b365733dd10633b9c Assets/Scripts/LayoutJogadorUnicoUI.cs
+branch 4261106106334bbf61530fd65500fb2b6fce832117a006f37d14ef714010b7ed Assets/Scripts/LayoutJogadorUnicoUI.cs
 branch 8e88d51ccd95908ad9386f92f4270f31ab1270ee0b3c05e689961509d175de57 Assets/Scripts/RoletaCapitaoUI.cs
-backup 4deea7b4f0fb34b7017fbb40e474e00ca22175147c7700215aa87f6012575df5 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+backup 7c5f69fd9bcdd5795c62d056125886b9f8296a2643145ce8000ee4d3c99e12e5 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
 backup f04c9ad4cdc4aa5cd49980487179ec2c880eaec5ee850b4c8d9a6b01af792e94 Assets/FutebolDiscos/Scripts/ProjetoFutebolDiscos.cs
-backup 41d0d1ee79a45513b4f0ac3e91943dd3447e5c485c21c63c8fba0e331a7f939e Assets/Scripts/LayoutJogadorUnicoUI.cs
+backup e2459b998b13e8a149a2b738124d02edd8c31834ebbedd8c7b2a61d24f1b75df Assets/Scripts/LayoutJogadorUnicoUI.cs
 backup 8e88d51ccd95908ad9386f92f4270f31ab1270ee0b3c05e689961509d175de57 Assets/Scripts/RoletaCapitaoUI.cs

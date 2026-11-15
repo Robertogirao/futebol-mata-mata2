@@ -18,6 +18,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         public Image faixa;
         public Image carga;
         public RectTransform painelEspecial;
+        public Image fundoEspecial;
+        public float tempoEsperaEspecial;
         public Image brilhoCarga;
         public float progressoCarga;
         public TextMeshProUGUI textoCarga;
@@ -270,9 +272,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         float inicio = esquerda ? 1.04f : -.69f;
         ficha.painelEspecial = CriarRetangulo("Captain_Special_Panel", bloco,
             new Vector2(inicio, .015f), new Vector2(inicio + .65f, .835f));
-        Image fundoEspecial = ficha.painelEspecial.gameObject.AddComponent<Image>();
-        fundoEspecial.color = new Color(.018f, .028f, .055f, 1f);
-        fundoEspecial.raycastTarget = false;
+        ficha.fundoEspecial = ficha.painelEspecial.gameObject.AddComponent<Image>();
+        ficha.fundoEspecial.color = new Color(.018f, .028f, .055f, 1f);
+        ficha.fundoEspecial.raycastTarget = false;
         Image borda = CriarImagem("Panel_Accent", ficha.painelEspecial,
             new Vector2(0f, .98f), Vector2.one);
         borda.color = new Color(.28f, .85f, .94f, 1f);
@@ -347,6 +349,8 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         if (!aoVivo)
         {
             ficha.progressoCarga = 0f;
+            ficha.tempoEsperaEspecial = 0f;
+            ficha.fundoEspecial.color = new Color(.018f, .028f, .055f, 1f);
             return;
         }
         int carga = partida.CargaCapitao(timeA);
@@ -356,7 +360,13 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.carga.rectTransform.anchorMax = new Vector2(ficha.progressoCarga, 1f);
         Color corCarga = partida.Configuracao != null ? partida.Configuracao.corBarraCapitao : new Color(.2f, .95f, .7f, 1f);
         corCarga.a = 1f;
-        float pulso = .5f + .5f * Mathf.Sin(Time.unscaledTime * (armado ? 8f : 4f));
+        // Pulso suave de 2,6 s: realça o painel sem apagar o fundo nem a leitura.
+        ficha.tempoEsperaEspecial = armado ? ficha.tempoEsperaEspecial + PassoTempo() : 0f;
+        float pulsoEspera = armado ? .5f - .5f * Mathf.Cos(ficha.tempoEsperaEspecial * (2f * Mathf.PI / 2.6f)) : 0f;
+        Color fundoBase = new Color(.018f, .028f, .055f, 1f);
+        Color fundoAceso = Color.Lerp(new Color(.12f, .17f, .23f, 1f), corCarga, .15f);
+        ficha.fundoEspecial.color = Color.Lerp(fundoBase, fundoAceso, pulsoEspera);
+        float pulso = armado ? pulsoEspera : .5f + .5f * Mathf.Sin(Time.unscaledTime * 4f);
         ficha.carga.color = Color.Lerp(corCarga, Color.white, .08f + pulso * .18f);
         ficha.brilhoCarga.gameObject.SetActive(ficha.progressoCarga > .01f);
         float brilho = Mathf.Repeat(Time.unscaledTime * .65f, 1f) * .82f;
