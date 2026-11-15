@@ -140,7 +140,7 @@ namespace FutebolDeDiscos
                 Titulo("Identificação dos jogadores");
                 bool capitaesConvidados = P("usarCapitaesConvidados").boolValue;
                 EditorGUILayout.HelpBox(capitaesConvidados
-                    ? "O capitão convidado usa o nome e a foto da própria ficha. Os demais discos usam os jogadores do Elenco do time; vagas sem jogador usam a sigla e o número do disco."
+                    ? "O capitão convidado usa o nome e a foto da própria ficha. O Elenco do time pode ficar vazio; nesse caso, os demais discos usam a sigla e o número do disco. Se houver jogadores cadastrados, seus nomes continuam sendo usados."
                     : "Os nomes vêm do Elenco de cada ficha de time. O capitão é o representante da foto. " +
                         "Cadastre os demais jogadores para nomear os outros discos; vagas sem jogador usam a sigla e o número do disco.", MessageType.Info);
                 Campo("mostrarTagsJogadores", "Mostrar nome nos discos");
@@ -218,6 +218,7 @@ namespace FutebolDeDiscos
             EditorGUILayout.HelpBox("Para cadastrar um personagem, use Project > Create > Futebol de Discos > Capitão convidado. " +
                 "Na ficha, escolha nome, foto, overall de 1 a 100 e posição: Defesa, Meio ou Ataque. " +
                 "O overall individual afeta a velocidade, a potência e a variação adicional da mira apenas desse capitão. " +
+                "Com esta opção ativa, não é necessário cadastrar jogadores no Elenco dos times. " +
                 "Os modelos incluídos são exemplos; substitua-os ou remova-os desta lista para usar seus personagens.", MessageType.Info);
             Campo("catalogoCapitaes", "Capitães disponíveis", "Cadastre pelo menos um capitão diferente por time. Os que não tiverem associação fixa são sorteados sem repetição.");
             if (GUILayout.Button("Carregar capitães do catálogo")) CarregarCapitaes();

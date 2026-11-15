@@ -141,10 +141,14 @@ public sealed class MataMataCampeonato : MonoBehaviour
             ". Complete as fichas ou escolha um tamanho menor. As cenas DEMO já têm 16 clubes.");
         Exigir(usados.Select(Id).Distinct(StringComparer.Ordinal).Count() == usados.Count,
             "Há fichas repetidas ou nomes de assets repetidos nos participantes.");
-        foreach (var t in usados)
-            Exigir(t.elenco != null && t.elenco.Any(p => p != null &&
-                !string.IsNullOrWhiteSpace(p.nomeJogador)),
-                "Cadastre pelo menos um jogador em " + t.nomeEquipe + ".");
+        var projetoDiscos = GetComponent<FutebolDeDiscos.ProjetoFutebolDiscos>();
+        bool usaCapitaesConvidados = projetoDiscos != null && projetoDiscos.isActiveAndEnabled &&
+            projetoDiscos.formato == FutebolDeDiscos.FormatoDiscos.MataMata && projetoDiscos.usarCapitaesConvidados;
+        if (!usaCapitaesConvidados)
+            foreach (var t in usados)
+                Exigir(t.elenco != null && t.elenco.Any(p => p != null &&
+                    !string.IsNullOrWhiteSpace(p.nomeJogador)),
+                    "Cadastre pelo menos um jogador em " + t.nomeEquipe + ".");
         return usados;
     }
 

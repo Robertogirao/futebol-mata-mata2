@@ -2,6 +2,16 @@
 
 Projeto Unity do backup enviado em 14/11/2026, com os efeitos de partida ligados nas quatro cenas e música durante o jogo.
 
+## Elenco vazio com capitães convidados
+
+[**BAIXAR SOMENTE ESTA ATUALIZAÇÃO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_ELENCO_VAZIO.zip)
+
+Com **Usar capitães convidados** ligado, o **Elenco Completo** das fichas de time pode ficar com **Size = 0**. O capitão continua usando o nome e a foto da própria ficha; os demais discos mantêm o escudo, a sigla e o número, como **BVB 2** ou **SPO 3**. Não altera a quantidade de discos nem sua identificação.
+
+O ZIP contém apenas três scripts e instruções. Com o Unity fechado, copie `Assets` sobre a pasta do projeto e substitua os scripts. Não apaga elencos ou fichas; você pode esvaziar a lista manualmente. Esvaziar só o elenco não exige outra temporada se os mesmos times, capitães e configurações forem mantidos. Modos sem capitães convidados continuam exigindo um representante.
+
+O catálogo de capitães e os participantes continuam sendo validados. Passaram 81 verificações da lógica C# com substitutos Unity; teste no editor com as APIs reais continua pendente.
+
 ## Contorno do capitão na cor do time
 
 [**BAIXAR SOMENTE ESTA ATUALIZAÇÃO — ZIP**](https://github.com/Robertogirao/futebol-mata-mata2/raw/refs/heads/entrega/audio-partidas/Downloads/ATUALIZACAO_CONTORNO_CAPITAO.zip)

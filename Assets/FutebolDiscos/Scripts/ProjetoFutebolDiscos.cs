@@ -471,9 +471,11 @@ namespace FutebolDeDiscos
                 {
                     if (string.IsNullOrWhiteSpace(equipe.name) || equipe.name != equipe.name.Trim())
                         throw new InvalidOperationException("Os nomes dos assets TeamData não podem ter espaços nas extremidades.");
-                    if (string.IsNullOrWhiteSpace(equipe.nomeEquipe) || equipe.elenco == null ||
-                        !equipe.elenco.Any(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador)))
-                        throw new InvalidOperationException("Confira o nome e cadastre um representante em " + equipe.name + ".");
+                    if (string.IsNullOrWhiteSpace(equipe.nomeEquipe))
+                        throw new InvalidOperationException("Confira o nome da equipe em " + equipe.name + ".");
+                    if (!usarCapitaesConvidados && (equipe.elenco == null ||
+                        !equipe.elenco.Any(j => j != null && !string.IsNullOrWhiteSpace(j.nomeJogador))))
+                        throw new InvalidOperationException("Cadastre um representante em " + equipe.name + ".");
                 }
                 if (usarCapitaesConvidados)
                     RepositorioCapitaesConvidados.ValidarConfiguracao(
