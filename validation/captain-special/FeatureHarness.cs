@@ -25,10 +25,129 @@ for(int i=0;i<15;i++)m.engine.Bola.RegistrarToque(a);Check(m.engine.CargaCapitao
 Exit(m,a);Contact(m,a);Check(m.engine.CargaCapitao(true)==2,"rapid separated contact counts without arbitrary cooldown");Contact(m,b);Check(m.engine.CargaCapitao(false)==1&&m.engine.CargaCapitao(true)==2,"captains charge independently");
 m.engine.Bola.Repor(Vector2.zero,Vector2.zero);m.engine.Bola.RegistrarToque(a,registrarContato:false);Check(m.engine.CargaCapitao(true)==2,"setpiece attribution does not charge");Contact(m,a);Check(m.engine.CargaCapitao(true)==3,"real touch after setpiece attribution counts");
 Charge(m,a);Check(m.engine.CargaCapitao(true)==PartidaDiscos.ToquesParaEspecial,"charge is bounded by five touches");m.engine.PararPartida();Contact(m,b);Check(m.engine.CargaCapitao(false)==1&&!m.engine.RoletaAtiva(true),"stopped match cannot charge or spin");m.Start();Check(m.engine.CargaCapitao(true)==0&&m.engine.CargaCapitao(false)==0,"new match resets both captain charges");Reset();}
-static void Roulette(){caseName="roulette outcome and score";var m=new Match();m.Start();var a=m.engine.Atletas.First(x=>x.TimeA&&x.Capitao);var b=m.engine.Atletas.First(x=>!x.TimeA&&x.Capitao);Set(m.engine,"random",new FixedRandom(0));Charge(m,a);Call(m.engine,"AtualizarEspecial",.1f);Check(m.engine.RoletaAtiva(true)&&!m.engine.RoletaAtiva(false)&&m.engine.AcertoEspecial,"full home charge starts home success wheel");Call(m.engine,"AtualizarEspecial",2.5f);Check(m.ui.GolsA==0&&m.engine.ProgressoRoleta==1f,"result remains visible before score resolves");Call(m.engine,"AtualizarEspecial",.8f);Check(m.ui.GolsA==1&&m.ui.GolsB==0&&m.engine.CargaCapitao(true)==0&&!m.engine.RoletaAtiva(true)&&m.engine.EmReposicao,"success credits exactly one home goal and consumes charge");Call(m.engine,"AtualizarEspecial",10f);Check(m.ui.GolsA==1,"repeated update during reset cannot duplicate special goal");m.ResetAfterGoal();Set(m.engine,"random",new FixedRandom(.999999));Charge(m,b);Call(m.engine,"AtualizarEspecial",.1f);Check(m.engine.RoletaAtiva(false)&&!m.engine.AcertoEspecial,"away captain can produce miss");Call(m.engine,"AtualizarEspecial",3.3f);Check(m.ui.GolsA==1&&m.ui.GolsB==0&&m.engine.CargaCapitao(false)==0&&!m.engine.RoletaAtiva(false),"miss consumes charge without changing score");
-Charge(m,b);Call(m.engine,"AtualizarEspecial",.1f);float p=m.engine.ProgressoRoleta;m.Cross(false);Call(m.engine,"AtualizarEspecial",1f);Check(Math.Abs(p-m.engine.ProgressoRoleta)<.0001f,"normal goal suspends pending roulette while ball resets");m.engine.PararPartida();Call(m.engine,"AtualizarEspecial",10f);Check(!m.engine.RoletaAtiva(false)&&m.ui.GolsB==0,"match end cancels pending roulette");Reset();}
+static void Arm(Match m, DiscoAtleta captain, bool hit, bool leaveLastContact = true)
+{
+    Set(m.engine, "random", new FixedRandom(hit ? 0d : .999999d));
+    for (int i = 0; i < PartidaDiscos.ToquesParaEspecial; i++)
+    {
+        Contact(m, captain);
+        if (i < PartidaDiscos.ToquesParaEspecial - 1 || leaveLastContact) Exit(m, captain);
+    }
+    Call(m.engine, "AtualizarEspecial", .1f);
+    Call(m.engine, "AtualizarEspecial", 3.3f);
+}
+static void Roulette()
+{
+    caseName = "armed result waits for distinct next touch";
+    var m = new Match(); m.Start();
+    var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    var b = m.engine.Atletas.First(x => !x.TimeA && x.Capitao);
+    Set(m.engine, "random", new FixedRandom(0));
+    for (int i = 0; i < 5; i++) { Contact(m, a); if (i < 4) Exit(m, a); }
+    Call(m.engine, "AtualizarEspecial", .1f);
+    Check(m.engine.RoletaAtiva(true) && !m.engine.RoletaAtiva(false), "full home charge starts only home spin");
+    Call(m.engine, "AtualizarEspecial", 2.4f);
+    Check(m.ui.GolsA == 0 && m.engine.ProgressoRoleta == 1f && m.engine.EspecialArmado(true), "spin completion at 2.5s arms result without awarding a goal");
+    Call(m.engine, "AtualizarEspecial", .8f);
+    Check(m.engine.EspecialArmado(true) && m.engine.AcertoArmado(true) && !m.engine.RoletaAtiva(true) && !m.engine.ChuteEspecialEmAndamento, "spin completion only arms HIT");
+    Check(m.ui.GolsA == 0 && m.ui.GolsB == 0 && m.engine.CargaCapitao(true) == 5 && !m.engine.EmReposicao, "armed result preserves full charge and live gameplay without score");
+    for (int i = 0; i < 4; i++) { Call(m.engine.Bola, "OnCollisionStay2D", new Collision2D { collider = a.GetComponent<CircleCollider2D>() }); m.engine.Bola.RegistrarToque(a); }
+    Check(m.engine.EspecialArmado(true) && !m.engine.ChuteEspecialEmAndamento, "sustained fifth contact cannot consume armed result");
+    Contact(m, b); Exit(m, b);
+    Check(m.engine.EspecialArmado(true) && !m.engine.ChuteEspecialEmAndamento, "opponent contact cannot consume home result");
+    Vector2 start = m.engine.Bola.Corpo.position;
+    Vector3 originalCaptainScale = a.transform.localScale, originalBallScale = m.engine.Bola.transform.localScale;
+    Exit(m, a); Contact(m, a);
+    Check(m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao && !m.engine.EspecialArmado(true) && m.engine.CargaCapitao(true) == 0, "next distinct captain touch consumes charge and launches animated HIT");
+    Check(m.ui.GolsA == 0 && m.engine.Atletas.All(x => !x.Corpo.simulated) && !m.engine.Bola.Corpo.simulated, "power shot begins with actors frozen and score unchanged");
+    Check(m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "HIT creates visible power aura");
+    float clock = m.ui.TempoAtual; Time.captureDeltaTime = .25f; Call(m.ui, "Update"); Time.captureDeltaTime = 0f;
+    Check(m.ui.TempoAtual == clock, "match clock pauses during visual special shot");
+    Call(m.engine, "AtualizarChuteEspecial", .35f);
+    Check(Vector2.Distance(start, m.engine.Bola.Corpo.position) > .1f && m.ui.GolsA == 0 && m.engine.ChuteEspecialEmAndamento, "real match ball travels during HIT before score resolves");
+    Check(m.engine.Bola.transform.localScale.x > originalBallScale.x && a.transform.localScale.x > originalCaptainScale.x, "HIT visibly pulses ball and captain");
+    Call(m.engine, "AtualizarChuteEspecial", .36f);
+    Check(m.ui.GolsA == 1 && m.ui.GolsB == 0 && !m.engine.ChuteEspecialEmAndamento && m.engine.EmReposicao, "completed HIT scores once for correct captain team");
+    Check(a.transform.localScale == originalCaptainScale && m.engine.Bola.transform.localScale == originalBallScale && !m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura"), "finished HIT restores scales and removes power aura");
+    Call(m.engine, "AtualizarChuteEspecial", 10f); Call(m.engine, "AtualizarEspecial", 10f);
+    Check(m.ui.GolsA == 1, "late callbacks cannot duplicate special goal");
+    m.ResetAfterGoal();
+    Arm(m, b, false);
+    Check(m.engine.EspecialArmado(false) && !m.engine.AcertoArmado(false) && m.ui.GolsA == 1 && m.ui.GolsB == 0, "away MISS is armed with no immediate goal");
+    Contact(m, b);
+    Check(m.engine.ChuteEspecialEmAndamento && !m.engine.EspecialArmado(false), "next away captain contact launches MISS animation");
+    Call(m.engine, "AtualizarChuteEspecial", .2f);
+    Check(m.engine.ChuteEspecialEmAndamento && m.ui.GolsB == 0, "MISS also animates before resolving");
+    Call(m.engine, "AtualizarChuteEspecial", .3f);
+    Check(!m.engine.ChuteEspecialEmAndamento && !m.engine.EmReposicao && m.ui.GolsA == 1 && m.ui.GolsB == 0 && m.engine.Bola.Corpo.simulated, "completed MISS resumes real ball without awarding a goal");
+    Check(Math.Abs(m.engine.Bola.Corpo.position.y) > CampoDiscos.MeioGol && m.engine.CargaCapitao(false) == 0, "MISS ends outside goal mouth and consumes charge once");
+    Reset();
+}
+static void Cancellation()
+{
+    caseName = "armed and animated special cancellation";
+    var m = new Match(); m.Start(); var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    Arm(m, a, true); m.engine.PararPartida();
+    Check(!m.engine.EspecialArmado(true) && !m.engine.RoletaAtiva(true) && !m.engine.ChuteEspecialEmAndamento, "stop discards armed and pending outcomes");
+    m.Start(); a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    Arm(m, a, true); Contact(m, a);
+    var ball = m.engine.Bola; var originalScale = Vector3.one; var trail = ball.GetComponent<TrailRenderer>();
+    Call(m.engine, "AtualizarChuteEspecial", .3f); m.engine.PararPartida();
+    Check(!m.engine.ChuteEspecialEmAndamento && a.transform.localScale == originalScale && ball.transform.localScale == originalScale, "stop midflight restores captain and ball transforms");
+    Check(!ball.Corpo.simulated && m.engine.Atletas.All(x => !x.Corpo.simulated) && ball.Corpo.interpolation == RigidbodyInterpolation2D.Interpolate, "stop midflight freezes bodies and restores interpolation");
+    Check(!m.root.GetComponentsInChildren<Transform>().Any(t => t.gameObject.name == "Captain Power Shot Aura") && Math.Abs(trail.time - .19f) < .0001f, "stop midflight removes aura and restores normal trail");
+    Call(m.engine, "AtualizarChuteEspecial", 5f);
+    Check(m.ui.GolsA == 0 && m.ui.GolsB == 0, "cancelled animation cannot score later");
+    m.Start(); a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    Arm(m, a, true); Contact(m, a); Call(m.engine, "AtualizarChuteEspecial", .3f);
+    m.Start();
+    Check(!m.engine.ChuteEspecialEmAndamento && !m.engine.EspecialArmado(true) && m.engine.CargaCapitao(true) == 0 && m.ui.GolsA == 0, "new match clears in-flight shot, armed state and charge");
+    Reset();
+}
+
 static void OddsAndMesh(){caseName="odds and wheel geometry";float last=0;for(int i=1;i<=100;i++){float chance=PartidaDiscos.ChanceEspecial(i);Check(chance>=last&&Math.Abs(chance-i/100f)<.00001f,"chance rises with overall "+i);last=chance;}Check(PartidaDiscos.ChanceEspecial(-20)==.01f&&PartidaDiscos.ChanceEspecial(500)==1f,"out of range overall clamps to valid probability");var wheel=new GameObject("wheel",typeof(RectTransform)).AddComponent<RoletaCapitaoUI>();wheel.rectTransform.sizeDelta=new Vector2(100,100);foreach(float chance in new[]{.01f,.25f,.5f,.85f,1f}){wheel.DefinirChance(chance);var vh=new UnityEngine.UI.VertexHelper();Call(wheel,"OnPopulateMesh",vh);double green=0,total=0;for(int i=0;i<vh.indices.Count;i+=3){int n=vh.indices[i];Vector3 a=vh.vertices[n],b=vh.vertices[vh.indices[i+1]],c=vh.vertices[vh.indices[i+2]];double area=Math.Abs((b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x))*.5;total+=area;if(vh.colors[n].g>vh.colors[n].r)green+=area;}Check(total>0&&Math.Abs(green/total-chance)<.002,"drawn green sector matches actual chance "+chance);}Reset();}
 static object Get(object obj,string name){return obj.GetType().GetField(name,BindingFlags.NonPublic|BindingFlags.Public|BindingFlags.Instance).GetValue(obj);}
-static void Cards(){caseName="external captain cards";var m=new Match();m.Start();var layout=m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().FirstOrDefault();Check(layout!=null,"existing external portrait layout exists");var ficha=Get(layout,"fichaA");var carga=(UnityEngine.UI.Image)Get(ficha,"carga");var texto=(TMPro.TextMeshProUGUI)Get(ficha,"textoCarga");var especial=(RectTransform)Get(ficha,"especial");var resultado=(TMPro.TextMeshProUGUI)Get(ficha,"resultado");var ponteiro=(RectTransform)Get(ficha,"ponteiro");var a=m.engine.Atletas.First(x=>x.TimeA&&x.Capitao);Contact(m,a);Exit(m,a);Call(layout,"Update");Check(carga.gameObject.activeInHierarchy&&Math.Abs(carga.rectTransform.anchorMax.x-.2f)<.0001f&&texto.text=="1/5 TOQUES","external bar and counter reflect one actual captain contact");Check(!especial.gameObject.activeSelf,"roulette hidden before full charge");Set(m.engine,"random",new FixedRandom(0));Charge(m,a);Call(m.engine,"AtualizarEspecial",.1f);Call(layout,"Update");Check(especial.gameObject.activeSelf&&resultado.text.Contains("GOL"),"full bar exposes roulette and odds beside existing photo");Call(m.engine,"AtualizarEspecial",2.4f);Call(layout,"Update");float angulo=(-ponteiro.localRotation.eulerAngles.z)%360f;float chance=PartidaDiscos.ChanceEspecial(a.OverallEfetivo);Check(angulo>=0&&angulo<chance*360f&&resultado.text.Contains("ACERTOU"),"pointer stops inside green sector matching selected success");m.Cross(false);Call(layout,"Update");Check(!especial.gameObject.activeSelf,"roulette hides during normal goal/restart presentation");m.engine.PararPartida();Call(layout,"Update");Check(!texto.gameObject.activeSelf&&!especial.gameObject.activeSelf,"charge and wheel hide when match ends");Reset();}
-public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();OddsAndMesh();Cards();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, home success, away miss, one score, reset/end lifecycle, overall probabilities and actual wheel mesh areas and external card/pointer visibility.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
+static void Cards()
+{
+    caseName = "external captain cards and visible roulette";
+    var m = new Match(); m.config.corBarraCapitao = new Color(.1f, .2f, .8f, .2f); m.Start();
+    var layout = m.root.GetComponentsInChildren<LayoutJogadorUnicoUI>().FirstOrDefault();
+    Check(layout != null, "existing external portrait layout exists");
+    var ficha = Get(layout, "fichaA");
+    var carga = (UnityEngine.UI.Image)Get(ficha, "carga");
+    var texto = (TMPro.TextMeshProUGUI)Get(ficha, "textoCarga");
+    var painel = (RectTransform)Get(ficha, "painelEspecial");
+    var especial = (RectTransform)Get(ficha, "especial");
+    var resultado = (TMPro.TextMeshProUGUI)Get(ficha, "resultado");
+    var ponteiro = (RectTransform)Get(ficha, "ponteiro");
+    var wheel = (RoletaCapitaoUI)Get(ficha, "roleta");
+    var shimmer = (UnityEngine.UI.Image)Get(ficha, "brilhoCarga");
+    var a = m.engine.Atletas.First(x => x.TimeA && x.Capitao);
+    Contact(m, a); Exit(m, a); Call(layout, "Update");
+    Check(carga.rectTransform.anchorMax.x > 0f && carga.rectTransform.anchorMax.x < .2f, "charge bar interpolates toward contact count");
+    for (int i = 0; i < 8; i++) { Scheduler.Tick(.02f); Call(layout, "Update"); }
+    Check(carga.gameObject.activeInHierarchy && Math.Abs(carga.rectTransform.anchorMax.x - .2f) < .0001f && texto.text == "1/5 TOUCHES", "external bar settles at correct charge with English counter");
+    Check(painel.GetComponent<UnityEngine.UI.Image>().color.a == 1f && painel.anchorMax.y <= .84f, "special panel is opaque and placed lower beside external portrait");
+    Check(carga.color.a == 1f && carga.color.b > carga.color.r, "bar uses selected configuration color with visible alpha");
+    float shimmerStart = shimmer.rectTransform.anchorMin.x; Color initial = carga.color;
+    Scheduler.Tick(.15f); Call(layout, "Update");
+    Check(shimmer.gameObject.activeSelf && shimmer.rectTransform.anchorMin.x != shimmerStart && carga.color.r != initial.r, "charge bar shimmer and color pulse animate over time");
+    Check(!especial.gameObject.activeSelf, "roulette stays hidden before full charge");
+    Set(m.engine, "random", new FixedRandom(0)); Charge(m, a); Call(m.engine, "AtualizarEspecial", .1f); Call(layout, "Update");
+    Check(especial.gameObject.activeSelf && resultado.text.Contains("HIT") && resultado.text.Contains("MISS"), "full bar exposes English HIT/MISS odds next to photo");
+    Check(wheel is UnityEngine.UI.Image && wheel.GetComponent<CanvasRenderer>() != null && wheel.mainTexture == Texture2D.whiteTexture && wheel.color.a == 1f, "roulette has native Image lifecycle, CanvasRenderer, white texture and opaque tint");
+    var vertices = new UnityEngine.UI.VertexHelper(); Call(wheel, "OnPopulateMesh", vertices);
+    Check(vertices.vertices.Count > 0 && vertices.colors.All(c => c.a == 1f), "actual wheel mesh supplies visible opaque vertex colors");
+    Call(m.engine, "AtualizarEspecial", 2.4f); Call(layout, "Update");
+    float angle = (-ponteiro.localRotation.eulerAngles.z) % 360f; float chance = PartidaDiscos.ChanceEspecial(a.OverallEfetivo);
+    Check(m.engine.EspecialArmado(true) && angle >= 0f && angle < chance * 360f && resultado.text.Contains("HIT READY") && resultado.text.Contains("NEXT TOUCH") && texto.text == "SPECIAL READY", "visible stopped pointer and ready label match armed HIT exactly at spin completion");
+    Call(layout, "Update"); Check(especial.gameObject.activeSelf && m.ui.GolsA == 0, "roulette ready result remains visible without auto scoring");
+    Exit(m, a); Contact(m, a); Call(layout, "Update");
+    Check(!especial.gameObject.activeSelf && m.engine.ChuteEspecialEmAndamento, "next touch hides roulette for power-shot animation");
+    m.engine.PararPartida(); Call(layout, "Update");
+    Check(!painel.gameObject.activeSelf && !especial.gameObject.activeSelf, "special panel and wheel hide when match ends");
+    Reset();
+}
+
+public static void Main(){string dir=Path.Combine(Path.GetTempPath(),"disc-feature-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(dir);Application.persistentDataPath=dir;try{Reset();Contacts();Roulette();Cancellation();OddsAndMesh();Cards();Console.WriteLine("PASS "+checks+" feature assertions: contact dedupe, rapid recontacts, setpiece attribution, captain-only independent charge, armed HIT/MISS, next-distinct-touch launch, visible ball flight, one score, cancellation/reset lifecycle, overall odds, native renderer/mesh and English external panel.");Console.WriteLine("Compiled actual runtime sources against the Unity/TMP facade. This does not simulate Unity native collision dispatch or GPU rendering.");}finally{Reset();Directory.Delete(dir,true);}}
 }

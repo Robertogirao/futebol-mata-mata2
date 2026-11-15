@@ -17,7 +17,7 @@ namespace UnityEngine
     [AttributeUsage(AttributeTargets.All)] public sealed class TextAreaAttribute : Attribute { public TextAreaAttribute(int min = 3, int max = 3) { } }
     [AttributeUsage(AttributeTargets.All)] public sealed class DisallowMultipleComponent : Attribute { }
     [AttributeUsage(AttributeTargets.All)] public sealed class DefaultExecutionOrder : Attribute { public DefaultExecutionOrder(int order) { } }
-    [AttributeUsage(AttributeTargets.All)] public sealed class RequireComponent : Attribute { public RequireComponent(Type first, Type second = null, Type third = null) { } }
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)] public sealed class RequireComponent : Attribute { public readonly Type[] Types; public RequireComponent(Type first, Type second = null, Type third = null) { Types = new [] { first, second, third }; } }
     [AttributeUsage(AttributeTargets.All)] public sealed class ContextMenu : Attribute { public ContextMenu(string value) { } }
     [AttributeUsage(AttributeTargets.All)] public sealed class CreateAssetMenuAttribute : Attribute { public string fileName, menuName; public int order; }
     public enum HideFlags { None = 0, DontSave=52, HideAndDontSave = 61 }
@@ -125,7 +125,10 @@ namespace UnityEngine
         public T AddComponent<T>() where T : Component, new() { return (T)AddComponent(typeof(T)); }
         public Component AddComponent(Type type)
         {
-            if (typeof(Transform).IsAssignableFrom(type)) return transform;
+            if (typeof(Transform).IsAssignableFrom(type)) { if (type == typeof(RectTransform) && !(transform is RectTransform)) UpgradeRectTransform(); return transform; }
+            foreach (RequireComponent requirement in type.GetCustomAttributes(typeof(RequireComponent), true))
+                foreach (Type required in requirement.Types.Where(t => t != null))
+                    if (required == typeof(RectTransform) ? !(transform is RectTransform) : GetComponent(required) == null) AddComponent(required);
             if (typeof(TMPro.TMP_Text).IsAssignableFrom(type) && !(transform is RectTransform)) UpgradeRectTransform();
             Component component = (Component)Activator.CreateInstance(type);
             component.gameObject = this;
@@ -514,6 +517,7 @@ namespace UnityEngine
     public static class Resources { public static T Load<T>(string path) where T : Object { return null; } }
     public enum RenderMode { ScreenSpaceOverlay, ScreenSpaceCamera, WorldSpace }
     public class Canvas : Behaviour { public bool overrideSorting; public RenderMode renderMode; public int sortingOrder; public float scaleFactor = 1; public static void ForceUpdateCanvases() { } }
+    public class CanvasRenderer : Component { public bool cull; public Color GetColor() { return Color.white; } }
     public class CanvasGroup : Behaviour { public float alpha = 1; public bool interactable, blocksRaycasts; }
     public class AudioClip : Object { }
     public class AudioListener : Behaviour { }
@@ -546,7 +550,7 @@ namespace UnityEngine.UI
     public class Mask : UnityEngine.Behaviour { public bool showMaskGraphic; }
     public class Button : UnityEngine.Behaviour { public ClickEvent onClick = new ClickEvent(); public class ClickEvent { public void RemoveAllListeners() { } public void AddListener(Action callback) { } } }
     public class GraphicRaycaster : UnityEngine.Behaviour { }
-    public class Graphic : UnityEngine.Behaviour { public void SetVerticesDirty() {} protected virtual void OnPopulateMesh(VertexHelper vh) {}  public UnityEngine.Color color; public bool raycastTarget; public UnityEngine.RectTransform rectTransform { get { return transform as UnityEngine.RectTransform; } } }
+    public class Graphic : UnityEngine.Behaviour { public virtual UnityEngine.Texture mainTexture { get { return UnityEngine.Texture2D.whiteTexture; } } public UnityEngine.CanvasRenderer canvasRenderer { get { return GetComponent<UnityEngine.CanvasRenderer>(); } } public void SetVerticesDirty() {} protected virtual void OnPopulateMesh(VertexHelper vh) {}  public UnityEngine.Color color = UnityEngine.Color.white; public bool raycastTarget; public UnityEngine.RectTransform rectTransform { get { return transform as UnityEngine.RectTransform; } } }
     public class Image : Graphic { public UnityEngine.Sprite sprite; public bool preserveAspect; public enum Type { Simple, Sliced, Filled } public enum FillMethod { Horizontal, Vertical, Radial90, Radial180, Radial360 } public Type type; public FillMethod fillMethod; public float fillAmount; public int fillOrigin; }
     public class RawImage : Graphic { public UnityEngine.Texture texture; }
     public class CanvasScaler : UnityEngine.Behaviour { public enum ScaleMode { ConstantPixelSize, ScaleWithScreenSize } public enum ScreenMatchMode { MatchWidthOrHeight, Expand, Shrink } public ScaleMode uiScaleMode; public ScreenMatchMode screenMatchMode; public UnityEngine.Vector2 referenceResolution; public float matchWidthOrHeight; }

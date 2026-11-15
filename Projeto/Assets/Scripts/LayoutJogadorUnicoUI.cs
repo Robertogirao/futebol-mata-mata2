@@ -17,6 +17,9 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         public Vector3 escalaOriginal;
         public Image faixa;
         public Image carga;
+        public RectTransform painelEspecial;
+        public Image brilhoCarga;
+        public float progressoCarga;
         public TextMeshProUGUI textoCarga;
         public RectTransform especial;
         public RoletaCapitaoUI roleta;
@@ -265,27 +268,43 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
             new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 27.2f);
         bool esquerda = minimo.x < .5f;
         float inicio = esquerda ? 1.04f : -.69f;
-        RectTransform lateral = CriarRetangulo("Especial_Capitao", bloco,
-            new Vector2(inicio, 0f), new Vector2(inicio + .65f, 1f));
-        Image fundoCarga = CriarImagem("Fundo_Carga", lateral, new Vector2(0f, .82f), new Vector2(1f, .92f));
-        fundoCarga.color = new Color(.08f, .12f, .18f, 1f);
-        ficha.carga = CriarImagem("Carga", fundoCarga.transform, Vector2.zero, Vector2.one);
-        ficha.carga.color = new Color(.2f, .95f, .7f);
-        ficha.textoCarga = CriarTexto("Toques", lateral, new Vector2(0f, .94f), new Vector2(1f, 1.07f), 15f);
-        ficha.especial = CriarRetangulo("Roleta", lateral, Vector2.zero, new Vector2(1f, .8f));
-        RectTransform areaRoleta = CriarRetangulo("Area_Roleta", ficha.especial, new Vector2(.08f, .25f), new Vector2(.92f, .95f));
-        RectTransform disco = CriarRetangulo("Disco_Roleta", areaRoleta, Vector2.zero, Vector2.one);
-        var aspecto = disco.gameObject.AddComponent<AspectRatioFitter>();
-        aspecto.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
-        aspecto.aspectRatio = 1f;
+        ficha.painelEspecial = CriarRetangulo("Captain_Special_Panel", bloco,
+            new Vector2(inicio, .015f), new Vector2(inicio + .65f, .835f));
+        Image fundoEspecial = ficha.painelEspecial.gameObject.AddComponent<Image>();
+        fundoEspecial.color = new Color(.018f, .028f, .055f, 1f);
+        fundoEspecial.raycastTarget = false;
+        Image borda = CriarImagem("Panel_Accent", ficha.painelEspecial,
+            new Vector2(0f, .98f), Vector2.one);
+        borda.color = new Color(.28f, .85f, .94f, 1f);
+        ficha.textoCarga = CriarTexto("Touches", ficha.painelEspecial,
+            new Vector2(.06f, .86f), new Vector2(.94f, .98f), 15f);
+        Image fundoCarga = CriarImagem("Charge_Background", ficha.painelEspecial,
+            new Vector2(.07f, .73f), new Vector2(.93f, .85f));
+        fundoCarga.color = new Color(.11f, .15f, .22f, 1f);
+        ficha.carga = CriarImagem("Charge_Fill", fundoCarga.transform, Vector2.zero, Vector2.one);
+        ficha.carga.preserveAspect = false;
+        ficha.carga.color = new Color(.2f, .95f, .7f, 1f);
+        ficha.brilhoCarga = CriarImagem("Charge_Shimmer", ficha.carga.transform,
+            new Vector2(0f, .05f), new Vector2(.15f, .95f));
+        ficha.brilhoCarga.color = new Color(1f, 1f, 1f, .35f);
+        ficha.especial = CriarRetangulo("Roulette", ficha.painelEspecial,
+            new Vector2(.025f, .01f), new Vector2(.975f, .71f));
+        RectTransform disco = CriarRetangulo("Roulette_Wheel", ficha.especial,
+            new Vector2(.18f, .23f), new Vector2(.82f, .99f));
+        // Use the native Image lifecycle with an explicit renderer for the generated wheel.
+        disco.gameObject.AddComponent<CanvasRenderer>();
         ficha.roleta = disco.gameObject.AddComponent<RoletaCapitaoUI>();
+        ficha.roleta.color = Color.white;
         ficha.roleta.raycastTarget = false;
-        ficha.ponteiro = CriarRetangulo("Ponteiro", disco, Vector2.zero, Vector2.one);
-        Image agulha = CriarImagem("Agulha", ficha.ponteiro, new Vector2(.48f, .48f), new Vector2(.52f, .97f));
+        ficha.ponteiro = CriarRetangulo("Pointer", disco, Vector2.zero, Vector2.one);
+        Image agulha = CriarImagem("Needle", ficha.ponteiro,
+            new Vector2(.48f, .48f), new Vector2(.52f, .97f));
         agulha.color = Color.white;
-        ficha.resultado = CriarTexto("Resultado", ficha.especial, Vector2.zero, new Vector2(1f, .23f), 15f);
+        ficha.resultado = CriarTexto("Result", ficha.especial,
+            new Vector2(.025f, 0f), new Vector2(.975f, .22f), 13f);
         ficha.resultado.richText = true;
         ficha.especial.gameObject.SetActive(false);
+        ficha.painelEspecial.gameObject.SetActive(false);
         return ficha;
     }
 
@@ -321,27 +340,44 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
     {
         if (ficha == null) return;
         bool aoVivo = partida != null && partida.EmAndamento && !apresentacaoPreparada;
-        ficha.carga.transform.parent.gameObject.SetActive(aoVivo);
-        ficha.textoCarga.gameObject.SetActive(aoVivo);
+        ficha.painelEspecial.gameObject.SetActive(aoVivo);
         bool girando = aoVivo && !partida.EmReposicao && partida.RoletaAtiva(timeA);
-        ficha.especial.gameObject.SetActive(girando);
-        if (!aoVivo) return;
+        bool armado = aoVivo && !partida.EmReposicao && partida.EspecialArmado(timeA);
+        ficha.especial.gameObject.SetActive(girando || armado);
+        if (!aoVivo)
+        {
+            ficha.progressoCarga = 0f;
+            return;
+        }
         int carga = partida.CargaCapitao(timeA);
-        ficha.carga.rectTransform.anchorMax = new Vector2(carga / (float)PartidaDiscos.ToquesParaEspecial, 1f);
-        ficha.textoCarga.text = carga + "/" + PartidaDiscos.ToquesParaEspecial + " TOQUES";
-        if (!girando) return;
+        float alvoCarga = carga / (float)PartidaDiscos.ToquesParaEspecial;
+        ficha.progressoCarga = Mathf.MoveTowards(ficha.progressoCarga, alvoCarga,
+            Mathf.Max(.001f, Time.unscaledDeltaTime) * 2.8f);
+        ficha.carga.rectTransform.anchorMax = new Vector2(ficha.progressoCarga, 1f);
+        Color corCarga = partida.Configuracao != null ? partida.Configuracao.corBarraCapitao : new Color(.2f, .95f, .7f, 1f);
+        corCarga.a = 1f;
+        float pulso = .5f + .5f * Mathf.Sin(Time.unscaledTime * (armado ? 8f : 4f));
+        ficha.carga.color = Color.Lerp(corCarga, Color.white, .08f + pulso * .18f);
+        ficha.brilhoCarga.gameObject.SetActive(ficha.progressoCarga > .01f);
+        float brilho = Mathf.Repeat(Time.unscaledTime * .65f, 1f) * .82f;
+        ficha.brilhoCarga.rectTransform.anchorMin = new Vector2(brilho, .08f);
+        ficha.brilhoCarga.rectTransform.anchorMax = new Vector2(brilho + .18f, .92f);
+        ficha.textoCarga.text = armado ? "SPECIAL READY" : carga + "/" + PartidaDiscos.ToquesParaEspecial + " TOUCHES";
+        ficha.textoCarga.color = armado ? Color.Lerp(corCarga, Color.white, pulso * .45f) : Color.white;
+        if (!girando && !armado) return;
         DiscoAtleta capitao = null;
         foreach (DiscoAtleta atleta in partida.Atletas)
             if (atleta.Capitao && atleta.TimeA == timeA) { capitao = atleta; break; }
         float chance = PartidaDiscos.ChanceEspecial(capitao != null ? capitao.OverallEfetivo : 50);
         ficha.roleta.DefinirChance(chance);
-        float p = partida.ProgressoRoleta;
-        float destino = partida.AcertoEspecial ? chance * 180f : chance * 360f + (1f - chance) * 180f;
+        float p = armado ? 1f : partida.ProgressoRoleta;
+        bool acerto = armado ? partida.AcertoArmado(timeA) : partida.AcertoEspecial;
+        float destino = acerto ? chance * 180f : chance * 360f + (1f - chance) * 180f;
         float angulo = Mathf.Lerp(0f, 1440f + destino, 1f - Mathf.Pow(1f - p, 3f));
         ficha.ponteiro.localRotation = Quaternion.Euler(0f, 0f, -angulo);
         ficha.resultado.text = p < 1f
-            ? "<color=#33EE99>GOL " + Mathf.RoundToInt(chance * 100f) + "%</color>\n<color=#FF6655>ERRAR " + Mathf.RoundToInt((1f - chance) * 100f) + "%</color>"
-            : partida.AcertoEspecial ? "<color=#33EE99>ACERTOU O GOL!</color>" : "<color=#FF6655>ERROU!</color>";
+            ? "<color=#33EE99>HIT " + Mathf.RoundToInt(chance * 100f) + "%</color>  <color=#FF6655>MISS " + Mathf.RoundToInt((1f - chance) * 100f) + "%</color>"
+            : acerto ? "<color=#33EE99>HIT READY</color>\nNEXT TOUCH" : "<color=#FF6655>MISS READY</color>\nNEXT TOUCH";
     }
 
     private static Color CorVisivel(Color cor)

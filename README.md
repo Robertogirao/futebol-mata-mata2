@@ -1,6 +1,6 @@
 # Futebol de Discos
 
-**Barra e roleta dos capitães (atualização avulsa):** [baixar somente a atualização](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes.zip) · [como aplicar no BACKUP enviado](Atualizacoes/LEIA-ME-Barra-Roleta-Capitaes.md). Cinco contatos enchem a barra ao lado da foto externa; o overall define a chance de gol.
+**Barra e roleta dos capitães — v2:** [baixar somente a atualização](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes_v2.zip) · [como aplicar e mudar a cor](Atualizacoes/LEIA-ME-Barra-Roleta-Capitaes-v2.md). Painel opaco, barra animada e roleta em inglês; HIT/MISS executado no próximo toque, com animação do chute.
 
 **[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.3)
 

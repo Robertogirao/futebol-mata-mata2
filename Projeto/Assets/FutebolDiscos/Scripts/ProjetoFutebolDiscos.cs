@@ -46,6 +46,7 @@ namespace FutebolDeDiscos
         public Color corGramado = new Color(0.035f, 0.22f, 0.22f), corLinhas = new Color(0.25f, 0.93f, 0.92f);
         public bool mostrarTagsJogadores = true, mostrarMarcaCapitao = true, usarFotoNoDiscoCapitao = true;
         public bool mostrarScannerFotos = true;
+        public Color corBarraCapitao = new Color(1f, .72f, .12f, 1f);
         public float velocidadeScannerFotos = 1f;
         public float tamanhoFonteTags = 4.5f, larguraTags = 2.6f;
         public string textoNoCampo = "DISC FOOTBALL", tituloRodape = "DISC FOOTBALL", subtituloRodape = "AUTOMATIC DISC FOOTBALL";

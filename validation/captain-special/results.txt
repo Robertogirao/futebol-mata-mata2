@@ -1,46 +1,48 @@
-Captain charge and roulette validation — 2026-11-15
+Captain charge and roulette V2 validation — 2026-11-15
 
 Published source branch baseline:
 Robertogirao/futebol-mata-mata2, entrega/futebol-discos-2026-11-13
-Baseline commit: 8dc9501214e3766a45051475133938a7f9c74062
-Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with only the captain-special feature applied.
+Baseline commit: 131011a0cd23339da8f11d50aa57162d6fbcff6c
+Source set: all 31 runtime C# scripts under Projeto/Assets/FutebolDiscos/Scripts and Projeto/Assets/Scripts, with the V2 captain-special update applied.
 
 Command: DOTNET=/path/to/dotnet bash validation/captain-special/run.sh
 PASS compilation of all 31 actual runtime source files against the extended existing Unity/TMP facade.
-PASS FeatureHarness: 131 assertions.
+PASS FeatureHarness: 156 assertions.
 PASS RuntimeHarness: 45 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
-TOTAL: 1216 passing assertions.
+TOTAL: 1241 passing assertions.
 
 Uploaded BACKUP source set:
-All 32 runtime C# scripts from BACKUP.part1.rar/part2.rar/part3.rar, with the same captain-special feature applied while preserving the backup's newer position, audio, final-score and configuration behavior.
-Commands:
-TEST_SOURCE=/path/to/backup/Projeto DOTNET=/path/to/dotnet bash validation/captain-special/run.sh FeatureHarness
-TEST_SOURCE=/path/to/backup/Projeto DOTNET=/path/to/dotnet bash validation/captain-special/run.sh GoalResetHarness CaptainHarness CornerRestartHarness
+All 32 runtime C# scripts from BACKUP.part1.rar/part2.rar/part3.rar, with the same V2 captain-special update applied while preserving the backup's newer position, audio, final-score and configuration behavior.
+Command:
+TEST_SOURCE=/path/to/backup/Projeto DOTNET=/path/to/dotnet bash validation/captain-special/run.sh FeatureHarness GoalResetHarness CaptainHarness CornerRestartHarness
 PASS compilation of all 32 actual runtime source files.
-PASS FeatureHarness: 131 assertions.
+PASS FeatureHarness: 156 assertions.
 PASS GoalResetHarness: 299 assertions.
 PASS CaptainHarness: 87 assertions.
 PASS CornerRestartHarness: 654 assertions.
-TOTAL: 1171 passing assertions for the backup feature and applicable regressions.
+TOTAL: 1196 passing assertions for the backup feature and applicable regressions.
 
-Baseline compatibility check:
-The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' when run against the newer uploaded BACKUP. Repeating the same test on the UNMODIFIED BACKUP source baseline produces the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This is not introduced by the captain-special feature. No unrelated final-score timing was changed.
+Previously established baseline compatibility:
+The older source branch's RuntimeHarness fails at 'draws and golden goal: league end releases final pause normally' against the newer uploaded BACKUP. Running that same test on the UNMODIFIED BACKUP source baseline produced the identical failure. The backup includes a newer final-score presentation delay, and this older harness assumes the earlier timing. This incompatibility predates the captain-special feature. V2 keeps the backup's unrelated final-score timing unchanged; the applicable backup regressions above pass.
 
 What was executed:
-The actual production C# classes, through the established repository Unity/TMP API facade, with injected contact/clock/goal callbacks. Coverage includes continuous-contact deduplication, rapid separated contacts, noncaptain exclusion, independent captain charge, synthetic setpiece attribution, five-touch limit, success/miss scoring, duplicate-goal prevention, end/reset lifecycle, monotonic overall probability, actual generated wheel triangle areas and external card/pointer state.
+Actual production C# classes through the established repository Unity/TMP API facade, with injected contact/clock/goal callbacks. Coverage includes continuous-contact deduplication, rapid separated contacts, noncaptain exclusion, independent charge, setpiece attribution, five-touch cap, spin completion at exactly 2.5 seconds arming HIT/MISS without scoring, sustained fifth-contact rejection, next distinct captain contact launching, real match-ball position changes along the flight, paused clock, visual scale pulse and aura/trail cleanup, HIT scoring once, MISS finishing outside goalmouth with no score, mid-flight cancellation, new-match reset, monotonic overall odds, generated mesh sector areas and opaque alpha, native Image inheritance with CanvasRenderer/white texture, stopped pointer/result consistency, opaque lowered external panel, English labels, configurable bar color and animated fill/shimmer.
+
+Facade additions for V2:
+RequireComponent dependencies are now honored when adding components, CanvasRenderer and Graphic.mainTexture/canvasRenderer API contracts are present, and Graphic.color starts white as Unity's serialized default. The new wheel's actual production creation and RequireComponent attribute provide the renderer that the assertions check.
 
 Limit:
-The Unity editor, native physics solver/collision dispatch, TMP rendering and GPU output were not executed in this environment. In-editor visual and real-contact validation remains complementary.
+The Unity editor, native physics solver/collision dispatch, TMP rendering and GPU output were not executed in this environment. These checks verify executable gameplay/UI state, required renderer setup and generated geometry; they do not certify the final pixels or real collision dispatch in Unity. In-editor visual and contact validation remains complementary.
 
 Tested feature source SHA-256:
-branch 9a0919e72a99db62798459109e8d68407d3895cf5e614b32bf69eea571ca7e23 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
-branch 1ec643695ad36d046f838b545f96253422af3d35e28c59cc238ece66b2aef47b Assets/FutebolDiscos/Scripts/BolaDiscos.cs
-branch f1f47fd85a7f633e030eb8e4bd2406bf446c129c0ef96225e7c31dc4f10db19a Assets/Scripts/LayoutJogadorUnicoUI.cs
-branch 13fb786f9934c02adeec7d9bb7cf9067234f07fbab48ee8b3c0c95057c047a54 Assets/Scripts/RoletaCapitaoUI.cs
-backup 704ade5b77b79aa4013e6dfc23b6d16c915e0a2a23c289aff6121b6ed287deb9 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
-backup 418246e717072a366b1e2895f68cf6c775b05eaad717f8db61b2df488c8f7d8d Assets/FutebolDiscos/Scripts/BolaDiscos.cs
-backup 1986d8964724f93c647402dfab4feb0c9136db4a731c1d1bd24d4538d4db517a Assets/Scripts/LayoutJogadorUnicoUI.cs
-backup 13fb786f9934c02adeec7d9bb7cf9067234f07fbab48ee8b3c0c95057c047a54 Assets/Scripts/RoletaCapitaoUI.cs
+branch 7c7bae15b8c92a0660e01108f067409b41c55aad29da91d3829f42c0f76fe982 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+branch 09254f9d15222b9a7cd602b667579248dabeadf843994cbef40a04532c141229 Assets/FutebolDiscos/Scripts/ProjetoFutebolDiscos.cs
+branch 0999a52fedf1e45f2e6a8da744cc4a6f8079f0015fa6442b365733dd10633b9c Assets/Scripts/LayoutJogadorUnicoUI.cs
+branch 8e88d51ccd95908ad9386f92f4270f31ab1270ee0b3c05e689961509d175de57 Assets/Scripts/RoletaCapitaoUI.cs
+backup 4deea7b4f0fb34b7017fbb40e474e00ca22175147c7700215aa87f6012575df5 Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+backup f04c9ad4cdc4aa5cd49980487179ec2c880eaec5ee850b4c8d9a6b01af792e94 Assets/FutebolDiscos/Scripts/ProjetoFutebolDiscos.cs
+backup 41d0d1ee79a45513b4f0ac3e91943dd3447e5c485c21c63c8fba0e331a7f939e Assets/Scripts/LayoutJogadorUnicoUI.cs
+backup 8e88d51ccd95908ad9386f92f4270f31ab1270ee0b3c05e689961509d175de57 Assets/Scripts/RoletaCapitaoUI.cs

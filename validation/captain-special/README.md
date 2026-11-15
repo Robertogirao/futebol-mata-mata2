@@ -14,6 +14,6 @@ Por padrão executa a suíte nova e as regressões de partida, reposição após
 bash validation/captain-special/run.sh FeatureHarness
 ```
 
-A suíte nova verifica contatos contínuos contados uma vez, recontatos rápidos, atribuição de cobrança sem carga, capitães independentes, limite de cinco toques, acerto/erro, pontuação única, fim e reinício da partida, probabilidades por overall, áreas da malha da roleta, barra e ponteiro nas fichas externas.
+A suíte nova verifica contatos contínuos contados uma vez, recontatos rápidos, atribuição de cobrança sem carga, capitães independentes, limite de cinco toques, resultado HIT/MISS armado exatamente ao parar a roleta, espera pelo próximo contato distinto, voo animado da bola, pontuação única, cancelamento durante o voo, restauração de escalas/rastro, fim e reinício da partida, probabilidades por overall, áreas/alpha da malha, Image e CanvasRenderer, textura branca, painel opaco, texto em inglês e barra configurável com preenchimento suave e brilho móvel.
 
 **Limite:** são testes dos scripts reais contra uma facade de API em C#, com callbacks injetados. Não executam o editor Unity, o solver nativo de física, a renderização TMP ou a GPU. Uma verificação visual e de colisões dentro do Unity continua sendo complementar.

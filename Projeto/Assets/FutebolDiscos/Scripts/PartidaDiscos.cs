@@ -40,39 +40,171 @@ namespace FutebolDeDiscos
 
         public const int ToquesParaEspecial = 5;
         private readonly int[] cargaCapitaes = new int[2];
+        // 0 = sem resultado, 1 = HIT pronto, -1 = MISS pronto.
+        private readonly int[] resultadosArmados = new int[2];
         private DiscoAtleta capitaoEspecial;
         private float tempoEspecial;
         private bool acertoEspecial;
+        private DiscoAtleta autorChuteEspecial;
+        private bool chuteEspecialAcerta;
+        private float tempoChuteEspecial;
+        private Vector2 inicioChuteEspecial, destinoChuteEspecial;
+        private Vector3 escalaAutorEspecial, escalaBolaEspecial;
+        private RigidbodyInterpolation2D interpolacaoBolaEspecial;
+        private GameObject auraChuteEspecial;
+        private TrailRenderer rastroChuteEspecial;
+        private Color inicioRastroOriginal, fimRastroOriginal;
+        private float larguraRastroOriginal, tempoRastroOriginal;
+
         public int CargaCapitao(bool equipeA) { return cargaCapitaes[equipeA ? 0 : 1]; }
         public bool RoletaAtiva(bool equipeA) { return capitaoEspecial != null && capitaoEspecial.TimeA == equipeA; }
         public float ProgressoRoleta { get { return Mathf.Clamp01(tempoEspecial / 2.5f); } }
         public bool AcertoEspecial { get { return acertoEspecial; } }
+        public bool EspecialArmado(bool equipeA) { return resultadosArmados[equipeA ? 0 : 1] != 0; }
+        public bool AcertoArmado(bool equipeA) { return resultadosArmados[equipeA ? 0 : 1] > 0; }
+        public bool ChuteEspecialEmAndamento { get { return autorChuteEspecial != null; } }
         public static float ChanceEspecial(int overall) { return Mathf.Clamp(overall, 1, 100) / 100f; }
 
         public void RegistrarToqueCapitao(DiscoAtleta atleta)
         {
-            if (!EmAndamento || EmReposicao || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
+            if (!EmAndamento || EmReposicao || !golLiberado || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
             int i = atleta.TimeA ? 0 : 1;
+            if (resultadosArmados[i] != 0)
+            {
+                bool acertar = resultadosArmados[i] > 0;
+                resultadosArmados[i] = 0;
+                cargaCapitaes[i] = 0;
+                IniciarChuteEspecial(atleta, acertar);
+                return;
+            }
             cargaCapitaes[i] = Mathf.Min(ToquesParaEspecial, cargaCapitaes[i] + 1);
         }
 
         private void AtualizarEspecial(float dt)
         {
-            if (EmReposicao || !golLiberado) return;
+            if (!EmAndamento || EmReposicao || !golLiberado) return;
             if (capitaoEspecial == null)
             {
-                capitaoEspecial = atletas.FirstOrDefault(a => a.Capitao && CargaCapitao(a.TimeA) >= ToquesParaEspecial);
+                capitaoEspecial = atletas.FirstOrDefault(a => a.Capitao && !EspecialArmado(a.TimeA) && CargaCapitao(a.TimeA) >= ToquesParaEspecial);
                 if (capitaoEspecial == null) return;
                 tempoEspecial = 0f;
                 acertoEspecial = random.NextDouble() < ChanceEspecial(capitaoEspecial.OverallEfetivo);
             }
-            tempoEspecial += dt;
-            if (tempoEspecial < 3.3f) return; // Giro de 2.5s e resultado legível por .8s.
-            DiscoAtleta autor = capitaoEspecial;
+            tempoEspecial += Mathf.Max(0f, dt);
+            if (tempoEspecial < 2.5f) return;
+            // Sortear não chuta nem marca gol. Só um novo contato físico consome o resultado.
+            int i = capitaoEspecial.TimeA ? 0 : 1;
+            resultadosArmados[i] = acertoEspecial ? 1 : -1;
+            if (hud != null) hud.MostrarEstado((acertoEspecial ? "HIT READY — " : "MISS READY — ") + capitaoEspecial.NomeExibicao);
             capitaoEspecial = null;
-            cargaCapitaes[autor.TimeA ? 0 : 1] = 0;
-            if (acertoEspecial) MarcarGol(autor.TimeA, autor, !autor.TimeA);
-            else if (hud != null) hud.MostrarEstado("ERROU — " + autor.NomeExibicao);
+        }
+
+        private void IniciarChuteEspecial(DiscoAtleta autor, bool acertar)
+        {
+            if (bola == null || autorChuteEspecial != null) return;
+            autorChuteEspecial = autor;
+            chuteEspecialAcerta = acertar;
+            tempoChuteEspecial = 0f;
+            inicioChuteEspecial = bola.Corpo.position;
+            float lado = autor.TimeA ? 1f : -1f;
+            float sinalY = inicioChuteEspecial.y < 0f ? -1f : 1f;
+            destinoChuteEspecial = acertar
+                ? new Vector2(lado * (CampoDiscos.MeioComprimento + config.tamanhoBola + .15f), 0f)
+                : new Vector2(lado * (CampoDiscos.MeioComprimento - config.tamanhoBola),
+                    sinalY * Mathf.Min(CampoDiscos.MeioLargura - config.tamanhoBola, CampoDiscos.MeioGol + 1.2f));
+            escalaAutorEspecial = autor.transform.localScale;
+            escalaBolaEspecial = bola.transform.localScale;
+            interpolacaoBolaEspecial = bola.Corpo.interpolation;
+            Congelar(true);
+            EmReposicao = true; // O relógio já respeita este estado de pausa visual.
+            bola.Corpo.interpolation = RigidbodyInterpolation2D.None;
+            ReiniciarMonitorCanto();
+            tempoBolaLenta = 0f;
+            if (acertar)
+            {
+                auraChuteEspecial = new GameObject("Captain Power Shot Aura");
+                auraChuteEspecial.transform.SetParent(raiz.transform, false);
+                SpriteRenderer brilho = auraChuteEspecial.AddComponent<SpriteRenderer>();
+                brilho.sprite = campo.SpriteCirculo;
+                brilho.sharedMaterial = campo.MaterialSprites;
+                brilho.color = new Color(1f, .72f, .08f, .42f);
+                brilho.sortingOrder = 19;
+                float ladoSprite = Mathf.Max(.0001f, Mathf.Max(campo.SpriteCirculo.bounds.size.x, campo.SpriteCirculo.bounds.size.y));
+                auraChuteEspecial.transform.localScale = Vector3.one * (config.tamanhoBola * 2.7f / ladoSprite);
+                auraChuteEspecial.transform.position = bola.transform.position;
+                rastroChuteEspecial = bola.GetComponent<TrailRenderer>();
+                if (rastroChuteEspecial != null)
+                {
+                    inicioRastroOriginal = rastroChuteEspecial.startColor;
+                    fimRastroOriginal = rastroChuteEspecial.endColor;
+                    larguraRastroOriginal = rastroChuteEspecial.startWidth;
+                    tempoRastroOriginal = rastroChuteEspecial.time;
+                    rastroChuteEspecial.startColor = new Color(1f, .83f, .18f, .95f);
+                    rastroChuteEspecial.endColor = new Color(1f, .3f, .02f, 0f);
+                    rastroChuteEspecial.startWidth = config.tamanhoBola * 1.2f;
+                    rastroChuteEspecial.time = .4f;
+                    rastroChuteEspecial.Clear();
+                }
+            }
+            if (hud != null) hud.MostrarEstado(acertar ? "POWER SHOT!" : "SPECIAL SHOT");
+        }
+
+        private void AtualizarChuteEspecial(float dt)
+        {
+            if (autorChuteEspecial == null || bola == null) return;
+            tempoChuteEspecial += Mathf.Max(0f, dt);
+            float duracao = chuteEspecialAcerta ? .7f : .45f;
+            float p = Mathf.Clamp01(tempoChuteEspecial / duracao);
+            // Pequena preparação e aceleração tornam o chute vencedor legível no vídeo.
+            float voo = chuteEspecialAcerta ? Mathf.Clamp01((p - .18f) / .82f) : p;
+            Vector2 posicao = Vector2.Lerp(inicioChuteEspecial, destinoChuteEspecial, voo * voo);
+            if (chuteEspecialAcerta) posicao.y += Mathf.Sin(voo * Mathf.PI) * .55f;
+            bola.Corpo.position = posicao;
+            bola.transform.position = new Vector3(posicao.x, posicao.y, bola.transform.position.z);
+            float pulso = chuteEspecialAcerta ? Mathf.Sin(p * Mathf.PI) : 0f;
+            bola.transform.localScale = escalaBolaEspecial * (1f + pulso * .35f);
+            autorChuteEspecial.transform.localScale = escalaAutorEspecial * (1f + pulso * .18f);
+            if (auraChuteEspecial != null) auraChuteEspecial.transform.position = bola.transform.position;
+            if (p < 1f) return;
+
+            DiscoAtleta autor = autorChuteEspecial;
+            bool acertou = chuteEspecialAcerta;
+            Vector2 final = destinoChuteEspecial;
+            LimparAnimacaoChuteEspecial();
+            EmReposicao = false;
+            if (acertou) MarcarGol(autor.TimeA, autor, !autor.TimeA);
+            else
+            {
+                Congelar(false);
+                // A bola chega fora da boca do gol e volta para o campo após o erro.
+                bola.Repor(final, new Vector2(autor.TimeA ? -2.5f : 2.5f, final.y > 0f ? -.8f : .8f), true);
+                bola.RegistrarToque(autor, registrarContato: false);
+                centroBolaLenta = final;
+                tempoBolaLenta = 0f;
+                if (hud != null) hud.MostrarEstado("MISS — " + autor.NomeExibicao);
+            }
+        }
+
+        private void LimparAnimacaoChuteEspecial()
+        {
+            if (autorChuteEspecial != null) autorChuteEspecial.transform.localScale = escalaAutorEspecial;
+            if (bola != null && autorChuteEspecial != null)
+            {
+                bola.transform.localScale = escalaBolaEspecial;
+                bola.Corpo.interpolation = interpolacaoBolaEspecial;
+            }
+            if (rastroChuteEspecial != null)
+            {
+                rastroChuteEspecial.startColor = inicioRastroOriginal;
+                rastroChuteEspecial.endColor = fimRastroOriginal;
+                rastroChuteEspecial.startWidth = larguraRastroOriginal;
+                rastroChuteEspecial.time = tempoRastroOriginal;
+                rastroChuteEspecial.Clear();
+            }
+            if (auraChuteEspecial != null) { auraChuteEspecial.SetActive(false); Destroy(auraChuteEspecial); }
+            auraChuteEspecial = null;
+            rastroChuteEspecial = null;
+            autorChuteEspecial = null;
         }
 
         private void Awake()
@@ -146,7 +278,9 @@ namespace FutebolDeDiscos
             // Tournament duration is owned by UniversalUI, including Golden Goal.
             if (bola == null || !ReferenceEquals(a, timeA) || !ReferenceEquals(b, timeB))
                 PrepararPartida(a, b, repsA, repsB, colorA, colorB);
+            LimparAnimacaoChuteEspecial();
             System.Array.Clear(cargaCapitaes, 0, cargaCapitaes.Length);
+            System.Array.Clear(resultadosArmados, 0, resultadosArmados.Length);
             capitaoEspecial = null;
             EmAndamento = true;
             EmReposicao = false;
@@ -158,6 +292,8 @@ namespace FutebolDeDiscos
 
         public void PararPartida()
         {
+            LimparAnimacaoChuteEspecial();
+            System.Array.Clear(resultadosArmados, 0, resultadosArmados.Length);
             capitaoEspecial = null;
             EmAndamento = false;
             EmReposicao = false;
@@ -173,6 +309,7 @@ namespace FutebolDeDiscos
             if (!EmAndamento) return;
             UniversalUI ui = UniversalUI.Instance;
             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
+            if (ChuteEspecialEmAndamento) { AtualizarChuteEspecial(PassoVideo()); return; }
             AtualizarEspecial(PassoVideo());
             if (EmReposicao && !aguardandoConfirmacaoSaida)
             {
@@ -190,6 +327,7 @@ namespace FutebolDeDiscos
             if (!EmAndamento || bola == null) return;
             UniversalUI ui = UniversalUI.Instance;
             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
+            if (ChuteEspecialEmAndamento) return;
             if (aguardandoConfirmacaoSaida)
             {
                 // A timer cannot rearm a goal. Confirm the physical AND rendered
@@ -374,6 +512,8 @@ namespace FutebolDeDiscos
             mira += ((float)random.NextDouble() * 2f - 1f) * (1f - habilidade) * 1.2f;
             Vector2 direction = (new Vector2(objetivoX, mira) - bola.Corpo.position).normalized;
             bola.RegistrarToque(atleta);
+            // O callback do atleta pode chegar antes do callback da bola no mesmo contato.
+            if (ChuteEspecialEmAndamento || EmReposicao) return;
             float potenciaIndividual = atleta.TemOverallIndividual ? .75f + atleta.OverallEfetivo / 100f * .5f : 1f;
             bola.Corpo.AddForce(direction * config.forcaChute * potenciaIndividual * (0.82f + (float)random.NextDouble() * 0.18f), ForceMode2D.Impulse);
             bola.LimitarVelocidade(config.velocidadeMaximaBola);

@@ -146,6 +146,9 @@ namespace FutebolDeDiscos
                 Campo("mostrarScannerFotos", "Mostrar leitura luminosa atrás da foto");
                 Slider("velocidadeScannerFotos", "Velocidade da leitura luminosa", 0.1f, 3f);
 
+                Titulo("Barra e roleta dos capitães");
+                Campo("corBarraCapitao", "Cor da barra do capitão", "Cor do preenchimento e do brilho da barra ao lado da foto externa. Pode ajustar durante o Play.");
+
                 Titulo("Discos e bola");
                 IntSlider("discosPorTime", capitaesConvidados && P("capitaoExtra").boolValue
                     ? "Jogadores do time (sem o capitão)" : "Discos por time", 1, 5);
