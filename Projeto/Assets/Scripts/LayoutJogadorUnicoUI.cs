@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using FutebolDeDiscos;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,12 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         public Vector2 maximoOriginal;
         public Vector3 escalaOriginal;
         public Image faixa;
+        public Image carga;
+        public TextMeshProUGUI textoCarga;
+        public RectTransform especial;
+        public RoletaCapitaoUI roleta;
+        public RectTransform ponteiro;
+        public TextMeshProUGUI resultado;
         public Image escudo;
         public Image foto;
         public TextMeshProUGUI equipe;
@@ -256,6 +263,29 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);
         ficha.jogador = CriarTexto("Nome_Jogador", bloco,
             new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 27.2f);
+        bool esquerda = minimo.x < .5f;
+        float inicio = esquerda ? 1.04f : -.69f;
+        RectTransform lateral = CriarRetangulo("Especial_Capitao", bloco,
+            new Vector2(inicio, 0f), new Vector2(inicio + .65f, 1f));
+        Image fundoCarga = CriarImagem("Fundo_Carga", lateral, new Vector2(0f, .82f), new Vector2(1f, .92f));
+        fundoCarga.color = new Color(.08f, .12f, .18f, 1f);
+        ficha.carga = CriarImagem("Carga", fundoCarga.transform, Vector2.zero, Vector2.one);
+        ficha.carga.color = new Color(.2f, .95f, .7f);
+        ficha.textoCarga = CriarTexto("Toques", lateral, new Vector2(0f, .94f), new Vector2(1f, 1.07f), 15f);
+        ficha.especial = CriarRetangulo("Roleta", lateral, Vector2.zero, new Vector2(1f, .8f));
+        RectTransform areaRoleta = CriarRetangulo("Area_Roleta", ficha.especial, new Vector2(.08f, .25f), new Vector2(.92f, .95f));
+        RectTransform disco = CriarRetangulo("Disco_Roleta", areaRoleta, Vector2.zero, Vector2.one);
+        var aspecto = disco.gameObject.AddComponent<AspectRatioFitter>();
+        aspecto.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+        aspecto.aspectRatio = 1f;
+        ficha.roleta = disco.gameObject.AddComponent<RoletaCapitaoUI>();
+        ficha.roleta.raycastTarget = false;
+        ficha.ponteiro = CriarRetangulo("Ponteiro", disco, Vector2.zero, Vector2.one);
+        Image agulha = CriarImagem("Agulha", ficha.ponteiro, new Vector2(.48f, .48f), new Vector2(.52f, .97f));
+        agulha.color = Color.white;
+        ficha.resultado = CriarTexto("Resultado", ficha.especial, Vector2.zero, new Vector2(1f, .23f), 15f);
+        ficha.resultado.richText = true;
+        ficha.especial.gameObject.SetActive(false);
         return ficha;
     }
 
@@ -278,6 +308,40 @@ public sealed class LayoutJogadorUnicoUI : MonoBehaviour
         ficha.semFoto.enabled = ficha.foto.sprite == null;
         ficha.jogador.text = jogador != null && !string.IsNullOrWhiteSpace(jogador.nomeJogador)
             ? jogador.nomeJogador.Trim() : "PLAYER NOT SET";
+    }
+
+    private void Update()
+    {
+        PartidaDiscos partida = PartidaDiscos.Instance;
+        AtualizarEspecial(fichaA, partida, true);
+        AtualizarEspecial(fichaB, partida, false);
+    }
+
+    private void AtualizarEspecial(Ficha ficha, PartidaDiscos partida, bool timeA)
+    {
+        if (ficha == null) return;
+        bool aoVivo = partida != null && partida.EmAndamento && !apresentacaoPreparada;
+        ficha.carga.transform.parent.gameObject.SetActive(aoVivo);
+        ficha.textoCarga.gameObject.SetActive(aoVivo);
+        bool girando = aoVivo && !partida.EmReposicao && partida.RoletaAtiva(timeA);
+        ficha.especial.gameObject.SetActive(girando);
+        if (!aoVivo) return;
+        int carga = partida.CargaCapitao(timeA);
+        ficha.carga.rectTransform.anchorMax = new Vector2(carga / (float)PartidaDiscos.ToquesParaEspecial, 1f);
+        ficha.textoCarga.text = carga + "/" + PartidaDiscos.ToquesParaEspecial + " TOQUES";
+        if (!girando) return;
+        DiscoAtleta capitao = null;
+        foreach (DiscoAtleta atleta in partida.Atletas)
+            if (atleta.Capitao && atleta.TimeA == timeA) { capitao = atleta; break; }
+        float chance = PartidaDiscos.ChanceEspecial(capitao != null ? capitao.OverallEfetivo : 50);
+        ficha.roleta.DefinirChance(chance);
+        float p = partida.ProgressoRoleta;
+        float destino = partida.AcertoEspecial ? chance * 180f : chance * 360f + (1f - chance) * 180f;
+        float angulo = Mathf.Lerp(0f, 1440f + destino, 1f - Mathf.Pow(1f - p, 3f));
+        ficha.ponteiro.localRotation = Quaternion.Euler(0f, 0f, -angulo);
+        ficha.resultado.text = p < 1f
+            ? "<color=#33EE99>GOL " + Mathf.RoundToInt(chance * 100f) + "%</color>\n<color=#FF6655>ERRAR " + Mathf.RoundToInt((1f - chance) * 100f) + "%</color>"
+            : partida.AcertoEspecial ? "<color=#33EE99>ACERTOU O GOL!</color>" : "<color=#FF6655>ERROU!</color>";
     }
 
     private static Color CorVisivel(Color cor)

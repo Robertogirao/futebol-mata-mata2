@@ -1,0 +1,266 @@
+--- a/Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
++++ b/Assets/FutebolDiscos/Scripts/PartidaDiscos.cs
+@@ -38,6 +38,43 @@
+         private Vector2 posicaoCobranca, velocidadeCobranca;
+         private DiscoAtleta cobradorReposicao;
+ 
++        public const int ToquesParaEspecial = 5;
++        private readonly int[] cargaCapitaes = new int[2];
++        private DiscoAtleta capitaoEspecial;
++        private float tempoEspecial;
++        private bool acertoEspecial;
++        public int CargaCapitao(bool equipeA) { return cargaCapitaes[equipeA ? 0 : 1]; }
++        public bool RoletaAtiva(bool equipeA) { return capitaoEspecial != null && capitaoEspecial.TimeA == equipeA; }
++        public float ProgressoRoleta { get { return Mathf.Clamp01(tempoEspecial / 2.5f); } }
++        public bool AcertoEspecial { get { return acertoEspecial; } }
++        public static float ChanceEspecial(int overall) { return Mathf.Clamp(overall, 1, 100) / 100f; }
++
++        public void RegistrarToqueCapitao(DiscoAtleta atleta)
++        {
++            if (!EmAndamento || EmReposicao || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
++            int i = atleta.TimeA ? 0 : 1;
++            cargaCapitaes[i] = Mathf.Min(ToquesParaEspecial, cargaCapitaes[i] + 1);
++        }
++
++        private void AtualizarEspecial(float dt)
++        {
++            if (EmReposicao || !golLiberado) return;
++            if (capitaoEspecial == null)
++            {
++                capitaoEspecial = atletas.FirstOrDefault(a => a.Capitao && CargaCapitao(a.TimeA) >= ToquesParaEspecial);
++                if (capitaoEspecial == null) return;
++                tempoEspecial = 0f;
++                acertoEspecial = random.NextDouble() < ChanceEspecial(capitaoEspecial.OverallEfetivo);
++            }
++            tempoEspecial += dt;
++            if (tempoEspecial < 3.3f) return; // Giro de 2.5s e resultado legível por .8s.
++            DiscoAtleta autor = capitaoEspecial;
++            capitaoEspecial = null;
++            cargaCapitaes[autor.TimeA ? 0 : 1] = 0;
++            if (acertoEspecial) MarcarGol(autor.TimeA, autor, !autor.TimeA);
++            else if (hud != null) hud.MostrarEstado("ERROU — " + autor.NomeExibicao);
++        }
++
+         private void Awake()
+         {
+             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+@@ -109,6 +146,8 @@
+             // Tournament duration is owned by UniversalUI, including Golden Goal.
+             if (bola == null || !ReferenceEquals(a, timeA) || !ReferenceEquals(b, timeB))
+                 PrepararPartida(a, b, repsA, repsB, colorA, colorB);
++            System.Array.Clear(cargaCapitaes, 0, cargaCapitaes.Length);
++            capitaoEspecial = null;
+             EmAndamento = true;
+             EmReposicao = false;
+             tempoMovimento = tempoBolaLenta = 0f;
+@@ -119,6 +158,7 @@
+ 
+         public void PararPartida()
+         {
++            capitaoEspecial = null;
+             EmAndamento = false;
+             EmReposicao = false;
+             golLiberado = aguardandoConfirmacaoSaida = false;
+@@ -133,6 +173,7 @@
+             if (!EmAndamento) return;
+             UniversalUI ui = UniversalUI.Instance;
+             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
++            AtualizarEspecial(PassoVideo());
+             if (EmReposicao && !aguardandoConfirmacaoSaida)
+             {
+                 reposicaoRestante -= PassoVideo();
+@@ -169,7 +210,7 @@
+                 EmReposicao = false;
+                 if (cobrancaBolaPresa)
+                 {
+-                    bola.RegistrarToque(cobradorReposicao);
++                    bola.RegistrarToque(cobradorReposicao, registrarContato: false);
+                     bola.Corpo.linearVelocity = velocidadeCobranca;
+                     bola.LimitarVelocidade(config.velocidadeMaximaBola);
+                     cobrancaBolaPresa = false;
+@@ -299,6 +340,13 @@
+             if (Mathf.Abs(bola.Corpo.position.y) + config.tamanhoBola * 0.5f > CampoDiscos.MeioGol) return;
+             bool pontoA = !golEsquerdo;
+             DiscoAtleta ultimo = bola.UltimoToque;
++            MarcarGol(pontoA, ultimo, golEsquerdo);
++        }
++
++        private void MarcarGol(bool pontoA, DiscoAtleta ultimo, bool golEsquerdo)
++        {
++            UniversalUI ui = UniversalUI.Instance;
++            if (!EmAndamento || EmReposicao || !golLiberado || ui == null || !ui.partidaEmAndamento) return;
+             TeamData equipe = pontoA ? timeA : timeB;
+             string nomeAutor = ultimo != null ? ultimo.NomeExibicao : equipe.nomeEquipe;
+             Sprite imagemAutor = ultimo != null ? ultimo.ImagemDoGol : equipe.escudoOuBandeira;
+--- a/Assets/FutebolDiscos/Scripts/BolaDiscos.cs
++++ b/Assets/FutebolDiscos/Scripts/BolaDiscos.cs
+@@ -9,6 +9,9 @@
+         public PartidaDiscos Partida { get; private set; }
+         public DiscoAtleta UltimoToque { get; private set; }
+         private TrailRenderer rastro;
++        // O chute e o callback da bola podem chegar em qualquer ordem.
++        // Um contato contínuo carrega uma vez; sair e voltar permite novo toque.
++        private readonly HashSet<DiscoAtleta> contatosAtletas = new HashSet<DiscoAtleta>();
+         private readonly Dictionary<DiscoAtleta, float> ultimosSonsDeToque = new Dictionary<DiscoAtleta, float>();
+         public void Criar(PartidaDiscos partida, float diametro, Sprite sprite, Material material, PhysicsMaterial2D fisica)
+         {
+@@ -51,12 +54,15 @@
+             Corpo.interpolation = interpolacao;
+             if (simular) Corpo.WakeUp();
+             UltimoToque = null;
++            contatosAtletas.Clear();
+             ultimosSonsDeToque.Clear();
+             if (rastro != null) rastro.Clear();
+         }
+-        public void RegistrarToque(DiscoAtleta atleta, bool tocarSom = true)
++        public void RegistrarToque(DiscoAtleta atleta, bool tocarSom = true, bool registrarContato = true)
+         {
+             UltimoToque = atleta;
++            if (registrarContato && atleta != null && Partida != null && Partida.EmAndamento && !Partida.EmReposicao &&
++                contatosAtletas.Add(atleta)) Partida.RegistrarToqueCapitao(atleta);
+             if (!tocarSom || atleta == null || Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;
+             UniversalUI ui = UniversalUI.Instance;
+             if (ui == null) return;
+@@ -72,6 +78,11 @@
+         public void LimitarVelocidade(float maximo) { Corpo.linearVelocity = Vector2.ClampMagnitude(Corpo.linearVelocity, maximo); }
+         private void OnCollisionEnter2D(Collision2D collision) { RegistrarContato(collision, true); }
+         private void OnCollisionStay2D(Collision2D collision) { RegistrarContato(collision, false); }
++        private void OnCollisionExit2D(Collision2D collision)
++        {
++            DiscoAtleta atleta = collision.collider.GetComponent<DiscoAtleta>();
++            if (atleta != null) contatosAtletas.Remove(atleta);
++        }
+         private void RegistrarContato(Collision2D collision, bool tocarSom)
+         {
+             if (Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;
+--- a/Assets/Scripts/LayoutJogadorUnicoUI.cs
++++ b/Assets/Scripts/LayoutJogadorUnicoUI.cs
+@@ -16,6 +16,12 @@
+         public Vector2 maximoOriginal;
+         public Vector3 escalaOriginal;
+         public Image faixa;
++        public Image carga;
++        public TextMeshProUGUI textoCarga;
++        public RectTransform especial;
++        public RoletaCapitaoUI roleta;
++        public RectTransform ponteiro;
++        public TextMeshProUGUI resultado;
+         public Image escudo;
+         public Image foto;
+         public Image molduraFoto;
+@@ -273,6 +279,29 @@
+         legenda.color = new Color(0.58f, 0.66f, 0.80f, 1f);
+         ficha.jogador = CriarTexto("Nome_Jogador", bloco,
+             new Vector2(0.07f, 0.035f), new Vector2(0.93f, 0.177f), 27.2f);
++        bool esquerda = minimo.x < .5f;
++        float inicio = esquerda ? 1.04f : -.69f;
++        RectTransform lateral = CriarRetangulo("Especial_Capitao", bloco,
++            new Vector2(inicio, 0f), new Vector2(inicio + .65f, 1f));
++        Image fundoCarga = CriarImagem("Fundo_Carga", lateral, new Vector2(0f, .82f), new Vector2(1f, .92f));
++        fundoCarga.color = new Color(.08f, .12f, .18f, 1f);
++        ficha.carga = CriarImagem("Carga", fundoCarga.transform, Vector2.zero, Vector2.one);
++        ficha.carga.color = new Color(.2f, .95f, .7f);
++        ficha.textoCarga = CriarTexto("Toques", lateral, new Vector2(0f, .94f), new Vector2(1f, 1.07f), 15f);
++        ficha.especial = CriarRetangulo("Roleta", lateral, Vector2.zero, new Vector2(1f, .8f));
++        RectTransform areaRoleta = CriarRetangulo("Area_Roleta", ficha.especial, new Vector2(.08f, .25f), new Vector2(.92f, .95f));
++        RectTransform disco = CriarRetangulo("Disco_Roleta", areaRoleta, Vector2.zero, Vector2.one);
++        var aspecto = disco.gameObject.AddComponent<AspectRatioFitter>();
++        aspecto.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
++        aspecto.aspectRatio = 1f;
++        ficha.roleta = disco.gameObject.AddComponent<RoletaCapitaoUI>();
++        ficha.roleta.raycastTarget = false;
++        ficha.ponteiro = CriarRetangulo("Ponteiro", disco, Vector2.zero, Vector2.one);
++        Image agulha = CriarImagem("Agulha", ficha.ponteiro, new Vector2(.48f, .48f), new Vector2(.52f, .97f));
++        agulha.color = Color.white;
++        ficha.resultado = CriarTexto("Resultado", ficha.especial, Vector2.zero, new Vector2(1f, .23f), 15f);
++        ficha.resultado.richText = true;
++        ficha.especial.gameObject.SetActive(false);
+         return ficha;
+     }
+ 
+@@ -316,6 +345,40 @@
+         ficha.scanner.anchorMax = new Vector2(.93f, baseFoto + .008f);
+     }
+ 
++    private void Update()
++    {
++        PartidaDiscos partida = PartidaDiscos.Instance;
++        AtualizarEspecial(fichaA, partida, true);
++        AtualizarEspecial(fichaB, partida, false);
++    }
++
++    private void AtualizarEspecial(Ficha ficha, PartidaDiscos partida, bool timeA)
++    {
++        if (ficha == null) return;
++        bool aoVivo = partida != null && partida.EmAndamento && !apresentacaoPreparada;
++        ficha.carga.transform.parent.gameObject.SetActive(aoVivo);
++        ficha.textoCarga.gameObject.SetActive(aoVivo);
++        bool girando = aoVivo && !partida.EmReposicao && partida.RoletaAtiva(timeA);
++        ficha.especial.gameObject.SetActive(girando);
++        if (!aoVivo) return;
++        int carga = partida.CargaCapitao(timeA);
++        ficha.carga.rectTransform.anchorMax = new Vector2(carga / (float)PartidaDiscos.ToquesParaEspecial, 1f);
++        ficha.textoCarga.text = carga + "/" + PartidaDiscos.ToquesParaEspecial + " TOQUES";
++        if (!girando) return;
++        DiscoAtleta capitao = null;
++        foreach (DiscoAtleta atleta in partida.Atletas)
++            if (atleta.Capitao && atleta.TimeA == timeA) { capitao = atleta; break; }
++        float chance = PartidaDiscos.ChanceEspecial(capitao != null ? capitao.OverallEfetivo : 50);
++        ficha.roleta.DefinirChance(chance);
++        float p = partida.ProgressoRoleta;
++        float destino = partida.AcertoEspecial ? chance * 180f : chance * 360f + (1f - chance) * 180f;
++        float angulo = Mathf.Lerp(0f, 1440f + destino, 1f - Mathf.Pow(1f - p, 3f));
++        ficha.ponteiro.localRotation = Quaternion.Euler(0f, 0f, -angulo);
++        ficha.resultado.text = p < 1f
++            ? "<color=#33EE99>GOL " + Mathf.RoundToInt(chance * 100f) + "%</color>\n<color=#FF6655>ERRAR " + Mathf.RoundToInt((1f - chance) * 100f) + "%</color>"
++            : partida.AcertoEspecial ? "<color=#33EE99>ACERTOU O GOL!</color>" : "<color=#FF6655>ERROU!</color>";
++    }
++
+     private static Color CorVisivel(Color cor)
+     {
+         cor.a = 1f;
+--- /dev/null
++++ b/Assets/Scripts/RoletaCapitaoUI.cs
+@@ -0,0 +1,37 @@
++using UnityEngine;
++using UnityEngine.UI;
++
++/// <summary>Roleta com setores proporcionais à chance real. Zero graus aponta para cima.</summary>
++public sealed class RoletaCapitaoUI : Graphic
++{
++    private float chance = .5f;
++    public void DefinirChance(float valor)
++    {
++        valor = Mathf.Clamp01(valor);
++        if (Mathf.Approximately(chance, valor)) return;
++        chance = valor;
++        SetVerticesDirty();
++    }
++    protected override void OnPopulateMesh(VertexHelper vh)
++    {
++        vh.Clear();
++        Rect r = rectTransform.rect;
++        float raio = Mathf.Min(r.width, r.height) * .5f;
++        for (int setor = 0; setor < 2; setor++)
++        {
++            float inicio = setor == 0 ? 0f : chance;
++            float fim = setor == 0 ? chance : 1f;
++            Color cor = setor == 0 ? new Color(.12f, .75f, .4f) : new Color(.9f, .22f, .18f);
++            for (int i = 0; i < 64; i++)
++            {
++                float a = Mathf.Lerp(inicio, fim, i / 64f) * Mathf.PI * 2f;
++                float b = Mathf.Lerp(inicio, fim, (i + 1) / 64f) * Mathf.PI * 2f;
++                int n = vh.currentVertCount;
++                vh.AddVert(r.center, cor, Vector2.zero);
++                vh.AddVert(r.center + new Vector2(Mathf.Sin(a), Mathf.Cos(a)) * raio, cor, Vector2.zero);
++                vh.AddVert(r.center + new Vector2(Mathf.Sin(b), Mathf.Cos(b)) * raio, cor, Vector2.zero);
++                vh.AddTriangle(n, n + 1, n + 2);
++            }
++        }
++    }
++}
+--- /dev/null
++++ b/Assets/Scripts/RoletaCapitaoUI.cs.meta
+@@ -0,0 +1,2 @@
++fileFormatVersion: 2
++guid: 1c22218171ff4c7aba00faf18c55dde1

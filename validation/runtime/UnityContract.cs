@@ -329,6 +329,7 @@ namespace UnityEngine
     }
     public struct Rect
     {
+        public Vector2 center { get { return new Vector2(x + width * .5f, y + height * .5f); } }
         public float x, y, width, height;
         public Rect(float x, float y, float width, float height) { this.x = x; this.y = y; this.width = width; this.height = height; }
     }
@@ -540,10 +541,12 @@ namespace UnityEngine
 namespace UnityEngine.SceneManagement { public struct Scene { public bool IsValid() { return true; } public UnityEngine.GameObject[] GetRootGameObjects() { return UnityEngine.GameObject.All.Where(g => g.transform.parent == null && !g.destroyed).ToArray(); } } }
 namespace UnityEngine.UI
 {
+    public class VertexHelper { public readonly List<UnityEngine.Vector3> vertices=new List<UnityEngine.Vector3>(); public readonly List<UnityEngine.Color> colors=new List<UnityEngine.Color>(); public readonly List<int> indices=new List<int>(); public int currentVertCount { get { return vertices.Count; } } public void Clear(){vertices.Clear();colors.Clear();indices.Clear();} public void AddVert(UnityEngine.Vector3 v,UnityEngine.Color c,UnityEngine.Vector2 uv){vertices.Add(v);colors.Add(c);} public void AddTriangle(int a,int b,int c){indices.Add(a);indices.Add(b);indices.Add(c);} }
+    public class AspectRatioFitter : UnityEngine.Behaviour { public enum AspectMode { None, WidthControlsHeight, HeightControlsWidth, FitInParent, EnvelopeParent } public AspectMode aspectMode; public float aspectRatio; }
     public class Mask : UnityEngine.Behaviour { public bool showMaskGraphic; }
     public class Button : UnityEngine.Behaviour { public ClickEvent onClick = new ClickEvent(); public class ClickEvent { public void RemoveAllListeners() { } public void AddListener(Action callback) { } } }
     public class GraphicRaycaster : UnityEngine.Behaviour { }
-    public class Graphic : UnityEngine.Behaviour { public UnityEngine.Color color; public bool raycastTarget; public UnityEngine.RectTransform rectTransform { get { return transform as UnityEngine.RectTransform; } } }
+    public class Graphic : UnityEngine.Behaviour { public void SetVerticesDirty() {} protected virtual void OnPopulateMesh(VertexHelper vh) {}  public UnityEngine.Color color; public bool raycastTarget; public UnityEngine.RectTransform rectTransform { get { return transform as UnityEngine.RectTransform; } } }
     public class Image : Graphic { public UnityEngine.Sprite sprite; public bool preserveAspect; public enum Type { Simple, Sliced, Filled } public enum FillMethod { Horizontal, Vertical, Radial90, Radial180, Radial360 } public Type type; public FillMethod fillMethod; public float fillAmount; public int fillOrigin; }
     public class RawImage : Graphic { public UnityEngine.Texture texture; }
     public class CanvasScaler : UnityEngine.Behaviour { public enum ScaleMode { ConstantPixelSize, ScaleWithScreenSize } public enum ScreenMatchMode { MatchWidthOrHeight, Expand, Shrink } public ScaleMode uiScaleMode; public ScreenMatchMode screenMatchMode; public UnityEngine.Vector2 referenceResolution; public float matchWidthOrHeight; }

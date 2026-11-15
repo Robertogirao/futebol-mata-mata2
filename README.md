@@ -1,5 +1,7 @@
 # Futebol de Discos
 
+**Barra e roleta dos capitães (atualização avulsa):** [baixar somente a atualização](Atualizacoes/Atualizacao_Barra_Roleta_Capitaes.zip) · [como aplicar no BACKUP enviado](Atualizacoes/LEIA-ME-Barra-Roleta-Capitaes.md). Cinco contatos enchem a barra ao lado da foto externa; o overall define a chance de gol.
+
 **[Baixar o projeto completo em ZIP](https://github.com/Robertogirao/futebol-mata-mata2/archive/refs/tags/futebol-discos-v2026.11.14.3.zip)** · [Versão no GitHub](https://github.com/Robertogirao/futebol-mata-mata2/releases/tag/futebol-discos-v2026.11.14.3)
 
 Projeto Unity de futebol automático entre discos, com liga e mata-mata. Reaproveita o catálogo de equipes, representantes, aberturas, classificação, chaveamento e salvamento do projeto de futebol. A partida usa um campo visto de cima, dois gols, discos das equipes e uma única bola branca: os gols acontecem pelas colisões e pelos chutes da simulação.

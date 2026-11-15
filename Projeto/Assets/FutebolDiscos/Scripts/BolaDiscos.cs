@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FutebolDeDiscos
@@ -8,6 +9,8 @@ namespace FutebolDeDiscos
         public PartidaDiscos Partida { get; private set; }
         public DiscoAtleta UltimoToque { get; private set; }
         private TrailRenderer rastro;
+        // Chute e callback da bola contam uma vez até os corpos se separarem.
+        private readonly HashSet<DiscoAtleta> contatosAtletas = new HashSet<DiscoAtleta>();
         public void Criar(PartidaDiscos partida, float diametro, Sprite sprite, Material material, PhysicsMaterial2D fisica)
         {
             Partida = partida;
@@ -49,12 +52,23 @@ namespace FutebolDeDiscos
             Corpo.interpolation = interpolacao;
             if (simular) Corpo.WakeUp();
             UltimoToque = null;
+            contatosAtletas.Clear();
             if (rastro != null) rastro.Clear();
         }
-        public void RegistrarToque(DiscoAtleta atleta) { UltimoToque = atleta; }
+        public void RegistrarToque(DiscoAtleta atleta, bool registrarContato = true)
+        {
+            UltimoToque = atleta;
+            if (registrarContato && atleta != null && Partida != null && Partida.EmAndamento && !Partida.EmReposicao &&
+                contatosAtletas.Add(atleta)) Partida.RegistrarToqueCapitao(atleta);
+        }
         public void LimitarVelocidade(float maximo) { Corpo.linearVelocity = Vector2.ClampMagnitude(Corpo.linearVelocity, maximo); }
         private void OnCollisionEnter2D(Collision2D collision) { RegistrarContato(collision); }
         private void OnCollisionStay2D(Collision2D collision) { RegistrarContato(collision); }
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            DiscoAtleta atleta = collision.collider.GetComponent<DiscoAtleta>();
+            if (atleta != null) contatosAtletas.Remove(atleta);
+        }
         private void RegistrarContato(Collision2D collision)
         {
             if (Partida == null || !Partida.EmAndamento || Partida.EmReposicao) return;

@@ -38,6 +38,43 @@ namespace FutebolDeDiscos
         private Vector2 posicaoCobranca, velocidadeCobranca;
         private DiscoAtleta cobradorReposicao;
 
+        public const int ToquesParaEspecial = 5;
+        private readonly int[] cargaCapitaes = new int[2];
+        private DiscoAtleta capitaoEspecial;
+        private float tempoEspecial;
+        private bool acertoEspecial;
+        public int CargaCapitao(bool equipeA) { return cargaCapitaes[equipeA ? 0 : 1]; }
+        public bool RoletaAtiva(bool equipeA) { return capitaoEspecial != null && capitaoEspecial.TimeA == equipeA; }
+        public float ProgressoRoleta { get { return Mathf.Clamp01(tempoEspecial / 2.5f); } }
+        public bool AcertoEspecial { get { return acertoEspecial; } }
+        public static float ChanceEspecial(int overall) { return Mathf.Clamp(overall, 1, 100) / 100f; }
+
+        public void RegistrarToqueCapitao(DiscoAtleta atleta)
+        {
+            if (!EmAndamento || EmReposicao || atleta == null || !atleta.Capitao || !atletas.Contains(atleta)) return;
+            int i = atleta.TimeA ? 0 : 1;
+            cargaCapitaes[i] = Mathf.Min(ToquesParaEspecial, cargaCapitaes[i] + 1);
+        }
+
+        private void AtualizarEspecial(float dt)
+        {
+            if (EmReposicao || !golLiberado) return;
+            if (capitaoEspecial == null)
+            {
+                capitaoEspecial = atletas.FirstOrDefault(a => a.Capitao && CargaCapitao(a.TimeA) >= ToquesParaEspecial);
+                if (capitaoEspecial == null) return;
+                tempoEspecial = 0f;
+                acertoEspecial = random.NextDouble() < ChanceEspecial(capitaoEspecial.OverallEfetivo);
+            }
+            tempoEspecial += dt;
+            if (tempoEspecial < 3.3f) return; // Giro de 2.5s e resultado legível por .8s.
+            DiscoAtleta autor = capitaoEspecial;
+            capitaoEspecial = null;
+            cargaCapitaes[autor.TimeA ? 0 : 1] = 0;
+            if (acertoEspecial) MarcarGol(autor.TimeA, autor, !autor.TimeA);
+            else if (hud != null) hud.MostrarEstado("ERROU — " + autor.NomeExibicao);
+        }
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -109,6 +146,8 @@ namespace FutebolDeDiscos
             // Tournament duration is owned by UniversalUI, including Golden Goal.
             if (bola == null || !ReferenceEquals(a, timeA) || !ReferenceEquals(b, timeB))
                 PrepararPartida(a, b, repsA, repsB, colorA, colorB);
+            System.Array.Clear(cargaCapitaes, 0, cargaCapitaes.Length);
+            capitaoEspecial = null;
             EmAndamento = true;
             EmReposicao = false;
             tempoMovimento = tempoBolaLenta = 0f;
@@ -119,6 +158,7 @@ namespace FutebolDeDiscos
 
         public void PararPartida()
         {
+            capitaoEspecial = null;
             EmAndamento = false;
             EmReposicao = false;
             golLiberado = aguardandoConfirmacaoSaida = false;
@@ -133,6 +173,7 @@ namespace FutebolDeDiscos
             if (!EmAndamento) return;
             UniversalUI ui = UniversalUI.Instance;
             if (ui == null || !ui.isActiveAndEnabled || !ui.partidaEmAndamento) { PararPartida(); return; }
+            AtualizarEspecial(PassoVideo());
             if (EmReposicao && !aguardandoConfirmacaoSaida)
             {
                 reposicaoRestante -= PassoVideo();
@@ -169,7 +210,7 @@ namespace FutebolDeDiscos
                 EmReposicao = false;
                 if (cobrancaBolaPresa)
                 {
-                    bola.RegistrarToque(cobradorReposicao);
+                    bola.RegistrarToque(cobradorReposicao, registrarContato: false);
                     bola.Corpo.linearVelocity = velocidadeCobranca;
                     bola.LimitarVelocidade(config.velocidadeMaximaBola);
                     cobrancaBolaPresa = false;
@@ -299,6 +340,13 @@ namespace FutebolDeDiscos
             if (Mathf.Abs(bola.Corpo.position.y) + config.tamanhoBola * 0.5f > CampoDiscos.MeioGol) return;
             bool pontoA = !golEsquerdo;
             DiscoAtleta ultimo = bola.UltimoToque;
+            MarcarGol(pontoA, ultimo, golEsquerdo);
+        }
+
+        private void MarcarGol(bool pontoA, DiscoAtleta ultimo, bool golEsquerdo)
+        {
+            UniversalUI ui = UniversalUI.Instance;
+            if (!EmAndamento || EmReposicao || !golLiberado || ui == null || !ui.partidaEmAndamento) return;
             TeamData equipe = pontoA ? timeA : timeB;
             string nomeAutor = ultimo != null ? ultimo.NomeExibicao : equipe.nomeEquipe;
             Sprite imagemAutor = ultimo != null ? ultimo.ImagemDoGol : equipe.escudoOuBandeira;
