@@ -1,0 +1,6 @@
+PREVIA VISUAL DA ARENA
+
+ARENA_PREVIA.png: imagem da proposta.
+ARENA_PREVIA.html: baixe e abra no Chrome ou Edge; clique em Ver jogada, no canto inferior direito.
+
+Animacao ilustrativa da proposta de composicao. Nao instala nem altera o Unity.
