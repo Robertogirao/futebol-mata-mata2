@@ -53,6 +53,9 @@ class CoreRunner
         Check(partial.Sample(0,3.4,0,0,3.7,0,.495,.18),"whole sphere below confirms basket");
         partial.Launch();partial.Sample(0,4.1,0,0,3.7,0,.495,.18);partial.Sample(0,3.65,0,0,3.7,0,.495,.18);
         Check(!partial.Sample(0,3.8,0,0,3.7,0,.495,.18)&&!partial.Scored,"bounce out cancels partial entry");
+        var batch=new MatchRules3D();batch.Reset(.1,0);batch.Start();batch.Tick(.1);
+        Check(batch.ScoreBatch(1,1)&&batch.Result==null&&batch.Red==2&&batch.Blue==2,"simultaneous opposing baskets keep sudden death tied");
+        batch.Score(TeamId.Red);Check(batch.Result.winner==TeamId.Red&&batch.Result.redScore==4,"next basket breaks batch tie");
         Console.WriteLine(checks+" pure C# rules/scoring/ballistic checks passed.");
     }
 }

@@ -19,6 +19,12 @@ namespace MarbleBasket3D.Tests
             Assert.That(shot.Sample(0,2,0,0,3,0,.5,.18), Is.True); Assert.That(shot.Sample(0,1,0,0,3,0,.5,.18), Is.False);
             shot.Launch(); shot.Sample(.6,4,0,0,3,0,.5,.18); Assert.That(shot.Sample(.6,2,0,0,3,0,.5,.18), Is.False);
         }
+        [Test] public void SimultaneousOpposingBasketsDoNotUseRegistryOrder()
+        {
+            var r=new MatchRules3D();r.Reset(1,0);r.Start();r.Tick(1);
+            Assert.That(r.ScoreBatch(1,1),Is.True);Assert.That(r.Result,Is.Null);Assert.That(r.Red,Is.EqualTo(r.Blue));
+            r.Score(TeamId.Blue);Assert.That(r.Result.winner,Is.EqualTo(TeamId.Blue));
+        }
         [Test] public void PauseAndRestartClearAllRules()
         {
             var r = new MatchRules3D(); r.Reset(90,3); r.Start(); r.Tick(3); r.Score(TeamId.Red); r.Pause(); r.Tick(90);

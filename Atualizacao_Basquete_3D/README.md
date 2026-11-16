@@ -1,97 +1,79 @@
-# Basquete de gude 3D — protótipo da partida
+# Basquete de gude 3D — V2: cruz e alavanca
 
-Módulo independente para Unity **6000.4.11f1**, versão identificada no backup enviado. Dois times, quatro bolinhas cada, partida automática de 90 segundos. **Não substitui nem reconstrói o chaveamento.** A arena é construída por código com primitivas, um prefab reutilizável de bolinha e malhas simples; não requer assets pagos ou plugins adicionais.
+Atualização do protótipo para Unity **6000.4.11f1**, com quatro bolinhas vermelhas e quatro azuis. O chaveamento e o sistema de retorno da primeira versão permanecem independentes desta revisão.
 
-## Abrir e jogar
+## Instalar e testar
 
-1. Feche o Unity e extraia este ZIP fora de `Assets`.
-2. Copie a pasta **Assets/MarbleBasket3D**, junto com `Assets/MarbleBasket3D.meta`, para a pasta `Assets` da sua cópia do projeto. Este pacote acrescenta uma pasta; não substitua o projeto inteiro nem os scripts antigos.
-3. Reabra o Unity, aguarde a compilação e abra **Assets/MarbleBasket3D/Scenes/MarbleBasket3D.unity**. Também pode usar **Tools → Basquete 3D → Abrir cena de simulação**.
-4. Entre em **Play**. O circuito é criado, aparece a contagem de três segundos e os dois times são liberados no mesmo passo de física.
-5. Use os botões **Iniciar**, **Pausar/Continuar** e **Reiniciar** na parte inferior da Game View.
+1. Feche o Unity e extraia o ZIP **ATUALIZACAO_BASQUETE_3D_V2.zip** fora de Assets.
+2. Copie a pasta **Assets** deste pacote para a raiz da sua cópia do projeto, aceitando substituir os arquivos correspondentes de `Assets/MarbleBasket3D`. Preserve os `.meta`.
+3. Reabra o Unity e use **Tools → Basquete 3D → Abrir cena de simulação**. Limpe as mensagens antigas do Console e entre em Play.
+4. No topo, confira **BOLAS 4/4** de cada equipe e os contadores de arremessos. A contagem inclui as bolinhas que estão no retorno, mesmo quando não são visíveis no enquadramento.
 
-A cena fornecida contém a configuração e o construtor. **Para ver a geometria antes de entrar em Play**, use **Tools → Basquete 3D → Gerar arena visível no Editor**. Esse comando salva a montagem na cena e os materiais/malhas gerados em `Assets/MarbleBasket3D/Generated`. Ao entrar em Play, a montagem é reconstruída a partir dos parâmetros, sem acumular outra arena.
+Esta atualização repõe os parâmetros iniciais do protótipo, inclusive quatro bolinhas por time. Para ajustar, abra **Tools → Basquete 3D → Selecionar configurações**. Não é necessário executar o instalador antigo da versão 2D.
 
-Abra a cena 3D própria para este teste. As cenas antigas `MataMata_Discos`, `MataMata_NBA` e o módulo `BasqueteArena` pertencem à versão anterior e não são usados aqui. O pacote 3D não remove nenhum desses arquivos.
+## Mudanças desta revisão
 
-## O circuito implementado
+- **Cruz giratória no funil:** quatro braços com colisores acompanham a inclinação do funil. O motor inverte gradualmente o sentido, gerando contatos, bloqueios e desvios. Substitui a gangorra na montagem da arena.
+- **Alavanca aberta:** a bolinha é acomodada junto à pá, a alavanca recua por aproximadamente 0,2 s e dá um golpe curto. A velocidade e a direção de saída correspondem à tangente do braço. O voo continua com Rigidbody, gravidade e colisões.
+- **Entrada sem portão:** o portão foi removido da geometria. A alavanca retorna em 0,24 s e pode receber a próxima bola sem esperar que a tentativa anterior chegue ao chão. A fila passa a depender das guias, da pá e das colisões.
+- **Colisões laterais da pá:** se a pá em movimento bater em outra bola, essa bola também recebe uma tentativa válida; sua velocidade física é preservada, sem corrigir a direção para a cesta.
+- **Calibração geométrica:** a velocidade central é calculada uma vez na montagem, a partir da posição real de saída da alavanca. Depois disso há oscilações de ângulo, potência e direção, comuns aos dois times. Não há correção do voo nem escolha de vencedor pelo placar.
+- **Aro ampliado:** raio de 0,66 m, com abertura de pontuação de 0,60 m. Mantidos tabela, rede visual e coletor.
+- **Contagem explícita:** o placar mostra quantas bolinhas de cada time continuam ativas e quantas estão retornando. Também mostra arremessos de cada equipe.
+- **Referência de prefab corrigida:** o identificador legado reservado `100100000` foi retirado do prefab. A configuração fornecida deixa `Marble Prefab` vazio de propósito; a criação nativa de esferas gera as oito bolinhas sem depender dessa referência. O prefab continua disponível como modelo opcional.
 
-Reservatórios elevados → rampas espelhadas → gangorra com Rigidbody/HingeJoint → funil → fila estreita → lançador único → voo físico → aro/tabela → coletor → segunda chance ou retorno ao reservatório.
+Se quiser recriar e atribuir um prefab salvo pelo próprio Unity, use **Tools → Basquete 3D → Recriar prefab nativo da bolinha**, fora do Play. Esse passo é opcional.
 
-- Oito identidades persistentes, sem criar outra bolinha a cada retorno.
-- Posições iniciais espelhadas e ordem de criação intercalada. Todas ficam cinemáticas durante a contagem; são liberadas no mesmo FixedUpdate.
-- Gangorra limitada a 18 graus para cada lado, influenciada pelo peso e pelos contatos das bolinhas.
-- Um só ocupante no lançador. O portão fecha atrás da bolinha, há uma preparação visível e a mira oscila continuamente.
-- Ângulo e velocidade seguem um ciclo de tempo comum. O mecanismo não consulta time, placar, overall, nome ou chance de vitória. A proximidade física escolhe a bolinha da frente; um empate geométrico exato aguarda a física separar as bolas.
-- Disparo por velocidade inicial no Rigidbody, gravidade e colisões durante todo o voo. A preparação pode acomodar a bola no encaixe.
-- Aro tubular com abertura real, tabela com colisor e rede apenas visual. O aro não é um disco sólido.
-- Cesta de dois pontos validada pelo cruzamento descendente dentro da abertura, com margem para o raio da bolinha. Há proteção por tentativa e um registro adicional contra eventos duplicados.
-- Contatos físicos podem causar erro e rebote na tabela, no aro e no coletor.
-- A posição física de saída do coletor determina a rota: erros que saem pelo lado interno podem receber segunda chance. Essa rota devolve à fila, sem conceder um disparo imediato. Cestas e as outras saídas voltam ao reservatório do time.
-- Duas áreas laterais de queda e recuperação de bolinhas fora dos limites ou imóveis por tempo prolongado. Uma fila parada enquanto o lançador opera normalmente não é tratada como travamento.
+## O que observar agora
 
-**Nesta primeira versão, retorno completo e segunda chance são transportes programados, com a própria bolinha visível e colisões suspensas durante o trajeto.** A física volta a atuar ao chegar ao reservatório ou à fila. Os tubos representam os mecanismos de transporte; ainda não há esteira/elevador físico com peças móveis. Água e lava não foram implementadas.
+- Os contadores devem indicar **4/4** para vermelho e azul. Uma foto com seis bolinhas visíveis não informa, sozinha, se faltam duas: elas podem estar no retorno ou atrás da estrutura.
+- A cruz deve girar e inverter o sentido, tocando as bolinhas no percurso.
+- O golpe da alavanca deve ser reconhecível e a entrada deve continuar aberta entre as tentativas.
+- Os contadores de arremessos devem subir para os dois times.
+- Confira acertos e erros reais no Editor. A calibração matemática foi testada sem colisões; ela não garante uma taxa de acerto da partida com PhysX.
 
-## Regras e integração
+## Ajustes no Inspector
 
-O tempo normal encerra a pontuação quando há um vencedor. Em empate, o circuito continua em morte súbita e a próxima cesta válida encerra a partida. O fim é emitido uma vez, com placares, vencedor, tempo simulado e indicação de prorrogação.
-
-No objeto raiz `MarbleBasket3D`, o evento **On Result** permite conectar um componente seu pelo Inspector. A assinatura do método receptor é:
-
-```csharp
-public void ReceberResultado(MarbleBasket3D.Core.MatchResult3D resultado)
-{
-    // resultado.redScore, blueScore, winner, suddenDeath e elapsedSeconds
-    // Encaminhe esses dados ao seu chaveamento.
-}
-```
-
-Outra opção é assinar o evento C# da partida depois que o construtor concluir seu Awake:
-
-```csharp
-var arena = UnityEngine.Object.FindFirstObjectByType<MarbleBasket3D.ArenaBuilder3D>();
-arena.Match.Finished += ReceberResultado;
-```
-
-Use `arena.Match.StartMatch()`, `TogglePause()` e `RestartMatch()` para comandos externos. O reinício reposiciona as oito bolinhas, limpa tentativas, pontuação, trânsito de retorno, ocupação do lançador, gangorra, efeitos e contadores. Não há salvamento de campeonato neste módulo.
-
-## Ajustar a dinâmica
-
-Use **Tools → Basquete 3D → Selecionar configurações** e edite `Arena3D_Settings` fora do Play. Mantenha os `.meta` fornecidos.
-
-| Controle | Inicial | Efeito |
+| Campo | Valor inicial | Efeito |
 |---|---:|---|
-| Match Seconds | 90 | Duração normal |
-| Countdown Seconds | 3 | Espera antes da liberação simultânea |
-| Marbles Per Team | 4 | Quantidade em cada time |
-| Launch Speed | 8,65 m/s | Regulagem de força, expressa como velocidade inicial |
-| Launch Angle | 56° | Inclinação central da mira |
-| Angle Variation | 2,8° | Oscilação visível da mira |
-| Speed Variation | 0,38 m/s | Oscilação de potência |
-| Power Cycle Seconds | 3,8 | Período do ciclo de mira/potência |
-| Preparation Seconds | 0,85 | Preparação antes do disparo |
-| Launch Interval | 0,55 | Intervalo mínimo após disparar |
-| Wait For Shot To Land | Sim | Uma tentativa aérea por vez para facilitar a leitura |
-| Return Seconds | 3,2 | Custo de tempo do retorno completo |
-| Second Chance Seconds | 1,7 | Custo do caminho curto |
-| Stuck Seconds | 7 | Recuperação de bolinhas sem deslocamento |
-| Mechanism Timeout | 12 | Limite para considerar a fila/mecanismo sem progresso |
-| Physics Step | 0,01 s | Passo fixo, aplicado somente enquanto esta cena está ativa |
+| Marbles Per Team | 4 | Quantidade de cada time |
+| Cross Degrees Per Second | 65 | Velocidade máxima da cruz |
+| Cross Reversal Seconds | 5 | Intervalo de inversão gradual do sentido |
+| Calibrate Launch Speed | Ligado | Calcula a referência de velocidade pela geometria da alavanca |
+| Launch Speed | 8,65 | Ajuste fino de velocidade: com calibração ligada, 8,65 representa o centro calculado |
+| Launch Angle | 56° | Ângulo central de saída |
+| Angle Variation | 2,8° | Oscilação do ângulo |
+| Launch Yaw Variation | 2,5° | Oscilação lateral da alavanca |
+| Speed Variation | 0,25 m/s | Oscilação de velocidade em torno da referência |
+| Preparation Seconds | 0,20 | Tempo de recuo antes do golpe |
+| Launch Interval | 0,24 | Tempo de retorno do braço |
+| Return Seconds | 3,2 | Tempo do retorno completo, preservado |
+| Second Chance Seconds | 1,7 | Tempo do caminho curto, preservado |
 
-Não mude a massa para dar vantagem a um time. As mesmas configurações se aplicam às duas equipes. O número de disparos/acertos reais depende dos contatos e deve ser medido no Editor; os valores iniciais são um ponto de partida para ajuste.
+O campo antigo `Wait For Shot To Land` foi ocultado e deixou de bloquear a entrada. As mesmas regras da alavanca e da cruz são aplicadas aos dois times. Não há força ou chance de cesta especial por equipe.
 
-## Visual, renderização e gravação
+## Pontuação e várias bolinhas no ar
 
-Há quadra de madeira em peças, bolas brilhantes vermelhas/azuis, estrutura metálica, guias transparentes, aro/rede, luzes de arena e efeitos/sons curtos. Os sons são sintetizados quando os campos de AudioClip ficam vazios; você pode substituí-los.
+Cada cesta vale dois pontos. A passagem precisa vir de cima, cruzar a abertura e ser confirmada quando a esfera passa inteira abaixo do aro. Contato lateral, passagem de baixo para cima e repetição da mesma tentativa não pontuam.
 
-O projeto do backup usa URP 2D nas configurações de qualidade. **Esta cena usa o renderer Built-in para desenhar as malhas 3D com Standard**, trocando o pipeline somente durante a execução e restaurando-o ao sair da cena/Play. O passo fixo e a gravidade anteriores também são restaurados. Nenhum arquivo de ProjectSettings é substituído. A montagem antecipada pode aparecer com materiais incompatíveis no Scene View do projeto 2D; a troca é aplicada ao entrar em Play.
+Com várias bolinhas no ar, as cestas do mesmo passo de física são processadas pela fração de tempo de cruzamento, e não pela ordem de criação das bolinhas. Em morte súbita, duas cestas adversárias com tempo efetivamente igual somam pontos aos dois times, mantêm o empate e a próxima cesta decide.
 
-Na Game View, escolha **16:9** ou **1920 × 1080**. A câmera é fixa e elevada, com enquadramento 16:9. O pacote do Recorder 5.1.7 já consta no backup: use **Window → General → Recorder → Recorder Window**, adicione um Movie Recorder com origem Game View e comece a gravação antes da contagem regressiva. Ajuste `Hide Buttons During Play` se quiser retirar os comandos durante a ação. Verifique resolução, som e desempenho numa gravação curta antes de uma partida longa.
+## Retorno, controle e integração
 
-A imagem de referência orientou o circuito e a organização espacial. **Este é o protótipo com formas simples pedido no escopo**, sem cenário final modelado, câmera de close, replay ou fluidos. Não há garantia de replay fiel por semente: uma etapa futura deverá registrar movimento/estados da simulação.
+O retorno continua usando as mesmas instâncias, com transporte programado visível pelos tubos e colisões suspensas no trajeto. A segunda chance volta à fila. A bola não é duplicada ao retornar. Água/lava e elevadores físicos permanecem fora desta etapa.
 
-## O que está validado
+A partida tem contagem regressiva, duração normal de 90 s, morte súbita, pausa e reinício. Os botões permanecem na parte inferior. O objeto raiz `MarbleBasket3D` expõe o evento **On Result** para seu chaveamento, com `MatchResult3D`: `redScore`, `blueScore`, `winner`, `suddenDeath` e `elapsedSeconds`. A interface C# `arena.Match.Finished`, `StartMatch()`, `TogglePause()` e `RestartMatch()` continua disponível.
 
-Consulte **VALIDACAO.md**. As regras, estados e referências foram testados em C# e verificações estruturais. **Não há Unity instalado no ambiente de desenvolvimento: importação, compilação com as bibliotecas reais e uma partida completa com PhysX ainda precisam ser executadas no seu Editor.** Os testes de Play Mode fornecidos verificam esses critérios; não foram executados aqui.
+## Diagnóstico se o placar continuar zerado ou uma bola parecer ausente
 
-Para diagnóstico após um teste, selecione `GeneratedArena3D`, abra o menu de contexto do componente **ArenaDiagnostics3D** e use **Salvar diagnóstico da partida**. O Console informa o caminho do JSON com disparos por time, pontos, retornos e recuperações.
+Selecione **GeneratedArena3D**, abra o menu de contexto de **ArenaDiagnostics3D** e escolha **Salvar diagnóstico da partida**. O Console informa o caminho do JSON. O relatório contém V1–V4 e A1–A4, posição, estado, tentativa, altura máxima e distância ao centro do aro no cruzamento. Valor -1 significa que o dado ainda não foi observado naquela tentativa. Os contadores diferenciam ausência real de bolinha e simples ocultação pela estrutura.
+
+## Renderização e gravação
+
+A cena usa materiais Standard e troca para o renderer Built-in durante o Play, restaurando o pipeline anterior ao sair. O passo fixo e a gravidade anteriores também são restaurados. Nenhum arquivo de ProjectSettings é substituído.
+
+Use Game View 16:9 ou 1920 × 1080. O Recorder 5.1.7 já consta no backup: **Window → General → Recorder → Recorder Window**, origem Game View. A câmera continua fixa e elevada. **Gerar arena visível no Editor**, no menu Basquete 3D, permite montar a geometria antes do Play; os materiais podem depender da troca de pipeline feita durante a execução.
+
+## Estado da validação
+
+As regras e a integração dos estados passaram em testes locais. O ambiente não tem Unity instalado: a importação do prefab corrigido, os contatos reais da cruz/pá e uma partida completa com acertos ainda precisam ser confirmados no Editor. Os testes Unity fornecidos estão em **Window → General → Test Runner**. Veja **VALIDACAO.md**. Esta revisão trata mecânica e leitura da ação; o acabamento visual final continua para depois de validar a dinâmica.

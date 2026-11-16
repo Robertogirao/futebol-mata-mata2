@@ -15,6 +15,7 @@ namespace MarbleBasket3D
             float now = match.SimulationTime;
             foreach (var b in match.Marbles)
             {
+                if (b == null) continue;
                 if (b.State == MarbleState3D.Returning || b.State == MarbleState3D.Held || b.State == MarbleState3D.Seated) continue;
                 Vector3 p = b.Body.position;
                 bool outside = p.y < -.7f || p.y > 16 || Mathf.Abs(p.x) > 11 || Mathf.Abs(p.z) > 9;

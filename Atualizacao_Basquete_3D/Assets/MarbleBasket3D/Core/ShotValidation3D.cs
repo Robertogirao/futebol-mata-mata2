@@ -8,19 +8,24 @@ namespace MarbleBasket3D.Core
         public int Attempt { get; private set; }
         public bool Scored { get; private set; }
         public bool Armed { get; private set; }
+        public double CrossingFraction { get; private set; }
+        public double RimPlaneOffset { get; private set; } = -1;
+        public double PeakHeight { get; private set; } = -1;
         private bool sampled, pendingCrossing;
         private double px, py, pz;
-        public void Reset() { Attempt = 0; Scored = Armed = sampled = pendingCrossing = false; }
-        public void Launch() { Attempt++; Scored = Armed = sampled = pendingCrossing = false; }
+        public void Reset() { Attempt = 0; Scored = Armed = sampled = pendingCrossing = false; CrossingFraction = 0; RimPlaneOffset = PeakHeight = -1; }
+        public void Launch() { Attempt++; Scored = Armed = sampled = pendingCrossing = false; CrossingFraction = 0; RimPlaneOffset = PeakHeight = -1; }
         public bool Sample(double x, double y, double z, double rimX, double rimY, double rimZ, double clearance, double ballRadius)
         {
             if (Scored || Attempt == 0) return false;
+            PeakHeight = Math.Max(PeakHeight, y);
             if (y >= rimY + ballRadius) Armed = true;
             bool crossed = false;
             if (sampled && Armed && py >= rimY && y < rimY && py > y && clearance > ballRadius)
             {
                 double t = (py - rimY) / (py - y);
                 double dx = px + (x - px) * t - rimX, dz = pz + (z - pz) * t - rimZ;
+                RimPlaneOffset = Math.Sqrt(dx * dx + dz * dz);
                 double r = clearance - ballRadius;
                 pendingCrossing = dx * dx + dz * dz < r * r;
             }
@@ -33,6 +38,7 @@ namespace MarbleBasket3D.Core
                 double t = (py - lower) / (py - y);
                 double dx = px + (x - px) * t - rimX, dz = pz + (z - pz) * t - rimZ;
                 crossed = dx * dx + dz * dz < clearance * clearance;
+                if (crossed) CrossingFraction = t;
                 pendingCrossing = false;
             }
             px = x; py = y; pz = z; sampled = true;

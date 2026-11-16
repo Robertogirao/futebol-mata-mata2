@@ -65,6 +65,11 @@ namespace MarbleBasket3D
             Body.position = position; Shot.Launch(); Release(MarbleState3D.InFlight, now);
             Body.linearVelocity = velocity; Body.WakeUp();
         }
+        internal void MarkPhysicalLaunch(float now)
+        {
+            Shot.Launch(); State = MarbleState3D.InFlight; StateTime = LastMotionTime = now;
+            LastMotionPosition = Body.position;
+        }
         private void OnCollisionEnter(Collision collision)
         {
             if (Match == null || !Match.Active || Match.SimulationTime < nextContact || collision.relativeVelocity.sqrMagnitude < .7f) return;

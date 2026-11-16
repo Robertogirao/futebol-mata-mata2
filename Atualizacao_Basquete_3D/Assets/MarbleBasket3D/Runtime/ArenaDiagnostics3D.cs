@@ -1,14 +1,23 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 namespace MarbleBasket3D
 {
-    [Serializable]
-    public sealed class ArenaReport3D
+    [Serializable] public sealed class MarbleReport3D
+    {
+        public string id, state;
+        public bool active, rendererEnabled;
+        public Vector3 position;
+        public int attempt;
+        public float peakHeight, rimPlaneOffset;
+    }
+    [Serializable] public sealed class ArenaReport3D
     {
         public string phase;
-        public int expectedMarbles, registeredMarbles, returning, redShots, blueShots, baskets, redScore, blueScore, recoveries;
+        public int expectedMarbles, registeredMarbles, liveRed, liveBlue, returning, redShots, blueShots, baskets, redScore, blueScore, recoveries;
         public float elapsedSimulation;
+        public List<MarbleReport3D> marbles = new List<MarbleReport3D>();
     }
     public sealed class ArenaDiagnostics3D : MonoBehaviour
     {
@@ -27,15 +36,32 @@ namespace MarbleBasket3D
         public void ResetCounters() { epoch = match.Rules.MatchNumber; RedShots = BlueShots = Baskets = 0; }
         private void CheckEpoch()
         {
-            if (match != null && epoch != match.Rules.MatchNumber) { epoch = match.Rules.MatchNumber; RedShots = BlueShots = Baskets = 0; }
+            if (match != null && epoch != match.Rules.MatchNumber) ResetCounters();
+        }
+        public int CountLive(Core.TeamId team, bool onlyReturning = false)
+        {
+            int count=0;
+            if(match==null)return count;
+            foreach(var ball in match.Marbles)
+                if(ball!=null && ball.Body!=null && ball.gameObject.activeSelf && ball.Team==team && (!onlyReturning || ball.State==MarbleState3D.Returning)) count++;
+            return count;
         }
         public ArenaReport3D Capture()
         {
             CheckEpoch();
-            return new ArenaReport3D { phase = match.Rules.Phase.ToString(), expectedMarbles = match.Settings.marblesPerTeam * 2,
-                registeredMarbles = match.Marbles.Count, returning = match.Returns.ReturningCount, redShots = RedShots, blueShots = BlueShots,
-                baskets = Baskets, redScore = match.Rules.Red, blueScore = match.Rules.Blue, elapsedSimulation = match.SimulationTime,
-                recoveries = match.GetComponent<Recovery3D>() != null ? match.GetComponent<Recovery3D>().Recoveries : 0 };
+            var report = new ArenaReport3D { phase=match.Rules.Phase.ToString(),expectedMarbles=match.Settings.marblesPerTeam*2,
+                registeredMarbles=match.Marbles.Count, liveRed=CountLive(Core.TeamId.Red),liveBlue=CountLive(Core.TeamId.Blue),returning=match.Returns.ReturningCount,
+                redShots=RedShots,blueShots=BlueShots,baskets=Baskets,redScore=match.Rules.Red,blueScore=match.Rules.Blue,elapsedSimulation=match.SimulationTime,
+                recoveries=match.GetComponent<Recovery3D>()!=null?match.GetComponent<Recovery3D>().Recoveries:0 };
+            foreach(var b in match.Marbles)
+            {
+                if(b==null || b.Body==null){report.marbles.Add(new MarbleReport3D{id="ausente",active=false});continue;}
+                var renderer=b.GetComponent<Renderer>();
+                report.marbles.Add(new MarbleReport3D{id=(b.Team==Core.TeamId.Red?"V":"A")+b.Number,state=b.State.ToString(),active=b.gameObject.activeSelf,
+                    rendererEnabled=renderer!=null && renderer.enabled,position=b.Body.position,attempt=b.Shot.Attempt,
+                    peakHeight=(float)b.Shot.PeakHeight,rimPlaneOffset=(float)b.Shot.RimPlaneOffset});
+            }
+            return report;
         }
         [ContextMenu("Salvar diagnóstico da partida")]
         public void SaveReport()

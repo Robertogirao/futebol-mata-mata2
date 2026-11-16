@@ -42,6 +42,15 @@ namespace MarbleBasket3D.Tests
             match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
             Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
         }
+        [UnityTest] public IEnumerator V2BuildHasEightMarblesCrossAndNoQueueGate()
+        {
+            var diagnostics=match.GetComponent<ArenaDiagnostics3D>();
+            Assert.That(diagnostics.CountLive(TeamId.Red),Is.EqualTo(4));Assert.That(diagnostics.CountLive(TeamId.Blue),Is.EqualTo(4));
+            Assert.That(root.GetComponentsInChildren<RotatingCross3D>().Length,Is.EqualTo(1));
+            foreach(var collider in root.GetComponentsInChildren<Collider>()) Assert.That(collider.gameObject.name,Does.Not.Contain("Queue gate"));
+            Assert.That(settings.preparationSeconds,Is.LessThan(.4f));
+            LogAssert.NoUnexpectedReceived();yield return null;
+        }
         [UnityTest] public IEnumerator PauseAndOutOfBoundsRecoveryPreserveIdentity()
         {
             match.StartMatch(); while (!match.Active) yield return new WaitForFixedUpdate();

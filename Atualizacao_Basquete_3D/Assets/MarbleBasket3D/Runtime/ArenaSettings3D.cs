@@ -17,15 +17,20 @@ namespace MarbleBasket3D
         [Range(.1f, 2)] public float marbleMass = .45f;
         [Range(0, 1)] public float marbleBounce = .42f;
         [Range(.005f, .03f)] public float physicsStep = .01f;
-        [Header("Lançador — mesmos controles para os dois times")]
+        [Header("Cruz de disputa")]
+        [Range(10, 120)] public float crossDegreesPerSecond = 65;
+        [Range(2, 12)] public float crossReversalSeconds = 5;
+        [Header("Alavanca — mesmos controles para os dois times")]
+        public bool calibrateLaunchSpeed = true;
+        [Range(0, 6)] public float launchYawVariation = 2.5f;
         [Range(5, 14)] public float launchSpeed = 8.65f;
         [Range(40, 75)] public float launchAngle = 56;
         [Range(0, 5)] public float angleVariation = 2.8f;
-        [Range(0, 1)] public float speedVariation = .38f;
+        [Range(0, 1)] public float speedVariation = .25f;
         [Min(.5f)] public float powerCycleSeconds = 3.8f;
-        [Range(.3f, 3)] public float preparationSeconds = .85f;
-        [Range(.1f, 3)] public float launchInterval = .55f;
-        public bool waitForShotToLand = true;
+        [Range(.12f, 1)] public float preparationSeconds = .20f;
+        [Range(.12f, 1)] public float launchInterval = .24f;
+        [HideInInspector] public bool waitForShotToLand; // Legacy value ignored: the entry now stays open.
         [Header("Retorno e recuperação")]
         [Range(1, 8)] public float returnSeconds = 3.2f;
         [Range(.5f, 5)] public float secondChanceSeconds = 1.7f;
@@ -45,13 +50,14 @@ namespace MarbleBasket3D
         public AudioClip collisionSound, launchSound, basketSound, fallSound, finishSound;
         public void Validate()
         {
-            foreach (float value in new[] { matchSeconds, countdownSeconds, marbleRadius, marbleMass, marbleBounce, physicsStep, launchSpeed, launchAngle, angleVariation, speedVariation, powerCycleSeconds, preparationSeconds, launchInterval, returnSeconds, secondChanceSeconds, stuckSeconds, mechanismTimeout, shotTimeout, cameraFieldOfView })
+            foreach (float value in new[] { matchSeconds, countdownSeconds, marbleRadius, marbleMass, marbleBounce, physicsStep, launchSpeed, launchAngle, angleVariation, speedVariation, powerCycleSeconds, preparationSeconds, launchInterval, returnSeconds, secondChanceSeconds, stuckSeconds, mechanismTimeout, shotTimeout, cameraFieldOfView, crossDegreesPerSecond, crossReversalSeconds, launchYawVariation })
                 if (!Finite(value)) throw new System.InvalidOperationException("Os controles da arena precisam de valores finitos.");
             if (marbleMass < .1f || marbleMass > 2 || marbleBounce < 0 || marbleBounce > 1 || angleVariation < 0 || angleVariation > 5 || speedVariation < 0 || speedVariation > 1) throw new System.InvalidOperationException("Confira massa, quique e variação do lançador.");
             if (!Finite(matchSeconds) || matchSeconds <= 0 || !Finite(countdownSeconds) || countdownSeconds < 0) throw new System.InvalidOperationException("Confira a duração e a contagem regressiva.");
             if (marblesPerTeam < 1 || marblesPerTeam > 6 || marbleRadius < .12f || marbleRadius > .22f) throw new System.InvalidOperationException("Use 1 a 6 bolinhas por time e raio entre 0,12 e 0,22.");
             if (!Finite(launchSpeed) || launchSpeed < 5 || launchSpeed > 14 || !Finite(launchAngle) || launchAngle < 40 || launchAngle > 75) throw new System.InvalidOperationException("Confira velocidade e ângulo de lançamento.");
-            if (powerCycleSeconds < .5f || preparationSeconds < .3f || launchInterval < .1f || physicsStep < .005f || physicsStep > .03f) throw new System.InvalidOperationException("Confira os tempos do mecanismo e da física.");
+            if (powerCycleSeconds < .5f || preparationSeconds < .12f || launchInterval < .1f || physicsStep < .005f || physicsStep > .03f) throw new System.InvalidOperationException("Confira os tempos do mecanismo e da física.");
+            if (crossDegreesPerSecond < 10 || crossDegreesPerSecond > 120 || crossReversalSeconds < 2 || crossReversalSeconds > 12 || launchYawVariation < 0 || launchYawVariation > 6) throw new System.InvalidOperationException("Confira a rotação da cruz e a oscilação da alavanca.");
             if (returnSeconds < 1 || secondChanceSeconds < .5f || stuckSeconds < 3 || mechanismTimeout < 4 || shotTimeout < .5f) throw new System.InvalidOperationException("Confira os tempos de retorno e recuperação.");
         }
         private static bool Finite(float f) => !float.IsNaN(f) && !float.IsInfinity(f);

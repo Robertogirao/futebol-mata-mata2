@@ -56,9 +56,16 @@ namespace MarbleBasket3D.Core
         }
         public bool Score(TeamId team)
         {
-            if (!Active || (team != TeamId.Red && team != TeamId.Blue)) return false;
-            if (team == TeamId.Red) Red += 2; else Blue += 2;
-            if (Phase == MatchPhase.SuddenDeath) Finish(true);
+            if (team != TeamId.Red && team != TeamId.Blue) return false;
+            return ScoreBatch(team == TeamId.Red ? 1 : 0, team == TeamId.Blue ? 1 : 0);
+        }
+        public bool ScoreBatch(int redBaskets, int blueBaskets)
+        {
+            if (!Active || redBaskets < 0 || blueBaskets < 0 || redBaskets + blueBaskets == 0) return false;
+            Red += redBaskets * 2; Blue += blueBaskets * 2;
+            // Exact simultaneous opposing baskets remain tied in sudden death.
+            // Distinct crossing times are submitted separately in chronological order.
+            if (Phase == MatchPhase.SuddenDeath && Red != Blue) Finish(true);
             return true;
         }
         public void Pause() { if (Phase == MatchPhase.Countdown || Active) { pausedPhase = Phase; Phase = MatchPhase.Paused; } }

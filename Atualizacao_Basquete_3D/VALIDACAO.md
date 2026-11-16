@@ -1,43 +1,35 @@
-# Validação e limites do protótipo 3D
+# Validação da V2 — cruz, alavanca e contagem
 
-## Inspeção do projeto
-
-- Backup: Unity 6000.4.11f1; URP 17.4.0 e Test Framework 1.6.0; Recorder 5.1.7 já configurado.
-- A versão 3D tem assemblies e namespace próprios e não depende dos controladores de futebol, da arena 2D ou do chaveamento.
-- O ambiente de desenvolvimento não tem editor Unity instalado.
+Base: Unity 6000.4.11f1, identificado no backup. O ambiente de desenvolvimento não possui editor Unity instalado.
 
 ## Executado aqui
 
-- **7.230 verificações C# puras**: contagem, pausa, reinício, fechamento da pontuação, morte súbita e validação de cesta. A maior parte cobre uma grade de posições e três raios de bolinha, verificando passagem descendente e margem da abertura.
-- **107 verificações de execução em C# com substitutos de APIs Unity**: oito identidades, pares espelhados sem sobreposição inicial, liberação no mesmo passo, captura pela proximidade, ocupação única, disparo, pontos sem duplicação, retorno, segunda chance passando pela fila, recuperação fora dos limites e reinício limpo, inclusive resultado estável quando um consumidor reinicia a partida durante o evento de conclusão.
-- Compilação dos scripts de execução e do editor com substitutos das dependências. Isso confere as referências e a lógica, **não compila contra as bibliotecas reais do Unity nem executa PhysX**.
-- **8 grupos de verificações estruturais**: sintaxe dos scripts, GUIDs, assemblies, cena/prefab, parâmetros iniciais, abertura do funil, largura da fila, independência do time e amostragem balística ideal do ciclo.
-- A amostragem balística ideal, sem colisões e com integração contínua, inclui acertos e erros. **Não é uma taxa de acerto prevista para a partida real.** A integração discreta e os contatos mudam os resultados.
-- O enquadramento inicial foi conferido por projeção geométrica; a avaliação final da Game View ainda é necessária.
+- **7.232 verificações de regras em C# puro**: relógio, pausa, reinício, morte súbita, cruzamento descendente, margem da abertura, confirmação da passagem completa, rejeição de pontos duplicados e empate de cestas simultâneas.
+- **129 verificações de execução em C# com substitutos das APIs Unity**: oito identidades, quatro por time, contagem preservada durante o retorno, entrada sem portão, cruz giratória, golpe da alavanca, tentativas consecutivas sem aguardar o pouso anterior, contatos laterais da pá sem correção de velocidade, segunda chance, recuperação e reinício. Incluem cestas ordenadas pelo tempo de cruzamento, sem dar preferência ao primeiro time registrado.
+- Compilação do código de execução e de editor com substitutos das dependências. **Não é compilação contra as bibliotecas reais nem execução de PhysX.**
+- **10 grupos de verificações estruturais**: sintaxe, GUIDs, assemblies, cena, prefab sem o ID reservado 100100000, configuração sem referência a esse prefab, quatro bolinhas por time, geometria de fila/funil e ausência de portão. Também foi conferido que o arquivo de retorno é idêntico ao da V1.
+- Sondagem numérica de **360 trajetórias** usando a posição real de saída da alavanca, oscilações de ângulo/direção/potência, gravidade, passo de 0,01 s e amortecimento aproximado: houve 233 acertos e 127 erros sem colisões. **Esses números não são uma previsão da taxa de acerto real.** Aro, tabela, contatos com outras bolinhas e integração PhysX mudam os resultados.
 
-O projeto inclui `Verification/CoreChecks.csproj` para repetir as verificações puras com .NET 8 (`dotnet run --project Verification/CoreChecks.csproj`). Isso é opcional; o jogo não depende do SDK .NET instalado no computador.
+As verificações puras podem ser repetidas com .NET 8: `dotnet run --project Verification/CoreChecks.csproj`. Isso é opcional e não é dependência do jogo.
 
-## Testes fornecidos para o Unity
+## Testes para executar no Unity
 
 Em **Window → General → Test Runner**:
 
-- **EditMode → MarbleBasket3D.EditorTests**: três testes de regras, reinício e validação de cesta.
-- **PlayMode → MarbleBasket3D.PlayTests**: partida automática de 90 s, integridade das oito bolinhas, disparos para os dois times, cestas, resultado emitido uma vez e reinício. Outro teste cobre pausa e recuperação fora da arena.
+- **EditMode → MarbleBasket3D.EditorTests**: regras, cestas, reinício e cestas simultâneas na morte súbita.
+- **PlayMode → MarbleBasket3D.PlayTests**: partida inteira de 90 s com oportunidades para os dois times, oito identidades e resultado; pausa/recuperação; montagem V2 com cruz e sem portão.
 
-O teste longo admite até 185 s reais para incluir eventual morte súbita; ele falha se não houver resultado ou se um dos times não tiver disparos. O diagnóstico da partida é escrito no Console para orientar ajustes. **Esses testes de Unity ainda não foram executados.**
+O teste longo admite até 185 s reais para incluir a prorrogação e falha se um time não tiver disparos, se não houver cestas ou se a partida não terminar. O diagnóstico é escrito no Console. **Esses testes de Unity não foram executados aqui.**
 
-## Critérios que dependem do Editor
+## Conferência manual indispensável
 
-| Critério | Evidência existente | Conferência pendente |
-|---|---|---|
-| Partida inteira automática | Estados e relógio implementados/testados | Executar 90 s + eventual prorrogação com PhysX |
-| Oportunidades para ambos | Geometria/slots espelhados, liberação simultânea, regras comuns | Medir disparos por time em várias partidas |
-| Acertos, erros e disputa | Gangorra, fila, aro, coletor e ciclo do lançador implementados | Ajustar velocidade, ângulo e ritmo com colisões reais |
-| Oito bolas sem perda/duplicação | Registro único e retorno da mesma instância | Rodar teste longo e observar saídas fora da arena |
-| Pontos corretos | Cruzamento descendente e proteção por tentativa testados | Conferir contatos reais com o aro |
-| Recuperação | Retorno/transporte e espera normal de fila testados com substitutos | Observar congestões prolongadas no funil e portão |
-| Vencedor e integração | Regras, evento C# e UnityEvent implementados | Conectar receptor real do chaveamento |
-| Reinício limpo | Regras e mecanismos testados com substitutos | Conferir junta física, colisores e gravação no Editor |
-| Visual e áudio | Materiais, iluminação e sons implementados | Revisar enquadramento, contraste, transparência e Recorder |
+1. Abrir a cena da atualização e limpar mensagens antigas do Console.
+2. Conferir BOLAS 4/4 de cada equipe e ausência de nova mensagem de cast do prefab.
+3. Conferir que a cruz realmente empurra as bolas e inverte o sentido sem prender o funil.
+4. Conferir recuo/golpe/retorno da alavanca e entrada aberta entre os arremessos.
+5. Observar vários arremessos: acertos e erros, rebotes, contadores por time e registro único de cada cesta.
+6. Conferir que o retorno continua claro e mantém quatro identidades por equipe.
+7. Pausar e reiniciar; conferir contadores zerados, posições iniciais e mecanismos reiniciados.
+8. Fazer uma gravação curta em 16:9 para avaliar o ritmo e a leitura da ação.
 
-Não há alegação de que uma partida de 90 segundos foi executada no Unity ou de que o balanceamento já esteja aprovado. Não foi implementado replay fiel, transporte físico por esteira/elevador, água/lava ou acabamento equivalente à ilustração de referência.
+Se o resultado continuar 0–0, o relatório de ArenaDiagnostics3D permite distinguir falta de disparos, trajetória que não atinge altura suficiente e passagem fora do aro. Não há alegação de que a revisão já tenha executado uma partida física no Unity.

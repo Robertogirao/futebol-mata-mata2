@@ -57,8 +57,8 @@ namespace MarbleBasket3D
             nextContact = match.SimulationTime + .06f; Play(contact, strength * .5f);
             Emitted?.Invoke(new ArenaEvent3D { kind = ArenaEventKind3D.Contact, marble = b });
         }
-        public void Loaded(Marble3D b) { Emit(ArenaEventKind3D.Loaded, b, Team(b) + " · BOLA " + b.Number + " NO LANÇADOR"); }
-        public void Launch(Marble3D b) { Emit(ArenaEventKind3D.Launch, b, Team(b) + " ARREMESSOU"); Play(launch); Flash(b.Body.position, new Color(1, .7f, .2f), .4f); }
+        public void Loaded(Marble3D b) { Emit(ArenaEventKind3D.Loaded, b, Team(b) + " · BOLA " + b.Number + " NA ALAVANCA"); }
+        public void Launch(Marble3D b) { Emit(ArenaEventKind3D.Launch, b, Team(b) + " · GOLPE DA ALAVANCA"); Play(launch); Flash(b.Body.position, new Color(1, .7f, .2f), .4f); }
         public void Basket(Marble3D b) { Emit(ArenaEventKind3D.Basket, b, "CESTA! " + Team(b) + " +2"); Play(basket); Flash(new Vector3(5.4f, 3.7f, -2.3f), new Color(1, .8f, .25f), .9f); }
         public void Fall(Marble3D b, string reason)
         {

@@ -24,14 +24,18 @@ MonoBehaviour:
   marbleMass: 0.45
   marbleBounce: 0.42
   physicsStep: 0.01
+  crossDegreesPerSecond: 65
+  crossReversalSeconds: 5
+  calibrateLaunchSpeed: 1
+  launchYawVariation: 2.5
   launchSpeed: 8.65
   launchAngle: 56
   angleVariation: 2.8
-  speedVariation: 0.38
+  speedVariation: 0.25
   powerCycleSeconds: 3.8
-  preparationSeconds: 0.85
-  launchInterval: 0.55
-  waitForShotToLand: 1
+  preparationSeconds: 0.20
+  launchInterval: 0.24
+  waitForShotToLand: 0
   returnSeconds: 3.2
   secondChanceSeconds: 1.7
   enableSecondChance: 1
@@ -43,7 +47,7 @@ MonoBehaviour:
   cameraTarget: {x: 0, y: 4.2, z: 0.5}
   cameraFieldOfView: 41
   useBuiltInRendering: 1
-  marblePrefab: {fileID: 100100000, guid: c307cdf9dab1519ca4c15d9c6037b400, type: 3}
+  marblePrefab: {fileID: 0}
   collisionSound: {fileID: 0}
   launchSound: {fileID: 0}
   basketSound: {fileID: 0}

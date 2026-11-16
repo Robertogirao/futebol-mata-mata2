@@ -31,6 +31,20 @@ namespace MarbleBasket3D.Editor
         }
         [MenuItem("Tools/Basquete 3D/Selecionar configurações")]
         public static void Settings() { Selection.activeObject = AssetDatabase.LoadAssetAtPath<ArenaSettings3D>(Root + "/Settings/Arena3D_Settings.asset"); }
+        [MenuItem("Tools/Basquete 3D/Recriar prefab nativo da bolinha")]
+        public static void RebuildMarblePrefab()
+        {
+            if(EditorApplication.isPlaying)return;
+            var go=GameObject.CreatePrimitive(PrimitiveType.Sphere);go.name="Marble3D";
+            try
+            {
+                go.AddComponent<Rigidbody>().isKinematic=true;go.AddComponent<Marble3D>();
+                var prefab=PrefabUtility.SaveAsPrefabAsset(go,Root+"/Prefabs/Marble3D.prefab");
+                var config=AssetDatabase.LoadAssetAtPath<ArenaSettings3D>(Root+"/Settings/Arena3D_Settings.asset");
+                config.marblePrefab=prefab;EditorUtility.SetDirty(config);AssetDatabase.SaveAssets();Selection.activeObject=prefab;
+            }
+            finally{Object.DestroyImmediate(go);}
+        }
         private static void PersistGeneratedResources(Transform parent)
         {
             string folder = Root + "/Generated"; Directory.CreateDirectory(folder); AssetDatabase.Refresh();

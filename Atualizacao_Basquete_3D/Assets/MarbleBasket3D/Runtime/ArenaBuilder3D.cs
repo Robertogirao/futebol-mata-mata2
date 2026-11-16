@@ -36,7 +36,7 @@ namespace MarbleBasket3D
             var launcher = Child("Shared launcher", world).AddComponent<Launcher3D>();
             var returns = world.gameObject.AddComponent<ReturnSystem3D>();
             var signals = world.gameObject.AddComponent<ArenaSignals3D>();
-            var seesaw = CreateSeesaw();
+            var seesaw = CreateCross();
             Match.Configure(settings, launcher, returns, seesaw, signals);
             launcher.Configure(Match); returns.Configure(Match); if (Application.isPlaying) signals.Configure(Match);
             Match.Finished += result => onResult.Invoke(result);
@@ -131,18 +131,24 @@ namespace MarbleBasket3D
                 Zone("Lateral fall", ZoneKind3D.Fall, new Vector3(side * 3.4f, 1.8f, 1.5f), new Vector3(1.35f, 1.5f, 2.3f));
             }
         }
-        private Seesaw3D CreateSeesaw()
+        private RotatingCross3D CreateCross()
         {
-            Vector3 pivotPosition = new Vector3(0, 4.75f, 1.5f);
-            var pedestal = Box("Seesaw support", pivotPosition - Vector3.up * .5f, new Vector3(.4f, 1, .4f), gold, false);
-            var pivot = Child("Seesaw fixed pivot", world); pivot.transform.position = pivotPosition; var fixedBody = pivot.AddComponent<Rigidbody>(); fixedBody.isKinematic = true;
-            var beam = Box("Physical seesaw", pivotPosition, new Vector3(4.4f, .14f, 1.05f), gold);
-            beam.transform.rotation = Quaternion.Euler(7, 0, 0);
-            var rb = beam.AddComponent<Rigidbody>(); rb.mass = 1.8f; rb.angularDamping = .25f; rb.centerOfMass = new Vector3(0, -.06f, 0); rb.isKinematic = true;
-            var hinge = beam.AddComponent<HingeJoint>(); hinge.connectedBody = fixedBody; hinge.anchor = Vector3.zero;
-            hinge.autoConfigureConnectedAnchor = false; hinge.connectedAnchor = Vector3.zero; hinge.axis = Vector3.forward;
-            hinge.useLimits = true; hinge.limits = new JointLimits { min = -18, max = 18 };
-            var mechanism = beam.AddComponent<Seesaw3D>(); mechanism.Configure(rb); return mechanism;
+            var root = Child("Cross rotor", world); root.transform.position = new Vector3(0, 0, 1.5f);
+            var body = root.AddComponent<Rigidbody>(); body.isKinematic = true;
+            for (int i = 0; i < 4; i++)
+            {
+                float angle = i * Mathf.PI * .5f;
+                Vector3 radial = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
+                float inner = .5f, outer = 2.45f;
+                float Floor(float radius) => 2.65f + (4.35f - 2.65f) * (radius - .245f) / (2.75f - .245f);
+                Vector3 a = root.transform.position + radial * inner + Vector3.up * (Floor(inner) + .19f);
+                Vector3 b = root.transform.position + radial * outer + Vector3.up * (Floor(outer) + .19f);
+                var paddle = Box("Cross paddle " + (i+1), (a+b)*.5f, new Vector3(.29f, .18f, Vector3.Distance(a,b)), gold, true, root.transform);
+                paddle.transform.rotation = Quaternion.LookRotation(b-a);
+            }
+            Rod("Cross motor shaft", new Vector3(0,3.35f,1.5f),new Vector3(0,4.7f,1.5f),.07f,steel);
+            Box("Cross motor hub",new Vector3(0,4.7f,1.5f),new Vector3(.42f,.28f,.42f),gold,false);
+            var mechanism = root.AddComponent<RotatingCross3D>(); mechanism.Configure(Match, body); return mechanism;
         }
         private void EntryAndContest()
         {
@@ -161,24 +167,27 @@ namespace MarbleBasket3D
         }
         private void BuildLauncher(Launcher3D launcher)
         {
-            Vector3 basePosition = new Vector3(0, .65f, -1.5f);
-            Box("Launcher plinth", basePosition - Vector3.up * .3f, new Vector3(1.4f, .4f, 1.3f), dark);
-            Box("Launcher cradle", basePosition + Vector3.up * .08f, new Vector3(.7f, .55f, .8f), gold, false);
-            launcher.seat = Seat; launcher.muzzle = Muzzle; launcher.target = Rim;
-            Transform barrel = Child("Oscillating barrel", world).transform; barrel.position = Seat - Vector3.up * .13f;
-            Vector3 direction = (Rim - Muzzle); direction.y = 0; direction = direction.normalized * Mathf.Cos(settings.launchAngle * Mathf.Deg2Rad) + Vector3.up * Mathf.Sin(settings.launchAngle * Mathf.Deg2Rad);
-            barrel.rotation = Quaternion.LookRotation(direction); launcher.barrel = barrel;
-            var tube = GameObject.CreatePrimitive(PrimitiveType.Cylinder); tube.name = "Barrel visual"; tube.transform.SetParent(barrel, false);
-            tube.transform.localRotation = Quaternion.Euler(90, 0, 0); tube.transform.localPosition = new Vector3(0, 0, .12f); tube.transform.localScale = new Vector3(.43f, .28f, .43f);
-            tube.GetComponent<Renderer>().sharedMaterial = steel; var tc = tube.GetComponent<Collider>(); tc.enabled = false; if (Application.isPlaying) Destroy(tc); else DestroyImmediate(tc);
-            // Open seating cup: a floor and two low sides, with an unobstructed upward firing path.
-            Box("Cup floor", new Vector3(0, 1.15f, -1.44f), new Vector3(.58f, .1f, .58f), steel);
-            for (int s = -1; s <= 1; s += 2) Box("Cup guide", new Vector3(s * .28f, 1.38f, -1.45f), new Vector3(.05f, .36f, .56f), glass);
-            Box("Cup back", new Vector3(0, 1.37f, -1.72f), new Vector3(.6f, .35f, .06f), steel);
-            var gate = Child("Queue gate", world); gate.transform.position = new Vector3(0, 1.83f, -1.06f);
-            var collider = gate.AddComponent<BoxCollider>(); collider.size = new Vector3(.57f, .60f, .07f); launcher.gate = collider;
-            var gateMesh = Box("Gate visual", gate.transform.position, new Vector3(.57f, .60f, .07f), gold, false, gate.transform); launcher.gateVisual = gateMesh.transform;
-            Zone("Loading cup sensor", ZoneKind3D.Loading, new Vector3(0, 1.55f, -1.45f), new Vector3(.60f, .58f, .5f));
+            Box("Lever plinth",new Vector3(-.25f,.32f,-1.5f),new Vector3(1.7f,.5f,1.35f),dark);
+            launcher.seat = Seat; launcher.target = Rim;
+            var lever = Child("Open lever",world); var body = lever.AddComponent<Rigidbody>();
+            body.isKinematic=true;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
+            launcher.ConfigureLever(body);
+            Vector3 pivot=body.position;
+            // Both pieces are compound colliders on the powered lever; the entry has no gate.
+            var arm=Box("Catapult arm",Vector3.zero,new Vector3(.20f,.14f,Launcher3D.ArmLength),steel,true,lever.transform);
+            arm.transform.localPosition=new Vector3(0,0,Launcher3D.ArmLength*.5f);arm.transform.localRotation=Quaternion.identity;
+            var paddle=Box("Catapult paddle",Vector3.zero,new Vector3(.55f,.10f,.44f),gold,true,lever.transform);
+            paddle.transform.localPosition=new Vector3(0,0,Launcher3D.ArmLength);paddle.transform.localRotation=Quaternion.identity;
+            var relay=lever.AddComponent<LeverContact3D>();relay.launcher=launcher;
+            Rod("Lever axle",pivot+Vector3.forward*.36f,pivot-Vector3.forward*.36f,.11f,gold);
+            for(int side=-1;side<=1;side+=2)
+                Box("Lever support",new Vector3(pivot.x,pivot.y*.5f,pivot.z+side*.40f),new Vector3(.17f,pivot.y,.15f),dark,false);
+            // The short open trough gathers the next ball while the lever cycles.
+            Box("Open loading floor",new Vector3(0,1.15f,-1.44f),new Vector3(.64f,.10f,.66f),steel);
+            for(int side=-1;side<=1;side+=2)
+                Box("Open loading side",new Vector3(side*.31f,1.34f,-1.43f),new Vector3(.04f,.28f,.66f),glass);
+            Box("Loading lip",new Vector3(0,1.27f,-1.77f),new Vector3(.66f,.14f,.04f),steel);
+            Zone("Loading cup sensor",ZoneKind3D.Loading,new Vector3(0,1.55f,-1.45f),new Vector3(.60f,.58f,.5f));
         }
         private void Basket()
         {
@@ -188,8 +197,8 @@ namespace MarbleBasket3D
             var backing = Box("Basket backboard", board, new Vector3(.10f, 1.65f, 1.85f), white); backing.transform.rotation = Quaternion.LookRotation(flight) * Quaternion.Euler(0, 90, 0);
             Rod("Basket post", board + Vector3.down * .2f + flight * .25f, new Vector3(board.x, .15f, board.z) + flight * .25f, .09f, dark);
             var hoop = Child("Rim scoring plane", world); hoop.transform.position = Rim;
-            var sensor = hoop.AddComponent<BasketSensor3D>(); sensor.match = Match; sensor.innerRadius = .495f;
-            const int count = 32; const float radius = .55f;
+            var sensor = hoop.AddComponent<BasketSensor3D>(); sensor.match = Match; sensor.innerRadius = .60f;
+            const int count = 32; const float radius = .66f;
             for (int i = 0; i < count; i++)
             {
                 float a = i * Mathf.PI * 2 / count, b = (i + 1) * Mathf.PI * 2 / count;
@@ -203,11 +212,11 @@ namespace MarbleBasket3D
             for (int i = 0; i < 12; i++)
             {
                 float a = i * Mathf.PI * 2 / 12;
-                Vector3 top = Rim + new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)) * .53f;
-                Vector3 bottom = Rim + new Vector3(Mathf.Cos(a + .35f) * .35f, -.62f, Mathf.Sin(a + .35f) * .35f);
+                Vector3 top = Rim + new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)) * .64f;
+                Vector3 bottom = Rim + new Vector3(Mathf.Cos(a + .35f) * .45f, -.62f, Mathf.Sin(a + .35f) * .45f);
                 Rod("Net weave", top, bottom, .009f, white);
             }
-            for (int i = 1; i <= 3; i++) CircleLine("Net ring", Rim + Vector3.down * (.18f * i), .53f - .05f * i, white, .009f);
+            for (int i = 1; i <= 3; i++) CircleLine("Net ring", Rim + Vector3.down * (.18f * i), .64f - .06f * i, white, .009f);
             Funnel("Basket collection", new Vector3(Rim.x, 0, Rim.z), 1.65f, .28f, 1.25f, .28f, false);
             Zone("Collector outlet", ZoneKind3D.Collector, new Vector3(Rim.x, .18f, Rim.z), new Vector3(.64f, .48f, .64f));
         }

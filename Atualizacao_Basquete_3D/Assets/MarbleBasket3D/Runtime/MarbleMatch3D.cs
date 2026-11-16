@@ -21,13 +21,13 @@ namespace MarbleBasket3D
         public MatchFinishedEvent3D onFinished = new MatchFinishedEvent3D();
         public event Action<MatchResult3D> Finished;
         private readonly List<Marble3D> marbles = new List<Marble3D>();
-        private Seesaw3D seesaw;
+        private RotatingCross3D obstacle;
         private bool configured, released, resultSent;
         private readonly Dictionary<Marble3D, int> awardedAttempts = new Dictionary<Marble3D, int>();
         private float pausedScale = 1;
-        public void Configure(ArenaSettings3D settings, Launcher3D launcher, ReturnSystem3D returns, Seesaw3D beam, ArenaSignals3D signals)
+        public void Configure(ArenaSettings3D settings, Launcher3D launcher, ReturnSystem3D returns, RotatingCross3D beam, ArenaSignals3D signals)
         {
-            Settings = settings; Launcher = launcher; Returns = returns; seesaw = beam; Signals = signals;
+            Settings = settings; Launcher = launcher; Returns = returns; obstacle = beam; Signals = signals;
             Settings.Validate(); configured = true;
         }
         public void Register(Marble3D marble)
@@ -47,8 +47,8 @@ namespace MarbleBasket3D
         {
             RestorePause(); Rules.Reset(Settings.matchSeconds, Settings.countdownSeconds);
             SimulationTime = 0; released = resultSent = false; awardedAttempts.Clear();
-            Launcher.ResetMechanism(); Returns.ResetSystem(); seesaw.ResetMechanism(); Signals.ClearEffects();
-            foreach (var ball in marbles) ball.ResetHome();
+            Launcher.ResetMechanism(); Returns.ResetSystem(); obstacle.ResetMechanism(); Signals.ClearEffects();
+            foreach (var ball in marbles) if (ball != null) ball.ResetHome();
             foreach (var sensor in GetComponentsInChildren<BasketSensor3D>()) sensor.ResetSensor(Rules.MatchNumber);
             var recovery = GetComponent<Recovery3D>(); if (recovery != null) recovery.ResetCounters(Rules.MatchNumber);
             var diagnostics = GetComponent<ArenaDiagnostics3D>(); if (diagnostics != null) diagnostics.ResetCounters();
@@ -69,28 +69,37 @@ namespace MarbleBasket3D
             Rules.Tick(Time.fixedDeltaTime);
             if (Rules.Active && !released)
             {
-                released = true; seesaw.Release();
+                released = true; obstacle.Release();
                 // Every body is enabled on this same fixed step before any physics simulation.
-                foreach (var ball in marbles) ball.Release(MarbleState3D.Contest, SimulationTime);
-                foreach (var ball in marbles) ball.Body.WakeUp();
+                foreach (var ball in marbles) if (ball != null) ball.Release(MarbleState3D.Contest, SimulationTime);
+                foreach (var ball in marbles) if (ball != null) ball.Body.WakeUp();
                 Signals.ReleaseTeams();
             }
             DispatchResult();
         }
-        public bool TryAward(Marble3D ball)
+        public bool TryAward(Marble3D ball) => TryAwardBatch(new[] { ball }) > 0;
+        public int TryAwardBatch(IReadOnlyList<Marble3D> simultaneous)
         {
-            if (!Active || ball == null || ball.Match != this || !marbles.Contains(ball) || ball.State != MarbleState3D.InFlight || !ball.Shot.Scored) return false;
-            if (awardedAttempts.TryGetValue(ball, out int attempt) && attempt >= ball.Shot.Attempt) return false;
-            if (!Rules.Score(ball.Team)) return false;
-            awardedAttempts[ball] = ball.Shot.Attempt;
-            Signals.Basket(ball); DispatchResult(); return true;
+            if (!Active) return 0;
+            var accepted = new List<Marble3D>(); var unique = new HashSet<Marble3D>();
+            int red = 0, blue = 0;
+            foreach (var ball in simultaneous)
+            {
+                if (ball == null || ball.Match != this || !marbles.Contains(ball) || ball.State != MarbleState3D.InFlight || !ball.Shot.Scored || !unique.Add(ball)) continue;
+                if (awardedAttempts.TryGetValue(ball, out int attempt) && attempt >= ball.Shot.Attempt) continue;
+                accepted.Add(ball); if (ball.Team == TeamId.Red) red++; else blue++;
+            }
+            if (!Rules.ScoreBatch(red, blue)) return 0;
+            foreach (var ball in accepted) awardedAttempts[ball] = ball.Shot.Attempt;
+            foreach (var ball in accepted) Signals.Basket(ball);
+            DispatchResult(); return accepted.Count;
         }
         private void DispatchResult()
         {
             if (Rules.Result == null || resultSent) return;
             MatchResult3D snapshot = Rules.Result;
-            resultSent = true; Launcher.StopMechanism(); Returns.StopSystem(); seesaw.Freeze();
-            foreach (var ball in marbles) ball.SetKinematic(true);
+            resultSent = true; Launcher.StopMechanism(); Returns.StopSystem(); obstacle.Freeze();
+            foreach (var ball in marbles) if (ball != null) ball.SetKinematic(true);
             Signals.Finish(snapshot);
             // A finished snapshot is emitted once; a restart creates a new result object.
             onFinished.Invoke(snapshot); Finished?.Invoke(snapshot);
