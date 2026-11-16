@@ -14,6 +14,9 @@ namespace MarbleBasket3D
         private Transform world;
         private Material steel, dark, gold, glass, wood, woodAlt, white, red, blue;
         private PhysicsMaterial tracks, ballPhysics;
+        public const float DeckHalfWidth = 3.2f, DeckFront = -.65f, DeckBack = 3.45f;
+        public const float SideGapStart = .05f, SideGapEnd = 2.75f;
+        public const float RotorCenterX = 1.35f, RotorCenterZ = 1.4f;
         public static readonly Vector3 Rim = new Vector3(5.4f, 3.7f, -2.3f);
         public static readonly Vector3 Seat = new Vector3(0, 1.48f, -1.42f);
         public static readonly Vector3 Muzzle = new Vector3(.16f, 1.85f, -1.46f);
@@ -36,8 +39,8 @@ namespace MarbleBasket3D
             var launcher = Child("Shared launcher", world).AddComponent<Launcher3D>();
             var returns = world.gameObject.AddComponent<ReturnSystem3D>();
             var signals = world.gameObject.AddComponent<ArenaSignals3D>();
-            var seesaw = CreateCross();
-            Match.Configure(settings, launcher, returns, seesaw, signals);
+            var rotors = CreateDuelRotors();
+            Match.Configure(settings, launcher, returns, rotors, signals);
             launcher.Configure(Match); returns.Configure(Match); if (Application.isPlaying) signals.Configure(Match);
             Match.Finished += result => onResult.Invoke(result);
             Court(); EntryAndContest(); BuildLauncher(launcher); Basket(); ReturnsVisuals(); LightingAndCamera();
@@ -127,57 +130,99 @@ namespace MarbleBasket3D
             {
                 Box("Reservoir frame post", new Vector3(side * 6.6f, 4, 3.5f), new Vector3(.28f, 8, .28f), dark, false);
                 Rod("Tower diagonal", new Vector3(side * 7.3f, .2f, 3.7f), new Vector3(side * 6, 8.7f, 3.7f), .065f, steel);
-                Box("Fall catcher", new Vector3(side * 3.4f, 1.05f, 1.5f), new Vector3(1.4f, .15f, 2), dark, false);
-                Zone("Lateral fall", ZoneKind3D.Fall, new Vector3(side * 3.4f, 1.8f, 1.5f), new Vector3(1.35f, 1.5f, 2.3f));
+                Box("Side drop basin", new Vector3(side * 3.9f, 2.85f, 1.4f), new Vector3(1.5f, .15f, 3.2f), dark, false);
+                Zone("Lateral fall", ZoneKind3D.Fall, new Vector3(side * 3.95f, 3.45f, 1.4f), new Vector3(1.5f, 1.15f, 3.25f));
             }
         }
-        private RotatingCross3D CreateCross()
+        public float DeckHeight(float z) => 4.45f + Mathf.Tan(settings.deckSlopeDegrees * Mathf.Deg2Rad) * (z - 1.4f);
+        private RotatingCross3D CreateDuelRotors()
         {
-            var root = Child("Cross rotor", world); root.transform.position = new Vector3(0, 0, 1.5f);
-            var body = root.AddComponent<Rigidbody>(); body.isKinematic = true;
-            for (int i = 0; i < 4; i++)
+            var group = Child("Twin platform rotors", world);
+            Rigidbody[] bodies = new Rigidbody[2];
+            Quaternion tilt = Quaternion.Euler(-settings.deckSlopeDegrees,0,0);
+            for(int sideIndex=0;sideIndex<2;sideIndex++)
             {
-                float angle = i * Mathf.PI * .5f;
-                Vector3 radial = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-                float inner = .5f, outer = 2.45f;
-                float Floor(float radius) => 2.65f + (4.35f - 2.65f) * (radius - .245f) / (2.75f - .245f);
-                Vector3 a = root.transform.position + radial * inner + Vector3.up * (Floor(inner) + .19f);
-                Vector3 b = root.transform.position + radial * outer + Vector3.up * (Floor(outer) + .19f);
-                var paddle = Box("Cross paddle " + (i+1), (a+b)*.5f, new Vector3(.29f, .18f, Vector3.Distance(a,b)), gold, true, root.transform);
-                paddle.transform.rotation = Quaternion.LookRotation(b-a);
+                int side=sideIndex==0?-1:1;
+                var rotor=Child(side<0?"Left three-blade rotor":"Right three-blade rotor",group.transform);
+                rotor.transform.position=new Vector3(side*RotorCenterX,DeckHeight(RotorCenterZ)+.20f,RotorCenterZ);
+                rotor.transform.rotation=tilt;var rb=rotor.AddComponent<Rigidbody>();rb.isKinematic=true;bodies[sideIndex]=rb;
+                float inner=.18f,outer=settings.duelRotorRadius;
+                for(int i=0;i<3;i++)
+                {
+                    float angle=(side<0?i*Mathf.PI*2/3:Mathf.PI-i*Mathf.PI*2/3);
+                    Vector3 localDirection=new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle));
+                    var paddle=Box("Duel rotor paddle "+side+" "+i,Vector3.zero,new Vector3(.30f,.20f,outer-inner),gold,true,rotor.transform);
+                    paddle.transform.localPosition=localDirection*((inner+outer)*.5f);
+                    paddle.transform.localRotation=Quaternion.LookRotation(localDirection);
+                }
+                // A small cap covers the axle, not the whole playing field.
+                var hub=Box("Rotor axle cap",Vector3.zero,new Vector3(.35f,.27f,.35f),steel,false,rotor.transform);
+                hub.transform.localPosition=Vector3.zero;hub.transform.localRotation=Quaternion.identity;
             }
-            Rod("Cross motor shaft", new Vector3(0,3.35f,1.5f),new Vector3(0,4.7f,1.5f),.07f,steel);
-            Box("Cross motor hub",new Vector3(0,4.7f,1.5f),new Vector3(.42f,.28f,.42f),gold,false);
-            var mechanism = root.AddComponent<RotatingCross3D>(); mechanism.Configure(Match, body); return mechanism;
+            var driver=group.AddComponent<RotatingCross3D>();driver.ConfigurePair(Match,bodies[0],bodies[1]);return driver;
+        }
+        private void DeckGuard(string label,Vector3 a,Vector3 b)
+        {
+            float z=(a.z+b.z)*.5f;
+            var guard=Box(label,new Vector3((a.x+b.x)*.5f,DeckHeight(z)+.25f,z),new Vector3(.06f,.52f,Vector3.Distance(a,b)),glass);
+            guard.transform.rotation=Quaternion.LookRotation(b-a);
+            Rod(label+" top rail",new Vector3(a.x,DeckHeight(a.z)+.52f,a.z),new Vector3(b.x,DeckHeight(b.z)+.52f,b.z),.025f,steel);
         }
         private void EntryAndContest()
         {
-            for (int side = -1; side <= 1; side += 2)
+            var deckMaterial=Mat("Flat competition deck",new Color(.075f,.10f,.14f),.28f,.38f);
+            var deck=Box("Open duel deck",new Vector3(0,4.37f,1.4f),new Vector3(DeckHalfWidth*2,.16f,DeckBack-DeckFront),deckMaterial);
+            deck.transform.rotation=Quaternion.Euler(-settings.deckSlopeDegrees,0,0);
+            DeckGuard("Rear deck guard",new Vector3(-DeckHalfWidth,0,DeckBack),new Vector3(DeckHalfWidth,0,DeckBack));
+            for(int side=-1;side<=1;side+=2)
             {
-                Vector3 start = new Vector3(side * 7.5f, 8.5f, 3.1f), end = new Vector3(side * 1.65f, 4.9f, 1.5f);
-                Track(side < 0 ? "Red entry" : "Blue entry", start, end, 1.35f);
-                // Transparent reservoir shell around the upper part of the same continuous ramp.
-                Vector3 center = Vector3.Lerp(start, end, .075f) + Vector3.up * .45f;
-                for (int z = -1; z <= 1; z += 2) Box("Reservoir transparent wall", center + Vector3.forward * z * .85f, new Vector3(1.8f, 1.15f, .06f), glass);
-                Box("Reservoir team accent", center + Vector3.up * .65f, new Vector3(1.9f, .06f, 1.8f), side < 0 ? red : blue, false);
+                float x=side*DeckHalfWidth;
+                DeckGuard("Side front guard",new Vector3(x,0,DeckFront),new Vector3(x,0,SideGapStart));
+                DeckGuard("Side rear guard",new Vector3(x,0,SideGapEnd),new Vector3(x,0,DeckBack));
+                DeckGuard("Front exit guard",new Vector3(side*.67f,0,DeckFront),new Vector3(x,0,DeckFront));
+                Vector3 start=EntryStart(side),end=EntryEnd(side);
+                Track(side<0?"Red entry":"Blue entry",start,end,1.35f);
+                Vector3 center=Vector3.Lerp(start,end,.075f)+Vector3.up*.45f;
+                for(int z=-1;z<=1;z+=2)Box("Reservoir transparent wall",center+Vector3.forward*z*.85f,new Vector3(1.8f,1.15f,.06f),glass);
+                Box("Reservoir team accent",center+Vector3.up*.65f,new Vector3(1.9f,.06f,1.8f),side<0?red:blue,false);
+                // Passive mirrored deflectors turn the ramp's incoming speed toward the rotors/front.
+                Vector3 a=new Vector3(side*1.70f,0,3.25f),b=new Vector3(side*.45f,0,2.50f);
+                DeckGuard("Entry deflector",a,b);
             }
-            Funnel("Contest funnel", new Vector3(0, 0, 1.5f), 2.75f, .245f, 4.35f, 2.65f, true);
-            Track("Single file queue", new Vector3(0, 2.16f, 1.65f), new Vector3(0, 1.20f, -1.48f), .60f);
-            Zone("Queue sensor", ZoneKind3D.Queue, new Vector3(0, 2.0f, .1f), new Vector3(.65f, 1.6f, 3.8f));
+            // Only a small funnel remains AFTER the front exit. No sloped cone encloses the duel area.
+            Funnel("Front exit funnel",new Vector3(0,0,-.70f),.72f,.245f,DeckHeight(DeckFront)-.02f,2.65f,false,true);
+            Track("Single file queue",new Vector3(0,2.16f,1.65f),new Vector3(0,1.20f,-1.48f),.60f);
+            // The feed tube opens at its bottom toward the existing queue, so it cannot become a gate.
+            for(int side=-1;side<=1;side+=2)
+                Box("Front feed side",new Vector3(side*.30f,2.20f,-.70f),new Vector3(.045f,.95f,.60f),glass);
+            Box("Front feed rear",new Vector3(0,2.30f,-.39f),new Vector3(.60f,.72f,.045f),glass);
+            Box("Front feed front",new Vector3(0,2.40f,-1.01f),new Vector3(.60f,.52f,.045f),glass);
+            Zone("Queue sensor",ZoneKind3D.Queue,new Vector3(0,2.0f,.1f),new Vector3(.65f,1.6f,3.8f));
         }
+        private static Vector3 EntryStart(int side)=>new Vector3(side*7.5f,8.5f,3.1f);
+        private static Vector3 EntryEnd(int side)=>new Vector3(side*1.85f,4.9f,2.75f);
         private void BuildLauncher(Launcher3D launcher)
         {
-            Box("Lever plinth",new Vector3(-.25f,.32f,-1.5f),new Vector3(1.7f,.5f,1.35f),dark);
+            bool compact=settings.compactLauncher;
+            Box("Launcher plinth",new Vector3(-.25f,.32f,-1.5f),compact?new Vector3(1.35f,.5f,1.0f):new Vector3(1.7f,.5f,1.35f),dark);
             launcher.seat = Seat; launcher.target = Rim;
-            var lever = Child("Open lever",world); var body = lever.AddComponent<Rigidbody>();
+            var lever = Child(compact?"Compact cross launcher":"Open lever",world); var body = lever.AddComponent<Rigidbody>();
             body.isKinematic=true;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
             launcher.ConfigureLever(body);
             Vector3 pivot=body.position;
-            // Both pieces are compound colliders on the powered lever; the entry has no gate.
-            var arm=Box("Catapult arm",Vector3.zero,new Vector3(.20f,.14f,Launcher3D.ArmLength),steel,true,lever.transform);
-            arm.transform.localPosition=new Vector3(0,0,Launcher3D.ArmLength*.5f);arm.transform.localRotation=Quaternion.identity;
-            var paddle=Box("Catapult paddle",Vector3.zero,new Vector3(.55f,.10f,.44f),gold,true,lever.transform);
-            paddle.transform.localPosition=new Vector3(0,0,Launcher3D.ArmLength);paddle.transform.localRotation=Quaternion.identity;
+            float length=launcher.EffectiveArmLength;
+            // Small compound paddles leave the ball visible. There is no opaque wheel or entry gate.
+            for(int blade=0;blade<(compact?4:1);blade++)
+            {
+                Quaternion turn=Quaternion.Euler(-blade*90,0,0);
+                Vector3 direction=turn*Vector3.forward;
+                var arm=Box("Catapult arm "+blade,Vector3.zero,compact?new Vector3(.16f,.10f,length):new Vector3(.20f,.14f,length),steel,true,lever.transform);
+                arm.transform.localPosition=direction*(length*.5f);arm.transform.localRotation=turn;
+                var paddle=Box("Catapult paddle "+blade,Vector3.zero,compact?new Vector3(.38f,.10f,.27f):new Vector3(.55f,.10f,.44f),gold,true,lever.transform);
+                paddle.transform.localPosition=direction*length;paddle.transform.localRotation=turn;
+            }
+            var hub=Box("Launcher hub",Vector3.zero,new Vector3(.30f,.30f,.30f),gold,false,lever.transform);
+            hub.transform.localPosition=Vector3.zero;hub.transform.localRotation=Quaternion.identity;
             var relay=lever.AddComponent<LeverContact3D>();relay.launcher=launcher;
             Rod("Lever axle",pivot+Vector3.forward*.36f,pivot-Vector3.forward*.36f,.11f,gold);
             for(int side=-1;side<=1;side+=2)
@@ -220,7 +265,7 @@ namespace MarbleBasket3D
             Funnel("Basket collection", new Vector3(Rim.x, 0, Rim.z), 1.65f, .28f, 1.25f, .28f, false);
             Zone("Collector outlet", ZoneKind3D.Collector, new Vector3(Rim.x, .18f, Rim.z), new Vector3(.64f, .48f, .64f));
         }
-        private void Funnel(string label, Vector3 center, float outer, float inner, float topY, float bottomY, bool sideFalls)
+        private void Funnel(string label, Vector3 center, float outer, float inner, float topY, float bottomY, bool sideFalls, bool openRear = false)
         {
             const int segments = 20;
             for (int i = 0; i < segments; i++)
@@ -232,7 +277,8 @@ namespace MarbleBasket3D
                 mesh.triangles = new[] { 0,1,2,0,2,3,4,6,5,4,7,6,0,4,5,0,5,1,1,5,6,1,6,2,2,6,7,2,7,3,3,7,4,3,4,0 }; mesh.RecalculateNormals(); mesh.RecalculateBounds(); resources.Own(mesh);
                 var go = Child(label + " slope " + i, world); go.AddComponent<MeshFilter>().sharedMesh = mesh; go.AddComponent<MeshRenderer>().sharedMaterial = glass;
                 var collider = go.AddComponent<MeshCollider>(); collider.sharedMesh = mesh; collider.convex = true; collider.sharedMaterial = tracks;
-                bool opening = sideFalls && (i == 0 || i == segments - 1 || i == segments / 2 || i == segments / 2 - 1);
+                bool opening = (sideFalls && (i == 0 || i == segments - 1 || i == segments / 2 || i == segments / 2 - 1))
+                    || (openRear && Mathf.Sin((a+b)*.5f) > .35f);
                 if (!opening)
                 {
                     Vector3 mid = P((a+b)*.5f, outer, topY + .23f);
@@ -275,7 +321,7 @@ namespace MarbleBasket3D
         public static Vector3 Home(TeamId team, int number)
         {
             float side = team == TeamId.Red ? -1 : 1;
-            Vector3 start = new Vector3(side * 7.5f, 8.5f, 3.1f), end = new Vector3(side * 1.65f, 4.9f, 1.5f);
+            Vector3 start = EntryStart((int)side), end = EntryEnd((int)side);
             float t = .035f + ((number - 1) / 2) * .07f;
             return Vector3.Lerp(start, end, t) + Vector3.up * .38f + Vector3.forward * ((number % 2 == 0) ? .24f : -.24f);
         }

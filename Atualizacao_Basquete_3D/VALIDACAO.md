@@ -1,35 +1,38 @@
-# Validação da V2 — cruz, alavanca e contagem
+# Validação da V3 — plataforma, dois rotores e roda compacta
 
-Base: Unity 6000.4.11f1, identificado no backup. O ambiente de desenvolvimento não possui editor Unity instalado.
+Versão alvo: Unity **6000.4.11f1**, identificada no projeto fornecido. O ambiente de desenvolvimento não possui Editor Unity instalado.
 
-## Executado aqui
+A V2 foi confirmada pelo usuário funcionando; a captura enviada mostra 34–36, quatro bolinhas por time e disparos de ambas as equipes. Essa observação é da versão anterior. Não constitui execução da V3.
 
-- **7.232 verificações de regras em C# puro**: relógio, pausa, reinício, morte súbita, cruzamento descendente, margem da abertura, confirmação da passagem completa, rejeição de pontos duplicados e empate de cestas simultâneas.
-- **129 verificações de execução em C# com substitutos das APIs Unity**: oito identidades, quatro por time, contagem preservada durante o retorno, entrada sem portão, cruz giratória, golpe da alavanca, tentativas consecutivas sem aguardar o pouso anterior, contatos laterais da pá sem correção de velocidade, segunda chance, recuperação e reinício. Incluem cestas ordenadas pelo tempo de cruzamento, sem dar preferência ao primeiro time registrado.
-- Compilação do código de execução e de editor com substitutos das dependências. **Não é compilação contra as bibliotecas reais nem execução de PhysX.**
-- **10 grupos de verificações estruturais**: sintaxe, GUIDs, assemblies, cena, prefab sem o ID reservado 100100000, configuração sem referência a esse prefab, quatro bolinhas por time, geometria de fila/funil e ausência de portão. Também foi conferido que o arquivo de retorno é idêntico ao da V1.
-- Sondagem numérica de **360 trajetórias** usando a posição real de saída da alavanca, oscilações de ângulo/direção/potência, gravidade, passo de 0,01 s e amortecimento aproximado: houve 233 acertos e 127 erros sem colisões. **Esses números não são uma previsão da taxa de acerto real.** Aro, tabela, contatos com outras bolinhas e integração PhysX mudam os resultados.
+## Executado nesta revisão
 
-As verificações puras podem ser repetidas com .NET 8: `dotnet run --project Verification/CoreChecks.csproj`. Isso é opcional e não é dependência do jogo.
+- **7.232 verificações em C# puro:** relógio, pausa, reinício, morte súbita, validação descendente de cesta, passagem completa e rejeição de pontuação duplicada.
+- **201 verificações de execução com substitutos das APIs Unity:** oito identidades, retorno e segunda chance, ordem temporal das cestas, contatos incidentais sem corrigir velocidade, disparos consecutivos, dois rotores espelhados, saídas laterais desobstruídas, passagem frontal aberta, tamanho da roda e cinco ciclos de troca de pá. Todas as quatro pás chegam ao mesmo encaixe sem salto de orientação; o reinício restaura roda e rotores. Inclui a opção de alavanca da V2 e tentativas incidentais durante o avanço da roda.
+- Compilação dos scripts de execução e de Editor contra substitutos das dependências. **Não equivale a compilação contra as bibliotecas Unity nem execução da física PhysX.**
+- **11 grupos de verificações estruturais:** sintaxe C#, GUIDs, assemblies, cena, prefab, quatro bolinhas por time, folgas da fila/funil, folga máxima entre rotores e defletores, configuração V3 e independência do código antigo de futebol.
+- Comparação de arquivos confirma que retorno, regras, validação de cesta, controle da partida, identidade das bolinhas, HUD e diagnóstico são idênticos à V2.
+- Sondagem numérica de **360 trajetórias** com a posição real de saída da roda compacta, oscilação de ângulo/direção/potência, gravidade e amortecimento aproximado: **227 acertos e 133 erros sem colisões**. A sondagem verifica possibilidade matemática de acerto e erro. Não prevê a taxa real de cestas com aro, tabela, outras bolas e PhysX.
+- Inspeção visual auxiliar da geometria exportada e renderizada fora do Unity. Essa imagem não comprova iluminação, importação ou comportamento físico no Editor.
 
-## Testes para executar no Unity
+As verificações puras incluídas no pacote podem ser repetidas com .NET 8: `dotnet run --project Verification/CoreChecks.csproj`. O .NET externo não é dependência do jogo.
+
+## Testes fornecidos para executar no Unity
 
 Em **Window → General → Test Runner**:
 
-- **EditMode → MarbleBasket3D.EditorTests**: regras, cestas, reinício e cestas simultâneas na morte súbita.
-- **PlayMode → MarbleBasket3D.PlayTests**: partida inteira de 90 s com oportunidades para os dois times, oito identidades e resultado; pausa/recuperação; montagem V2 com cruz e sem portão.
+- **EditMode → MarbleBasket3D.EditorTests:** regras, cestas, reinício e simultaneidade na morte súbita.
+- **PlayMode → MarbleBasket3D.PlayTests:** partida automática inteira, oito identidades, disparos dos dois times, cestas e resultado; pausa/recuperação; montagem com os dois rotores e quatro pás no lançador.
 
-O teste longo admite até 185 s reais para incluir a prorrogação e falha se um time não tiver disparos, se não houver cestas ou se a partida não terminar. O diagnóstico é escrito no Console. **Esses testes de Unity não foram executados aqui.**
+O teste longo admite até 185 s reais para incluir a prorrogação e falha se não houver cestas, se uma equipe não tiver disparos ou se a partida não terminar. Esses testes nativos não foram executados neste ambiente.
 
-## Conferência manual indispensável
+## Conferência manual da nova dinâmica
 
-1. Abrir a cena da atualização e limpar mensagens antigas do Console.
-2. Conferir BOLAS 4/4 de cada equipe e ausência de nova mensagem de cast do prefab.
-3. Conferir que a cruz realmente empurra as bolas e inverte o sentido sem prender o funil.
-4. Conferir recuo/golpe/retorno da alavanca e entrada aberta entre os arremessos.
-5. Observar vários arremessos: acertos e erros, rebotes, contadores por time e registro único de cada cesta.
-6. Conferir que o retorno continua claro e mantém quatro identidades por equipe.
-7. Pausar e reiniciar; conferir contadores zerados, posições iniciais e mecanismos reiniciados.
-8. Fazer uma gravação curta em 16:9 para avaliar o ritmo e a leitura da ação.
+1. Abrir a cena, limpar mensagens antigas do Console e conferir BOLAS 4/4 para ambos os times.
+2. Observar contatos dos dois rotores e quedas pelas aberturas laterais; conferir que a mesma bolinha retorna.
+3. Conferir passagem para o pequeno funil frontal sem travamento na borda traseira.
+4. Observar o golpe e o avanço de um quarto de volta da roda; a próxima pá deve receber a bola na mesma posição.
+5. Conferir oportunidades para os dois times, acertos, erros e rebotes durante uma partida completa.
+6. Pausar e reiniciar; confirmar posições, placar e contadores zerados.
+7. Avaliar a leitura da ação numa gravação curta em 16:9.
 
-Se o resultado continuar 0–0, o relatório de ArenaDiagnostics3D permite distinguir falta de disparos, trajetória que não atinge altura suficiente e passagem fora do aro. Não há alegação de que a revisão já tenha executado uma partida física no Unity.
+A geometria agora permite saída lateral. A frequência de ejeções, a disputa, eventuais travamentos e o ritmo com a nova roda dependem da simulação real e ainda precisam desta validação.

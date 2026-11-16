@@ -15,11 +15,15 @@ namespace MarbleBasket3D
         public float ReferenceSpeed { get; private set; }
         public float LastProgress { get; private set; }
         public int ShotsFired { get; private set; }
-        public bool Striking => (striking && Phase == LauncherPhase3D.Preparing) || (Phase == LauncherPhase3D.Cooling && match != null && match.SimulationTime - lastReleaseTime <= Time.fixedDeltaTime * 2);
+        public bool Striking => (striking && Phase == LauncherPhase3D.Preparing)
+            || (Phase == LauncherPhase3D.Cooling && match != null
+                && (match.Settings.compactLauncher || match.SimulationTime - lastReleaseTime <= Time.fixedDeltaTime * 2));
         public Vector3 seat, muzzle, target;
         public Transform barrel;
         public Rigidbody leverBody;
         public const float ArmLength = 1.05f;
+        public float EffectiveArmLength => match != null && match.Settings.compactLauncher ? match.Settings.launcherWheelRadius : ArmLength;
+        public int ActiveBladeIndex { get; private set; }
         public const float RestAngle = -74f;
         private const float DrawbackAngle = -86f;
         private MarbleMatch3D match;
@@ -35,8 +39,9 @@ namespace MarbleBasket3D
             leverBody = body; barrel = body.transform;
             horizontal = target - seat; horizontal.y = 0; horizontal.Normalize();
             float rest = RestAngle * Mathf.Deg2Rad, offset = match.Settings.marbleRadius + .07f;
-            pivot = seat - horizontal * (ArmLength * Mathf.Cos(rest) - Mathf.Sin(rest) * offset)
-                - Vector3.up * (ArmLength * Mathf.Sin(rest) + Mathf.Cos(rest) * offset);
+            ActiveBladeIndex = 0;
+            pivot = seat - horizontal * (EffectiveArmLength * Mathf.Cos(rest) - Mathf.Sin(rest) * offset)
+                - Vector3.up * (EffectiveArmLength * Mathf.Sin(rest) + Mathf.Cos(rest) * offset);
             leverBody.position = pivot;
             Vector3 release = TipAt(match.Settings.launchAngle - 90, 0);
             Vector3 distance = target - release; distance.y = 0;
@@ -54,18 +59,20 @@ namespace MarbleBasket3D
         public Vector3 TipAt(float armAngle, float yaw)
         {
             Quaternion rotation = Rotation(armAngle, yaw);
-            return pivot + rotation * Vector3.forward * ArmLength + rotation * Vector3.up * (match.Settings.marbleRadius + .07f);
+            return pivot + rotation * Vector3.forward * EffectiveArmLength + rotation * Vector3.up * (match.Settings.marbleRadius + .07f);
         }
+        private Quaternion BodyRotation(float armAngle, float yaw) => Rotation(armAngle - ActiveBladeIndex * 90, yaw);
         private void Pose(float armAngle, float yaw)
         {
-            if (leverBody != null) leverBody.MoveRotation(Rotation(armAngle, yaw));
+            if (leverBody != null) leverBody.MoveRotation(BodyRotation(armAngle, yaw));
         }
         public void Enter(Marble3D ball) { if (ball != null) candidates.Add(ball); }
         public void Exit(Marble3D ball) { if (ball != null) candidates.Remove(ball); }
         public void ResetMechanism()
         {
             Occupant = null; candidates.Clear(); ShotsFired = 0; LastProgress = phaseStarted = 0; striking = false;
-            Phase = LauncherPhase3D.Open; lastReleaseTime = -100; if (leverBody != null) leverBody.rotation = Rotation(RestAngle, 0);
+            ActiveBladeIndex = 0; Phase = LauncherPhase3D.Open; lastReleaseTime = -100;
+            if (leverBody != null) leverBody.rotation = BodyRotation(RestAngle, 0);
         }
         public void StopMechanism() { Phase = LauncherPhase3D.Stopped; striking = false; }
         public bool QueueIsHealthy(float now) => Phase != LauncherPhase3D.Stopped && now - LastProgress < match.Settings.mechanismTimeout;
@@ -101,7 +108,7 @@ namespace MarbleBasket3D
                 if (!striking)
                 {
                     float fraction = Mathf.Clamp01((now - phaseStarted) / s.preparationSeconds);
-                    float armAngle = RestAngle + (DrawbackAngle - RestAngle) * fraction;
+                    float armAngle = s.compactLauncher ? RestAngle : RestAngle + (DrawbackAngle - RestAngle) * fraction;
                     Pose(armAngle, 0);
                     if (Occupant != null) Occupant.Body.position = TipAt(armAngle, 0);
                     if (fraction >= 1)
@@ -112,10 +119,11 @@ namespace MarbleBasket3D
                 }
                 else
                 {
-                    // Tangent speed = angular speed * lever length. A short powered stroke
+                    // Tangent speed = angular speed * paddle radius. A short powered stroke
                     // produces the same tangent direction that the ball receives at release.
                     float releaseArmAngle = strikeAngle - 90;
-                    float angle = Mathf.Min(releaseArmAngle, DrawbackAngle + (now - strikeStarted) * strikeSpeed / ArmLength * Mathf.Rad2Deg);
+                    float startAngle = s.compactLauncher ? RestAngle : DrawbackAngle;
+                    float angle = Mathf.Min(releaseArmAngle, startAngle + (now - strikeStarted) * strikeSpeed / EffectiveArmLength * Mathf.Rad2Deg);
                     Pose(angle, strikeYaw);
                     if (Occupant != null) Occupant.Body.position = TipAt(angle, strikeYaw);
                     if (angle >= releaseArmAngle)
@@ -134,12 +142,19 @@ namespace MarbleBasket3D
             else if (Phase == LauncherPhase3D.Cooling)
             {
                 float fraction = Mathf.Clamp01((now - phaseStarted) / s.launchInterval);
-                Pose((strikeAngle - 90) + (RestAngle - strikeAngle + 90) * fraction, strikeYaw * (1 - fraction));
-                if (fraction >= 1) { Phase = LauncherPhase3D.Open; LastProgress = now; }
+                float endAngle = RestAngle + (s.compactLauncher ? 90 : 0);
+                Pose((strikeAngle - 90) + (endAngle - strikeAngle + 90) * fraction, strikeYaw * (1 - fraction));
+                if (fraction >= 1)
+                {
+                    // Advance one quarter-turn in the same direction. The following paddle
+                    // then occupies the same loading seat without reversing the wheel.
+                    if (s.compactLauncher) ActiveBladeIndex = (ActiveBladeIndex + 3) % 4;
+                    Phase = LauncherPhase3D.Open; LastProgress = now;
+                }
             }
             if (Phase == LauncherPhase3D.Preparing && now - phaseStarted > s.mechanismTimeout)
             {
-                if (Occupant != null) match.Returns.ReturnHome(Occupant, "Recuperação da alavanca");
+                if (Occupant != null) match.Returns.ReturnHome(Occupant, "Recuperação do lançador");
                 Occupant = null; BeginCooling(now);
             }
         }

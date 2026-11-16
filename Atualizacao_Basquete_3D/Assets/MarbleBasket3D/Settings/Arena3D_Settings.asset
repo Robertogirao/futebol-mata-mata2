@@ -24,8 +24,12 @@ MonoBehaviour:
   marbleMass: 0.45
   marbleBounce: 0.42
   physicsStep: 0.01
-  crossDegreesPerSecond: 65
+  deckSlopeDegrees: 4.5
+  duelRotorRadius: 1.05
+  crossDegreesPerSecond: 105
   crossReversalSeconds: 5
+  compactLauncher: 1
+  launcherWheelRadius: 0.65
   calibrateLaunchSpeed: 1
   launchYawVariation: 2.5
   launchSpeed: 8.65

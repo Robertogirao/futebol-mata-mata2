@@ -42,11 +42,18 @@ namespace MarbleBasket3D.Tests
             match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
             Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
         }
-        [UnityTest] public IEnumerator V2BuildHasEightMarblesCrossAndNoQueueGate()
+        [UnityTest] public IEnumerator V3BuildHasTwinRotorsCompactWheelAndEightMarbles()
         {
             var diagnostics=match.GetComponent<ArenaDiagnostics3D>();
             Assert.That(diagnostics.CountLive(TeamId.Red),Is.EqualTo(4));Assert.That(diagnostics.CountLive(TeamId.Blue),Is.EqualTo(4));
             Assert.That(root.GetComponentsInChildren<RotatingCross3D>().Length,Is.EqualTo(1));
+            var rotors=root.GetComponentInChildren<RotatingCross3D>();
+            Assert.That(rotors.body,Is.Not.Null);Assert.That(rotors.oppositeBody,Is.Not.Null);
+            Assert.That(rotors.body.GetComponentsInChildren<BoxCollider>().Length,Is.EqualTo(3));
+            Assert.That(rotors.oppositeBody.GetComponentsInChildren<BoxCollider>().Length,Is.EqualTo(3));
+            int paddles=0;foreach(var child in match.Launcher.leverBody.GetComponentsInChildren<Transform>())
+                if(child.name.StartsWith("Catapult paddle"))paddles++;
+            Assert.That(paddles,Is.EqualTo(4));Assert.That(settings.launcherWheelRadius,Is.LessThan(.81f));
             foreach(var collider in root.GetComponentsInChildren<Collider>()) Assert.That(collider.gameObject.name,Does.Not.Contain("Queue gate"));
             Assert.That(settings.preparationSeconds,Is.LessThan(.4f));
             LogAssert.NoUnexpectedReceived();yield return null;
