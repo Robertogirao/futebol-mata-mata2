@@ -15,7 +15,8 @@ namespace MarbleBasket3D
         private Material steel, dark, gold, glass, wood, woodAlt, white, red, blue;
         private PhysicsMaterial tracks, ballPhysics;
         public const float DeckHalfWidth = 3.2f, DeckFront = -.65f, DeckBack = 3.45f;
-        public const float SideGapStart = .05f, SideGapEnd = 2.75f;
+        public const float SideGapStart = .10f, SideGapEnd = 2.75f;
+        public const float FrontExitHalfWidth = 1.0f, ChuteExitWidth = 1.05f;
         public const float RotorCenterX = 1.35f, RotorCenterZ = 1.4f;
         public static readonly Vector3 Rim = new Vector3(5.4f, 3.7f, -2.3f);
         public static readonly Vector3 Seat = new Vector3(0, 1.48f, -1.42f);
@@ -114,6 +115,31 @@ namespace MarbleBasket3D
                 Rod(label + " rail", a + right * side * width * .5f + up * .58f, b + right * side * width * .5f + up * .58f, .035f, steel);
             }
         }
+        private void SurfacePrism(string label, Vector3[] top, float depth, Material material)
+        {
+            int n=top.Length;var vertices=new Vector3[n*2];var triangles=new List<int>();
+            for(int i=0;i<n;i++){vertices[i]=top[i];vertices[i+n]=top[i]-Vector3.up*depth;}
+            for(int i=1;i<n-1;i++)triangles.AddRange(new[]{0,i,i+1,n,n+i+1,n+i});
+            for(int i=0;i<n;i++){int j=(i+1)%n;triangles.AddRange(new[]{i,i+n,j+n,i,j+n,j});}
+            var mesh=new Mesh{name=label};mesh.vertices=vertices;mesh.triangles=triangles.ToArray();mesh.RecalculateNormals();mesh.RecalculateBounds();resources.Own(mesh);
+            var go=Child(label,world);go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=material;
+            var collider=go.AddComponent<MeshCollider>();collider.sharedMesh=mesh;collider.convex=true;collider.sharedMaterial=tracks;
+        }
+        private void ChuteGuard(string label,Vector3 a,Vector3 b)
+        {
+            Vector3 direction=b-a;direction.y=0;direction.Normalize();
+            Vector3 half=Vector3.Cross(Vector3.up,direction)*.0325f;
+            SurfacePrism(label,new[]{a+half+Vector3.up*.55f,b+half+Vector3.up*.55f,b-half+Vector3.up*.55f,a-half+Vector3.up*.55f},.65f,glass);
+            Rod(label+" rail",a+Vector3.up*.55f,b+Vector3.up*.55f,.025f,steel);
+        }
+        private void OpenGravityChute(Vector3 lip)
+        {
+            Vector3 entry=new Vector3(0,DeckHeight(DeckFront)-.04f,DeckFront);
+            Vector3 leftEntry=entry-Vector3.right*FrontExitHalfWidth,rightEntry=entry+Vector3.right*FrontExitHalfWidth;
+            Vector3 leftExit=lip-Vector3.right*(ChuteExitWidth*.5f),rightExit=lip+Vector3.right*(ChuteExitWidth*.5f);
+            SurfacePrism("Open drop chute floor",new[]{leftEntry,rightEntry,rightExit,leftExit},.12f,glass);
+            ChuteGuard("Open drop chute guide",leftEntry,leftExit);ChuteGuard("Open drop chute guide",rightExit,rightEntry);
+        }
         private void Court()
         {
             Box("Court foundation", new Vector3(0, -.18f, 0), new Vector3(20, .35f, 12), dark);
@@ -171,15 +197,14 @@ namespace MarbleBasket3D
         private void EntryAndContest(Launcher3D launcher)
         {
             var deckMaterial=Mat("Flat competition deck",new Color(.075f,.10f,.14f),.28f,.38f);
-            var deck=Box("Open duel deck",new Vector3(0,4.37f,1.4f),new Vector3(DeckHalfWidth*2,.16f,DeckBack-DeckFront),deckMaterial);
-            deck.transform.rotation=Quaternion.Euler(-settings.deckSlopeDegrees,0,0);
+            Vector3 D(float x,float z)=>new Vector3(x,DeckHeight(z),z);
+            SurfacePrism("Open duel deck",new[]{D(-DeckHalfWidth,DeckBack),D(DeckHalfWidth,DeckBack),D(DeckHalfWidth,SideGapStart),D(FrontExitHalfWidth,DeckFront),D(-FrontExitHalfWidth,DeckFront),D(-DeckHalfWidth,SideGapStart)},.16f,deckMaterial);
             DeckGuard("Rear deck guard",new Vector3(-DeckHalfWidth,0,DeckBack),new Vector3(DeckHalfWidth,0,DeckBack));
             for(int side=-1;side<=1;side+=2)
             {
                 float x=side*DeckHalfWidth;
-                DeckGuard("Side front guard",new Vector3(x,0,DeckFront),new Vector3(x,0,SideGapStart));
                 DeckGuard("Side rear guard",new Vector3(x,0,SideGapEnd),new Vector3(x,0,DeckBack));
-                DeckGuard("Front exit guard",new Vector3(side*.67f,0,DeckFront),new Vector3(x,0,DeckFront));
+                DeckGuard("Front exit guard",new Vector3(side*FrontExitHalfWidth,0,DeckFront),new Vector3(x,0,SideGapStart));
                 Vector3 start=EntryStart(side),end=EntryEnd(side);
                 Track(side<0?"Red entry":"Blue entry",start,end,1.35f);
                 Vector3 center=Vector3.Lerp(start,end,.075f)+Vector3.up*.45f;
@@ -191,15 +216,11 @@ namespace MarbleBasket3D
             }
             if (launcher.Continuous)
             {
-                Vector3 queueStart = launcher.QueueReturnPoint - Vector3.up * .30f;
                 Vector3 drop = launcher.DropPoint;
                 Vector3 forward = Rim - Seat; forward.y = 0; forward.Normalize();
                 Vector3 axis = Vector3.Cross(Vector3.up,forward);
                 Vector3 lip = drop - axis*.36f;
-                float fraction = (queueStart.z + .70f) / (queueStart.z - lip.z);
-                Vector3 mouth = Vector3.Lerp(queueStart, lip, fraction); mouth.y = 0;
-                Funnel("Front exit funnel",mouth,.72f,.245f,DeckHeight(DeckFront)-.02f,3.95f,false,true);
-                Track("Open drop chute",queueStart,lip,.60f);
+                OpenGravityChute(lip);
                 // Parallel to the wheel plane: these walls remove the chute's axial drift
                 // while leaving the rotating paddles and their radial exit unobstructed.
                 for (int side=-1;side<=1;side+=2)
@@ -211,7 +232,7 @@ namespace MarbleBasket3D
                     var guide = Box("Drop guide side",drop + axis * side * .34f + Vector3.up*centerY,new Vector3(.06f,height,1.05f),glass);
                     guide.transform.rotation = Quaternion.LookRotation(forward);
                 }
-                Zone("Queue sensor",ZoneKind3D.Queue,new Vector3(.15f,3.50f,.1f),new Vector3(1.1f,1.5f,3.8f));
+                Zone("Queue sensor",ZoneKind3D.Queue,new Vector3(.15f,3.50f,-.9f),new Vector3(2.2f,1.9f,1.4f));
                 return;
             }
             // Compatibility path for the V3 indexed wheel and the V2 lever.
@@ -295,8 +316,8 @@ namespace MarbleBasket3D
                 Rod("Net weave", top, bottom, .009f, white);
             }
             for (int i = 1; i <= 3; i++) CircleLine("Net ring", Rim + Vector3.down * (.18f * i), .64f - .06f * i, white, .009f);
-            Funnel("Basket collection", new Vector3(Rim.x, 0, Rim.z), 1.65f, .28f, 1.25f, .28f, false);
-            Zone("Collector outlet", ZoneKind3D.Collector, new Vector3(Rim.x, .18f, Rim.z), new Vector3(.64f, .48f, .64f));
+            Funnel("Basket collection", new Vector3(Rim.x, 0, Rim.z), 1.65f, .48f, 1.25f, .28f, false);
+            Zone("Collector outlet", ZoneKind3D.Collector, new Vector3(Rim.x, .18f, Rim.z), new Vector3(1.05f, .55f, 1.05f));
         }
         private void Funnel(string label, Vector3 center, float outer, float inner, float topY, float bottomY, bool sideFalls, bool openRear = false)
         {
@@ -342,8 +363,15 @@ namespace MarbleBasket3D
                 }
                 Rod("Reservoir return connection", high, Home((side < 0 ? TeamId.Red : TeamId.Blue), 1), .27f, glass);
             }
-            Vector3[] chance = { new Vector3(5.4f, .25f, -2.3f), new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f,.65f,-3.6f), new Vector3(1.1f,2.7f,1.7f), Match.Launcher.QueueReturnPoint };
-            for (int i = 1; i < chance.Length; i++) Rod("Second chance return tube", chance[i-1], chance[i], .24f, glass);
+            Rod("Basket return common tube",ReturnSystem3D.CollectorOutlet,ReturnSystem3D.CollectorFork,.24f,glass);
+            for(int side=-1;side<=1;side+=2)
+            {
+                TeamId team=side<0?TeamId.Red:TeamId.Blue;
+                Vector3 branch=ReturnSystem3D.CollectorBranch(team);
+                Rod("Reservoir return branch",ReturnSystem3D.CollectorFork,branch,.24f,glass);
+                Rod("Reservoir branch connection",branch,new Vector3(side*8.5f,.7f,-3.7f),.24f,glass);
+                Rod("Return team stripe",ReturnSystem3D.CollectorFork+Vector3.up*.24f,branch+Vector3.up*.24f,.025f,side<0?red:blue);
+            }
         }
         private void Zone(string label, ZoneKind3D kind, Vector3 center, Vector3 size)
         {

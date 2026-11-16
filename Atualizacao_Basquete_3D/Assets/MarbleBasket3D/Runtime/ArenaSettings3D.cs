@@ -18,7 +18,7 @@ namespace MarbleBasket3D
         [Range(0, 1)] public float marbleBounce = .42f;
         [Range(.005f, .03f)] public float physicsStep = .01f;
         [Header("Plataforma e dois rotores")]
-        [Range(1, 8)] public float deckSlopeDegrees = 4.5f;
+        [Range(1, 8)] public float deckSlopeDegrees = 6.5f;
         [Range(.8f, 1.10f)] public float duelRotorRadius = 1.05f;
         [Range(10, 120)] public float crossDegreesPerSecond = 105;
         [Range(2, 12)] public float crossReversalSeconds = 5;
@@ -46,8 +46,8 @@ namespace MarbleBasket3D
         [HideInInspector] public bool waitForShotToLand; // Legacy value ignored: the entry now stays open.
         [Header("Retorno e recuperação")]
         [Range(1, 8)] public float returnSeconds = 3.2f;
-        [Range(.5f, 5)] public float secondChanceSeconds = 1.7f;
-        public bool enableSecondChance = true;
+        [HideInInspector] public float secondChanceSeconds = 1.7f; // Legacy serialized value; all collected balls now return home.
+        [HideInInspector] public bool enableSecondChance;
         [Range(3, 20)] public float stuckSeconds = 7;
         [Range(4, 25)] public float mechanismTimeout = 12;
         [Range(.5f, 8)] public float shotTimeout = 6;

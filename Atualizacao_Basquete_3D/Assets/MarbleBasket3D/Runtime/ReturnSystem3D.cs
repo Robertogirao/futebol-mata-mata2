@@ -19,6 +19,9 @@ namespace MarbleBasket3D
         public int ReturnsStarted { get; private set; }
         public int SecondChances { get; private set; }
         public int ReturningCount => transits.Count;
+        public static readonly Vector3 CollectorOutlet = new Vector3(5.4f,.18f,-2.3f);
+        public static readonly Vector3 CollectorFork = new Vector3(5.4f,.7f,-4.7f);
+        public static Vector3 CollectorBranch(Core.TeamId team) => new Vector3(team==Core.TeamId.Red?-8.5f:8.5f,.7f,-4.7f);
         public void Configure(MarbleMatch3D owner) { match = owner; }
         public void ResetSystem() { transits.Clear(); completed.Clear(); ReturnsStarted = SecondChances = 0; }
         public void StopSystem() { }
@@ -33,14 +36,10 @@ namespace MarbleBasket3D
         public bool Collect(Marble3D ball, float dividerX)
         {
             if (!CanReturn(ball) || ball.State != MarbleState3D.InFlight) return false;
-            // Physical exit side decides the route; neither team identity nor the score is consulted.
-            if (match.Settings.enableSecondChance && !ball.Shot.Scored && ball.Body.position.x < dividerX)
-            {
-                Vector3[] points = { ball.Body.position, new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f, .65f, -3.6f), new Vector3(1.1f, 2.7f, 1.7f), match.Launcher.QueueReturnPoint };
-                Begin(ball, points, match.Settings.secondChanceSeconds, true); SecondChances++;
-                match.Signals.SecondChance(ball); return true;
-            }
-            return ReturnHome(ball, "Retorno após arremesso");
+            float side=ball.Team==Core.TeamId.Red?-1:1;
+            var points=new[]{ball.Body.position,CollectorFork,CollectorBranch(ball.Team),new Vector3(side*8.5f,.7f,-3.7f),new Vector3(side*8.5f,8.8f,3.4f),ball.Home};
+            Begin(ball,points,match.Settings.returnSeconds,false);ReturnsStarted++;
+            match.Signals.Fall(ball,"Retorno ao reservatório");return true;
         }
         private bool CanReturn(Marble3D b) => match != null && match.Active && b != null && b.Match == match && b.State != MarbleState3D.Returning && !transits.ContainsKey(b);
         private void Begin(Marble3D ball, Vector3[] points, float duration, bool secondChance)

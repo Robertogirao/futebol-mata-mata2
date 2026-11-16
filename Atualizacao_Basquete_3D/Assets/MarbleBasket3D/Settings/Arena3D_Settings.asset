@@ -24,7 +24,7 @@ MonoBehaviour:
   marbleMass: 0.45
   marbleBounce: 0.42
   physicsStep: 0.01
-  deckSlopeDegrees: 4.5
+  deckSlopeDegrees: 6.5
   duelRotorRadius: 1.05
   crossDegreesPerSecond: 105
   crossReversalSeconds: 5
@@ -49,7 +49,7 @@ MonoBehaviour:
   waitForShotToLand: 0
   returnSeconds: 3.2
   secondChanceSeconds: 1.7
-  enableSecondChance: 1
+  enableSecondChance: 0
   stuckSeconds: 7
   mechanismTimeout: 12
   shotTimeout: 6

@@ -1,0 +1,464 @@
+{
+  "v4": {
+    "left_corner": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            -2.85,
+            4.486,
+            -0.44
+          ]
+        }
+      ],
+      "exits": {}
+    },
+    "right_corner": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            2.85,
+            4.486,
+            -0.44
+          ]
+        }
+      ],
+      "exits": {}
+    },
+    "two_at_descent": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            0.101,
+            4.159,
+            -0.82
+          ]
+        },
+        {
+          "ball": 1,
+          "position": [
+            0.46,
+            4.138,
+            -0.819
+          ]
+        }
+      ],
+      "exits": {}
+    },
+    "eight_front": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            -0.75,
+            4.486,
+            -0.44
+          ]
+        },
+        {
+          "ball": 1,
+          "position": [
+            -0.02,
+            4.234,
+            -0.826
+          ]
+        },
+        {
+          "ball": 2,
+          "position": [
+            0.297,
+            4.066,
+            -0.806
+          ]
+        },
+        {
+          "ball": 3,
+          "position": [
+            0.75,
+            4.486,
+            -0.44
+          ]
+        },
+        {
+          "ball": 4,
+          "position": [
+            -0.75,
+            4.514,
+            -0.081
+          ]
+        },
+        {
+          "ball": 5,
+          "position": [
+            0.28,
+            4.424,
+            -0.769
+          ]
+        },
+        {
+          "ball": 6,
+          "position": [
+            0.611,
+            4.238,
+            -0.845
+          ]
+        },
+        {
+          "ball": 7,
+          "position": [
+            0.75,
+            4.514,
+            -0.081
+          ]
+        }
+      ],
+      "exits": {}
+    },
+    "two_at_collector": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            5.22,
+            0.431,
+            -2.3
+          ]
+        },
+        {
+          "ball": 1,
+          "position": [
+            5.58,
+            0.431,
+            -2.3
+          ]
+        }
+      ],
+      "exits": {}
+    },
+    "eight_front_large": {
+      "feed": 0,
+      "outside": 0,
+      "remaining": [
+        {
+          "ball": 0,
+          "position": [
+            -0.75,
+            4.529,
+            -0.4
+          ]
+        },
+        {
+          "ball": 1,
+          "position": [
+            -0.009,
+            4.289,
+            -0.87
+          ]
+        },
+        {
+          "ball": 2,
+          "position": [
+            0.42,
+            4.188,
+            -0.863
+          ]
+        },
+        {
+          "ball": 3,
+          "position": [
+            0.754,
+            4.529,
+            -0.4
+          ]
+        },
+        {
+          "ball": 4,
+          "position": [
+            -0.75,
+            4.564,
+            0.039
+          ]
+        },
+        {
+          "ball": 5,
+          "position": [
+            -0.153,
+            4.52,
+            -0.524
+          ]
+        },
+        {
+          "ball": 6,
+          "position": [
+            0.28,
+            4.513,
+            -0.601
+          ]
+        },
+        {
+          "ball": 7,
+          "position": [
+            0.13,
+            4.546,
+            -0.189
+          ]
+        }
+      ],
+      "exits": {}
+    }
+  },
+  "v5": {
+    "left_corner": {
+      "feed": 1,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "0": {
+          "time": 5.742,
+          "position": [
+            0.533,
+            2.796,
+            -1.621
+          ],
+          "feed": true
+        }
+      }
+    },
+    "right_corner": {
+      "feed": 1,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "0": {
+          "time": 5.572,
+          "position": [
+            0.021,
+            2.796,
+            -1.403
+          ],
+          "feed": true
+        }
+      }
+    },
+    "two_at_descent": {
+      "feed": 2,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "0": {
+          "time": 0.892,
+          "position": [
+            0.03,
+            2.795,
+            -1.413
+          ],
+          "feed": true
+        },
+        "1": {
+          "time": 0.952,
+          "position": [
+            0.412,
+            2.795,
+            -1.609
+          ],
+          "feed": true
+        }
+      }
+    },
+    "eight_front": {
+      "feed": 8,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "2": {
+          "time": 2.138,
+          "position": [
+            0.243,
+            2.8,
+            -1.448
+          ],
+          "feed": true
+        },
+        "1": {
+          "time": 2.216,
+          "position": [
+            0.184,
+            2.793,
+            -1.561
+          ],
+          "feed": true
+        },
+        "3": {
+          "time": 2.278,
+          "position": [
+            0.55,
+            2.8,
+            -1.592
+          ],
+          "feed": true
+        },
+        "0": {
+          "time": 2.422,
+          "position": [
+            0.251,
+            2.799,
+            -1.45
+          ],
+          "feed": true
+        },
+        "7": {
+          "time": 2.49,
+          "position": [
+            0.682,
+            2.794,
+            -1.474
+          ],
+          "feed": true
+        },
+        "6": {
+          "time": 2.512,
+          "position": [
+            0.332,
+            2.794,
+            -1.536
+          ],
+          "feed": true
+        },
+        "5": {
+          "time": 2.594,
+          "position": [
+            0.33,
+            2.796,
+            -1.489
+          ],
+          "feed": true
+        },
+        "4": {
+          "time": 3.336,
+          "position": [
+            0.584,
+            2.799,
+            -1.646
+          ],
+          "feed": true
+        }
+      }
+    },
+    "two_at_collector": {
+      "feed": 2,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "0": {
+          "time": 0.574,
+          "position": [
+            5.2,
+            0.09,
+            -2.3
+          ],
+          "feed": true
+        },
+        "1": {
+          "time": 0.574,
+          "position": [
+            5.6,
+            0.09,
+            -2.3
+          ],
+          "feed": true
+        }
+      }
+    },
+    "eight_front_large": {
+      "feed": 8,
+      "outside": 0,
+      "remaining": [],
+      "exits": {
+        "2": {
+          "time": 2.162,
+          "position": [
+            0.267,
+            2.795,
+            -1.537
+          ],
+          "feed": true
+        },
+        "3": {
+          "time": 2.212,
+          "position": [
+            0.722,
+            2.799,
+            -1.621
+          ],
+          "feed": true
+        },
+        "1": {
+          "time": 2.438,
+          "position": [
+            -0.035,
+            2.796,
+            -1.402
+          ],
+          "feed": true
+        },
+        "6": {
+          "time": 2.53,
+          "position": [
+            0.265,
+            2.796,
+            -1.553
+          ],
+          "feed": true
+        },
+        "7": {
+          "time": 2.692,
+          "position": [
+            0.838,
+            2.797,
+            -1.626
+          ],
+          "feed": true
+        },
+        "0": {
+          "time": 2.748,
+          "position": [
+            0.412,
+            2.795,
+            -1.572
+          ],
+          "feed": true
+        },
+        "5": {
+          "time": 2.91,
+          "position": [
+            0.168,
+            2.799,
+            -1.443
+          ],
+          "feed": true
+        },
+        "4": {
+          "time": 3.566,
+          "position": [
+            0.445,
+            2.792,
+            -1.507
+          ],
+          "feed": true
+        }
+      }
+    }
+  }
+}

@@ -42,7 +42,7 @@ namespace MarbleBasket3D.Tests
             match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
             Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
         }
-        [UnityTest] public IEnumerator V4BuildHasTwinRotorsContinuousWheelAndEightMarbles()
+        [UnityTest] public IEnumerator V5BuildHasTwinRotorsContinuousWheelAndEightMarbles()
         {
             var diagnostics=match.GetComponent<ArenaDiagnostics3D>();
             Assert.That(diagnostics.CountLive(TeamId.Red),Is.EqualTo(4));Assert.That(diagnostics.CountLive(TeamId.Blue),Is.EqualTo(4));
@@ -58,6 +58,32 @@ namespace MarbleBasket3D.Tests
             foreach(var collider in root.GetComponentsInChildren<Collider>()) Assert.That(collider.gameObject.name,Does.Not.Contain("Queue gate"));
             Assert.That(settings.preparationSeconds,Is.LessThan(.4f));
             LogAssert.NoUnexpectedReceived();yield return null;
+        }
+        [UnityTest,Timeout(20000)] public IEnumerator FrontCornersAndTwoBallsAtDescentReachWheelArea()
+        {
+            match.StartMatch();while(!match.Active)yield return new WaitForFixedUpdate();
+            var builder=root.GetComponent<ArenaBuilder3D>();
+            Vector3[] starts={new Vector3(-2.85f,builder.DeckHeight(.4f)+settings.marbleRadius+.025f,.4f),new Vector3(2.85f,builder.DeckHeight(.4f)+settings.marbleRadius+.025f,.4f),new Vector3(.03f,4.7f,-.70f),new Vector3(.43f,4.7f,-.70f)};
+            var passed=new bool[starts.Length];
+            for(int i=0;i<starts.Length;i++)
+            {
+                var b=match.Marbles[i];b.Body.position=starts[i];b.Body.linearVelocity=Vector3.zero;b.Body.angularVelocity=Vector3.zero;
+            }
+            float deadline=Time.realtimeSinceStartup+10;
+            while(Time.realtimeSinceStartup<deadline)
+            {
+                int count=0;
+                for(int i=0;i<starts.Length;i++)
+                {
+                    var b=match.Marbles[i];Vector3 p=b.Body.position;
+                    if(b.State!=MarbleState3D.Returning&&((p.y<2.9f&&Mathf.Abs(p.x)<1.6f&&p.z> -2.5f&&p.z<.1f)||b.State==MarbleState3D.InFlight))passed[i]=true;
+                    if(passed[i])count++;
+                }
+                if(count==starts.Length)break;
+                yield return new WaitForFixedUpdate();
+            }
+            for(int i=0;i<passed.Length;i++)Assert.That(passed[i],Is.True,"A passagem deve escoar a bolinha "+i+" sem depender da recuperação programada.");
+            Assert.That(match.Marbles.Count,Is.EqualTo(8));
         }
         [UnityTest] public IEnumerator ContinuousWheelDoesNotWaitForAnOccupantAndPausesWithMatch()
         {
