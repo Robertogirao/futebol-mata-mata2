@@ -1,0 +1,1 @@
+{"name":"MarbleBasket3D.EditorTests","references":["MarbleBasket3D.Core","MarbleBasket3D.Runtime"],"includePlatforms":["Editor"],"optionalUnityReferences":["TestAssemblies"],"autoReferenced":false}

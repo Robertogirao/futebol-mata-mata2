@@ -1,0 +1,57 @@
+using System.Collections;
+using System.Collections.Generic;
+using MarbleBasket3D.Core;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+
+namespace MarbleBasket3D.Tests
+{
+    public sealed class CircuitAcceptance3D
+    {
+        private GameObject root;
+        private ArenaSettings3D settings;
+        private MarbleMatch3D match;
+        [UnitySetUp] public IEnumerator SetUp()
+        {
+            settings = ScriptableObject.CreateInstance<ArenaSettings3D>(); settings.autoStart = false; settings.countdownSeconds = .1f;
+            root = new GameObject("Circuit acceptance test"); root.SetActive(false);
+            var builder = root.AddComponent<ArenaBuilder3D>(); builder.settings = settings;
+            root.SetActive(true); yield return null; match = builder.Match;
+        }
+        [UnityTearDown] public IEnumerator TearDown()
+        {
+            if (root != null) Object.Destroy(root); if (settings != null) Object.Destroy(settings); yield return null;
+        }
+        [UnityTest, Timeout(240000)] public IEnumerator FullAutomaticMatchKeepsEightMarblesAndGivesBothTeamsShots()
+        {
+            int finishes = 0; match.Finished += result => finishes++; match.StartMatch();
+            float deadline = Time.realtimeSinceStartup + 185;
+            var identities = new HashSet<int>(); foreach (var b in match.Marbles) identities.Add(b.GetInstanceID());
+            while (match.Rules.Phase != MatchPhase.Finished && Time.realtimeSinceStartup < deadline)
+            {
+                Assert.That(match.Marbles.Count, Is.EqualTo(8));
+                foreach (var b in match.Marbles) { Assert.That(b, Is.Not.Null); Assert.That(identities.Contains(b.GetInstanceID()), Is.True); }
+                yield return new WaitForSeconds(.25f);
+            }
+            ArenaReport3D report = match.GetComponent<ArenaDiagnostics3D>().Capture();
+            Debug.Log(JsonUtility.ToJson(report, true));
+            Assert.That(match.Rules.Phase, Is.EqualTo(MatchPhase.Finished), "Ajuste a dinâmica se não houver resultado em até 185 s reais.");
+            Assert.That(finishes, Is.EqualTo(1)); Assert.That(report.redShots, Is.GreaterThan(0)); Assert.That(report.blueShots, Is.GreaterThan(0));
+            Assert.That(report.baskets, Is.GreaterThan(0)); Assert.That(identities.Count, Is.EqualTo(8));
+            match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
+            Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
+        }
+        [UnityTest] public IEnumerator PauseAndOutOfBoundsRecoveryPreserveIdentity()
+        {
+            match.StartMatch(); while (!match.Active) yield return new WaitForFixedUpdate();
+            var b = match.Marbles[0]; int identity = b.GetInstanceID();
+            match.TogglePause(); Vector3 paused = b.Body.position; yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(Vector3.Distance(paused, b.Body.position), Is.LessThan(.001f)); match.TogglePause();
+            b.Body.position = new Vector3(30,2,0); yield return new WaitForFixedUpdate(); yield return new WaitForFixedUpdate();
+            Assert.That(b.State, Is.EqualTo(MarbleState3D.Returning));
+            yield return new WaitForSeconds(settings.returnSeconds + .1f);
+            Assert.That(b.GetInstanceID(), Is.EqualTo(identity)); Assert.That(match.Marbles.Count, Is.EqualTo(8)); Assert.That(b.State, Is.Not.EqualTo(MarbleState3D.Returning));
+        }
+    }
+}

@@ -1,0 +1,1 @@
+{"name":"MarbleBasket3D.Editor","rootNamespace":"MarbleBasket3D.Editor","references":["MarbleBasket3D.Runtime","MarbleBasket3D.Core"],"includePlatforms":["Editor"],"excludePlatforms":[],"allowUnsafeCode":false,"overrideReferences":false,"precompiledReferences":[],"autoReferenced":true,"defineConstraints":[],"versionDefines":[],"noEngineReferences":false}
