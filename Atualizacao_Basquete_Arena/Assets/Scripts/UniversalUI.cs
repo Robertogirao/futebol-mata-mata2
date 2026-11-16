@@ -1,0 +1,636 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections;
+using System.Collections.Generic;
+
+public class UniversalUI : MonoBehaviour
+{
+    public static UniversalUI Instance;
+
+    [Header("Configuração de Tempo (Vídeo)")]
+    public float duracaoRealEmSegundos = 45f;
+
+    [Tooltip(
+        "Tempo mínimo de pausa após a partida. Se ainda houver " +
+        "comemorações na fila, aguarda todas terminarem antes de seguir.")]
+    public float tempoCongeladoPosJogo = 5f;
+
+    [Header("Apresentação do placar final")]
+    public bool mostrarPlacarFinal = true;
+    [Min(0f)] public float tempoPlacarFinal = 3f;
+
+    [Header("Regras de Partida")]
+    [Tooltip(
+        "Ligado: empate vai para Golden Goal. " +
+        "Desligado: a partida pode terminar empatada.")]
+    public bool ativarGoldenGoal = true;
+
+    [Header("Sons da Partida")]
+    [Tooltip(
+        "Opcional. Se ficar vazio, cria uma fonte exclusiva para os efeitos " +
+        "da partida, sem reutilizar fontes de abertura ou música.")]
+    public AudioSource fonteDeAudio;
+
+    public AudioClip somGol;
+    public AudioClip somApitoInicial;
+    public AudioClip somApitoFinal;
+
+    public AudioClip somToqueBola;
+    [Range(0f, 1f)] public float volumeToqueBola = .45f;
+    [Tooltip("Intervalo mínimo entre sons de toque do mesmo atleta. Evita duplicar chute e colisão.")]
+    [Range(.02f, .25f)] public float intervaloSomToqueBola = .08f;
+
+    [Range(0f, 1f)]
+    public float volumeSons = 0.8f;
+
+    [Header("Música da partida")]
+    public AudioClip musicaPartida;
+    [Range(0f, 1f)] public float volumeMusica = .25f;
+    [Min(0f)] public float fadeInMusica = 2f;
+    [Min(0f)] public float fadeOutMusica = 2f;
+    private AudioTransicao trilhaPartida;
+
+    private void IniciarMusica()
+    {
+        if (trilhaPartida == null) trilhaPartida = gameObject.AddComponent<AudioTransicao>();
+        trilhaPartida.Tocar(musicaPartida, volumeMusica, true, fadeInMusica);
+    }
+
+    private void EncerrarMusica()
+    {
+        if (trilhaPartida != null) trilhaPartida.Encerrar(fadeOutMusica);
+    }
+
+    private AudioSource fonteAutomaticaDosEfeitos;
+    private AudioSource fontePreparadaDosEfeitos;
+
+    [Header("Elementos do Topo da TV")]
+    public Image escudoTimeA;
+    public Image escudoTimeB;
+    public Image logoCampeonato;
+    public TextMeshProUGUI placarTimeA;
+    public TextMeshProUGUI placarTimeB;
+    public TextMeshProUGUI textoCronometro;
+
+    [Header("Overlays e Banners")]
+    public GameObject bannerGol;
+
+    [Header("Escalação na Tela - Time A")]
+    public Image[] fotosTitularesA = new Image[1];
+    public TextMeshProUGUI[] nomesTitularesA =
+        new TextMeshProUGUI[1];
+    public TextMeshProUGUI[] numerosTitularesA =
+        new TextMeshProUGUI[1];
+
+    [Header("Escalação na Tela - Time B")]
+    public Image[] fotosTitularesB = new Image[1];
+    public TextMeshProUGUI[] nomesTitularesB =
+        new TextMeshProUGUI[1];
+    public TextMeshProUGUI[] numerosTitularesB =
+        new TextMeshProUGUI[1];
+
+    private LayoutJogadorUnicoUI layoutJogadorUnico;
+
+    public bool ApresentacaoJogadoresConcluida
+    {
+        get { return layoutJogadorUnico != null && layoutJogadorUnico.ApresentacaoConcluida; }
+    }
+
+    private int golsA = 0;
+    private int golsB = 0;
+    private float tempoAtual = 0f;
+
+    public bool partidaEmAndamento = false;
+
+    private bool emProrrogacao = false;
+    private bool partidaEncerrando = false;
+    private int versaoPartida;
+
+    public int GolsA { get { return golsA; } }
+    public int GolsB { get { return golsB; } }
+    public float TempoAtual { get { return tempoAtual; } }
+    public bool EmProrrogacao { get { return emProrrogacao; } }
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        PrepararAudio();
+        PrepararEscalacao();
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
+        CancelarPlacarFinal();
+        CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
+        if (trilhaPartida != null) trilhaPartida.Parar();
+        if (partidaEncerrando)
+        {
+            partidaEmAndamento = partidaEncerrando = emProrrogacao = false;
+            PararSimulacao();
+            Time.timeScale = 1f;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance != this) return;
+        CancelarPartida();
+        if (fonteAutomaticaDosEfeitos != null) Destroy(fonteAutomaticaDosEfeitos);
+        Instance = null;
+    }
+
+    private void PrepararAudio()
+    {
+        if (fonteDeAudio == null)
+        {
+            // An existing source can belong to the opening or background music.
+            // Never adopt its clip, playback or cancellation lifecycle as match FX.
+            if (fonteAutomaticaDosEfeitos == null)
+                fonteAutomaticaDosEfeitos = gameObject.AddComponent<AudioSource>();
+            fonteDeAudio = fonteAutomaticaDosEfeitos;
+        }
+        if (fontePreparadaDosEfeitos == fonteDeAudio) return;
+        PararAudioDaPartida();
+        fonteDeAudio.Stop();
+        fonteDeAudio.clip = null;
+        fonteDeAudio.playOnAwake = false;
+        fonteDeAudio.loop = false;
+
+        // Som 2D: não depende da distância da câmera.
+        fonteDeAudio.spatialBlend = 0f;
+        fontePreparadaDosEfeitos = fonteDeAudio;
+    }
+
+    private void PararAudioDaPartida()
+    {
+        if (fontePreparadaDosEfeitos != null) fontePreparadaDosEfeitos.Stop();
+    }
+
+    private void TocarSom(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        PrepararAudio();
+
+        fonteDeAudio.PlayOneShot(
+            clip,
+            Mathf.Clamp01(volumeSons));
+    }
+
+    public bool TocarSomToqueBola()
+    {
+        if (!isActiveAndEnabled || !partidaEmAndamento || partidaEncerrando || somToqueBola == null) return false;
+        PrepararAudio();
+        fonteDeAudio.PlayOneShot(somToqueBola, Mathf.Clamp01(volumeSons) * Mathf.Clamp01(volumeToqueBola));
+        return true;
+    }
+
+    void Update()
+    {
+        if (partidaEmAndamento && !partidaEncerrando &&
+            (FutebolDeDiscos.PartidaDiscos.Instance == null ||
+             !FutebolDeDiscos.PartidaDiscos.Instance.EmReposicao))
+        {
+            tempoAtual += PassoTempoVideo();
+
+            AtualizarRelogioUI();
+
+            if (tempoAtual >= duracaoRealEmSegundos &&
+                (!emProrrogacao || ModoBasquete))
+            {
+                VerificarFimOuProrrogacao();
+            }
+        }
+    }
+
+    public void ConfigurarPartida(
+        TeamData timeA,
+        TeamData timeB,
+        Sprite trofeu,
+        List<JogadorDados> titularesA,
+        List<JogadorDados> titularesB)
+    {
+        CancelarPlacarFinal();
+        CancelarApresentacaoJogadores();
+        PrepararAudio();
+        PararAudioDaPartida();
+        // Uma partida nova começa sem banners antigos.
+        if (GoalBannerUI.Instance != null)
+        {
+            GoalBannerUI.Instance.LimparFila();
+        }
+
+        golsA = 0;
+        golsB = 0;
+        tempoAtual = 0f;
+        if (ModoBasquete) duracaoRealEmSegundos = GetComponent<FutebolDeDiscos.ProjetoFutebolDiscos>().duracaoPartida;
+        partidaEmAndamento = false;
+        emProrrogacao = false;
+        partidaEncerrando = false;
+
+        if (textoCronometro != null)
+        {
+            textoCronometro.color = Color.white;
+        }
+
+        if (bannerGol != null)
+        {
+            bannerGol.SetActive(false);
+        }
+
+        AtualizarPlacarUI();
+        AtualizarRelogioUI();
+
+        if (escudoTimeA != null && timeA != null)
+        {
+            escudoTimeA.sprite = timeA.escudoOuBandeira;
+        }
+
+        if (escudoTimeB != null && timeB != null)
+        {
+            escudoTimeB.sprite = timeB.escudoOuBandeira;
+        }
+
+        if (logoCampeonato != null && trofeu != null)
+        {
+            logoCampeonato.sprite = trofeu;
+        }
+
+        PrepararEscalacao();
+        if (layoutJogadorUnico != null)
+        {
+            layoutJogadorUnico.Configurar(timeA, timeB, titularesA, titularesB);
+        }
+
+        Time.timeScale = 1f;
+    }
+
+    public bool PrepararApresentacaoJogadores()
+    {
+        return isActiveAndEnabled && layoutJogadorUnico != null &&
+            layoutJogadorUnico.PrepararApresentacao();
+    }
+
+    public IEnumerator ExibirApresentacaoJogadores(float tempoLeitura, float tempoDeslocamento)
+    {
+        if (!isActiveAndEnabled || layoutJogadorUnico == null) yield break;
+        IEnumerator animacao = layoutJogadorUnico.ExibirApresentacao(tempoLeitura, tempoDeslocamento);
+        while (isActiveAndEnabled && animacao.MoveNext())
+            yield return animacao.Current;
+    }
+
+    public void CancelarApresentacaoJogadores()
+    {
+        if (layoutJogadorUnico != null) layoutJogadorUnico.CancelarApresentacao();
+    }
+
+    private bool mostrarScannerFotos = true;
+    private float velocidadeScannerFotos = 1f;
+
+    public void ConfigurarEfeitoFotos(bool mostrar, float velocidade)
+    {
+        mostrarScannerFotos = mostrar;
+        velocidadeScannerFotos = Mathf.Clamp(velocidade, .1f, 3f);
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
+    }
+
+    private void PrepararEscalacao()
+    {
+        // Keep serialized bindings from existing scenes, but clear every old slot.
+        LimparFotos(fotosTitularesA);
+        LimparFotos(fotosTitularesB);
+        LimparTextos(nomesTitularesA);
+        LimparTextos(nomesTitularesB);
+        LimparTextos(numerosTitularesA);
+        LimparTextos(numerosTitularesB);
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) canvas = GetComponentInChildren<Canvas>(true);
+        if (canvas == null) return;
+
+        // These two containers contain only the six old player cards.
+        // Do not disable any parent shared with the score or goal banners.
+        Transform antigoA = canvas.transform.Find("Container_TimeA");
+        Transform antigoB = canvas.transform.Find("Container_TimeB");
+        if (antigoA != null) antigoA.gameObject.SetActive(false);
+        if (antigoB != null) antigoB.gameObject.SetActive(false);
+
+        if (layoutJogadorUnico == null)
+        {
+            TMP_FontAsset fonte = FonteDosNomes(nomesTitularesA)
+                ?? FonteDosNomes(nomesTitularesB);
+            if (fonte == null && textoCronometro != null)
+                fonte = textoCronometro.font;
+            layoutJogadorUnico = LayoutJogadorUnicoUI.Criar(canvas, fonte);
+        }
+        if (layoutJogadorUnico != null)
+            layoutJogadorUnico.ConfigurarScanner(mostrarScannerFotos, velocidadeScannerFotos);
+    }
+
+    private static TMP_FontAsset FonteDosNomes(TextMeshProUGUI[] nomes)
+    {
+        if (nomes != null)
+            foreach (TextMeshProUGUI nome in nomes)
+                if (nome != null && nome.font != null) return nome.font;
+        return null;
+    }
+
+    private static void LimparFotos(Image[] fotos)
+    {
+        if (fotos == null) return;
+        foreach (Image foto in fotos)
+        {
+            if (foto == null) continue;
+            foto.sprite = null;
+            foto.enabled = false;
+            foto.raycastTarget = false;
+        }
+    }
+
+    private static void LimparTextos(TextMeshProUGUI[] textos)
+    {
+        if (textos == null) return;
+        foreach (TextMeshProUGUI texto in textos)
+        {
+            if (texto == null) continue;
+            texto.text = "";
+            texto.enabled = false;
+            texto.raycastTarget = false;
+        }
+    }
+
+    public void IniciarCronometro()
+    {
+        if (partidaEmAndamento || partidaEncerrando) return;
+
+        partidaEmAndamento = true;
+        partidaEncerrando = false;
+        Time.timeScale = 1f;
+
+        TocarSom(somApitoInicial);
+        IniciarMusica();
+    }
+
+    public void PararCronometro()
+    {
+        partidaEmAndamento = false;
+        EncerrarMusica();
+        PararSimulacao();
+        Time.timeScale = 1f;
+    }
+
+    public void CancelarPartida()
+    {
+        StopAllCoroutines();
+        CancelarPlacarFinal();
+        EncerrarMusica();
+        CancelarApresentacaoJogadores();
+        PararAudioDaPartida();
+        partidaEmAndamento = false;
+        partidaEncerrando = false;
+        emProrrogacao = false;
+        PararSimulacao();
+        if (GoalBannerUI.Instance != null) GoalBannerUI.Instance.LimparFila();
+        Time.timeScale = 1f;
+    }
+
+    public bool ModoBasquete
+    {
+        get { var projeto = GetComponent<FutebolDeDiscos.ProjetoFutebolDiscos>(); return projeto != null && projeto.modoBasquete; }
+    }
+
+    public void RegistrarCesta(bool timeA, int pontos)
+    {
+        if (!ModoBasquete || !partidaEmAndamento || partidaEncerrando || (pontos != 2 && pontos != 3)) return;
+        if (timeA) golsA += pontos; else golsB += pontos;
+        TocarSom(somGol);
+        AtualizarPlacarUI();
+    }
+
+    public void RegistrarGol(bool golDoTimeA, float tempo)
+    {
+        if (!partidaEmAndamento || partidaEncerrando) return;
+
+        if (golDoTimeA)
+        {
+            golsA++;
+        }
+        else
+        {
+            golsB++;
+        }
+
+        // O placar muda imediatamente, sem esperar o banner.
+        TocarSom(somGol);
+        AtualizarPlacarUI();
+
+        if (emProrrogacao && !partidaEncerrando)
+        {
+            Debug.Log(
+                "GOLDEN GOAL! O jogo acabou na morte súbita!");
+
+            EncerrarPartidaComRespiro(golDoTimeA);
+        }
+    }
+
+    private void AtualizarPlacarUI()
+    {
+        if (placarTimeA != null)
+        {
+            placarTimeA.text = golsA.ToString();
+        }
+
+        if (placarTimeB != null)
+        {
+            placarTimeB.text = golsB.ToString();
+        }
+    }
+
+    private void AtualizarRelogioUI()
+    {
+        if (textoCronometro == null) return;
+
+        if (ModoBasquete)
+        {
+            float restante = Mathf.Max(0f, duracaoRealEmSegundos - tempoAtual);
+            textoCronometro.text = (emProrrogacao ? "OT " : "") + Mathf.CeilToInt(restante).ToString("00") + "s";
+            return;
+        }
+        if (emProrrogacao)
+        {
+            textoCronometro.text =
+                "90:00+\n<size=60%><color=yellow>" +
+                "GOLDEN GOAL</color></size>";
+
+            return;
+        }
+
+        float progresso =
+            Mathf.Clamp01(tempoAtual / Mathf.Max(0.01f, duracaoRealEmSegundos));
+
+        float minutosSimulados = progresso * 90f;
+
+        int minutos = Mathf.FloorToInt(minutosSimulados);
+
+        int segundos = Mathf.FloorToInt(
+            (minutosSimulados - minutos) * 60f);
+
+        textoCronometro.text =
+            string.Format("{0:00}:{1:00}", minutos, segundos);
+    }
+
+    private void VerificarFimOuProrrogacao()
+    {
+        if (ModoBasquete && golsA == golsB)
+        {
+            emProrrogacao = true;
+            duracaoRealEmSegundos = tempoAtual + 15f;
+            AtualizarRelogioUI();
+            return;
+        }
+        if (golsA == golsB && ativarGoldenGoal)
+        {
+            emProrrogacao = true;
+
+            if (textoCronometro != null)
+            {
+                textoCronometro.color = Color.yellow;
+            }
+
+            Debug.Log(
+                "Empate no Mata-Mata! Entrando em Golden Goal.");
+            AtualizarRelogioUI();
+        }
+        else
+        {
+            if (golsA == golsB)
+            {
+                Debug.Log(
+                    "Fim de partida: empate permitido nesta rodada.");
+            }
+
+            EncerrarPartidaComRespiro(golsA > golsB);
+        }
+    }
+
+    private void EncerrarPartidaComRespiro(bool timeAVenceu)
+    {
+        if (partidaEncerrando || !partidaEmAndamento) return;
+
+        partidaEncerrando = true;
+        partidaEmAndamento = false;
+
+        TocarSom(somApitoFinal);
+        EncerrarMusica();
+
+        PararSimulacao();
+
+        Time.timeScale = 0f;
+
+        int versao;
+        unchecked { versao = ++versaoPartida; }
+        StartCoroutine(RotinaFimDeJogo(timeAVenceu, versao));
+    }
+
+    private System.Collections.IEnumerator RotinaFimDeJogo(
+        bool timeAVenceu, int versao)
+    {
+        // No Golden Goal, a partida de discos chama RegistrarGol
+        // antes de adicionar a comemoração ao banner.
+        // Este frame permite que essa chamada seja concluída.
+        yield return null;
+        if (!EncerramentoAtual(versao)) yield break;
+
+        // A pausa mínima acontece enquanto os banners continuam.
+        float pausa = 0f;
+        float duracaoPausa = Mathf.Max(0f, tempoCongeladoPosJogo);
+        while (EncerramentoAtual(versao) && pausa < duracaoPausa)
+        {
+            pausa += PassoTempoVideo();
+            yield return null;
+        }
+
+        // Não libera o próximo jogo ou a tabela enquanto
+        // existir alguma comemoração sendo exibida ou na fila.
+        while (EncerramentoAtual(versao) && GoalBannerUI.Instance != null &&
+               GoalBannerUI.Instance.TemBannersPendentes)
+        {
+            yield return null;
+        }
+
+        if (!EncerramentoAtual(versao)) yield break;
+        FutebolDeDiscos.HudFutebolDiscos hud = GetComponent<FutebolDeDiscos.HudFutebolDiscos>();
+        float duracaoPlacar = float.IsNaN(tempoPlacarFinal) || float.IsInfinity(tempoPlacarFinal)
+            ? 0f : Mathf.Max(0f, tempoPlacarFinal);
+        if (mostrarPlacarFinal && duracaoPlacar > 0f && hud != null && hud.isActiveAndEnabled)
+        {
+            // As comemorações terminam antes do resumo. A simulação permanece
+            // parada até a saída completa da apresentação do resultado.
+            IEnumerator apresentacao = hud.ExibirPlacarFinal(golsA, golsB, duracaoPlacar);
+            while (EncerramentoAtual(versao) && hud != null && hud.isActiveAndEnabled && apresentacao.MoveNext())
+                yield return apresentacao.Current;
+            if (EncerramentoAtual(versao) && hud != null) hud.OcultarPlacarFinal();
+        }
+        if (!EncerramentoAtual(versao)) yield break;
+
+        Time.timeScale = 1f;
+        emProrrogacao = false;
+        partidaEncerrando = false;
+
+        if (bannerGol != null)
+        {
+            bannerGol.SetActive(false);
+        }
+
+        PararSimulacao();
+
+        // O gerenciador só recebe o resultado e avança
+        // depois da pausa mínima e do fim das comemorações.
+        if (TournamentManager.Instance != null)
+        {
+            TournamentManager.Instance.FinalizarPartidaEAvancar(
+                timeAVenceu,
+                golsA,
+                golsB);
+        }
+    }
+
+    private bool EncerramentoAtual(int versao)
+    {
+        return this != null && isActiveAndEnabled && partidaEncerrando && versao == versaoPartida;
+    }
+
+    private void CancelarPlacarFinal()
+    {
+        unchecked { versaoPartida++; }
+        FutebolDeDiscos.HudFutebolDiscos hud = GetComponent<FutebolDeDiscos.HudFutebolDiscos>();
+        if (hud != null) hud.OcultarPlacarFinal();
+    }
+
+    private static void PararSimulacao()
+    {
+        FutebolDeDiscos.PartidaDiscos partida = FutebolDeDiscos.PartidaDiscos.Instance;
+        if (partida != null) partida.PararPartida();
+    }
+
+    private static float PassoTempoVideo()
+    {
+        float captura = Time.captureDeltaTime;
+        float passo = captura > 0f && !float.IsNaN(captura) && !float.IsInfinity(captura)
+            ? captura : Time.unscaledDeltaTime;
+        return float.IsNaN(passo) || float.IsInfinity(passo) ? 0f : Mathf.Max(0f, passo);
+    }
+}
