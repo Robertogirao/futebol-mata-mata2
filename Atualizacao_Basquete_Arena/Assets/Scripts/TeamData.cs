@@ -1,0 +1,307 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public enum PosturaTatica
+{
+    // Explicit values preserve every existing TeamData asset.
+    [InspectorName("Ataque")] Ataque = 0,
+    [InspectorName("Balanceado")] Balanceado = 1,
+    [InspectorName("Defensivo")] Defesa = 2,
+    [InspectorName("Ultra defensivo")] UltraDefensivo = 3
+}
+
+// Independente do catálogo de convidados: só as cenas normais leem esta posição.
+public enum PosicaoCapitaoDiscos
+{
+    [InspectorName("Defesa")] Defesa = 0,
+    [InspectorName("Meio-campo")] Meio = 1,
+    [InspectorName("Ataque")] Ataque = 2
+}
+
+// Automática = 0 mantém as fichas anteriores sem alterações.
+public enum PosicaoJogadorDiscos
+{
+    [InspectorName("Automática")] Automatica = 0,
+    [InspectorName("Defesa")] Defesa = 1,
+    [InspectorName("Meio-campo")] Meio = 2,
+    [InspectorName("Ataque")] Ataque = 3
+}
+
+[System.Serializable]
+public class JogadorDados
+{
+    [Header("Identificação")]
+    public string nomeJogador = "Player Name";
+    [HideInInspector]
+    public int numeroCamisa = 10;
+    public Sprite foto512x512;
+
+    [InspectorName("Posição nas cenas normais")]
+    [Tooltip("Defesa, meio-campo ou ataque deste jogador nas cenas normais. Automática usa a função da vaga padrão; com todos em Automática, a formação anterior é preservada. As cenas de capitães convidados ignoram esta opção.")]
+    public PosicaoJogadorDiscos posicaoDiscos = PosicaoJogadorDiscos.Automatica;
+
+    // Campos antigos preservados por compatibilidade.
+    // O novo lançador não usa habilidade individual.
+    [HideInInspector]
+    [Range(1, 5)]
+    public int estrelasSkill = 3;
+
+    public float ObterMultiplicadorForca(float variacaoMaxima)
+    {
+        return 1f + (Mathf.Clamp(estrelasSkill, 1, 5) - 3)
+            * Mathf.Clamp(variacaoMaxima, 0f, 0.5f) / 2f;
+    }
+}
+
+[CreateAssetMenu(
+    fileName = "NovoTime",
+    menuName = "Tournament Engine/Nova Ficha de Equipe",
+    order = 1)]
+public class TeamData : ScriptableObject
+{
+    [Header("Dados Básicos da Equipe")]
+    public string nomeEquipe = "Team Name";
+    public string sigla = "BRA";
+    public Sprite escudoOuBandeira;
+
+    [Header("Força do Time")]
+    [Range(1, 100)]
+    [Tooltip("Comparado ao overall adversário para definir a participação nos lançamentos.")]
+    public int overall = 75;
+
+    [Header("Cores Padrão")]
+    [InspectorName("Principal 1")]
+    public Color corPrincipal = Color.blue;
+
+    [InspectorName("Principal 2 (alternativa)")]
+    public Color corSecundaria = Color.white;
+
+    [Header("Tática e IA")]
+    [InspectorName("Postura tática")]
+    [Tooltip("Limite de jogadores liberados para pressionar além do meio-campo: ultra defensivo 0, defensivo 1, balanceado 2 e ataque 3. A subida depende da jogada e do bloqueio geral da arena.")]
+    public PosturaTatica posturaTatica = PosturaTatica.Balanceado;
+
+    [Header("Capitão nas cenas normais de discos")]
+    [InspectorName("Posição do capitão (cenas normais)")]
+    [Tooltip("Posição de base do capitão nas cenas normais quando a posição individual dele estiver em Automática. Não altera as cenas da pasta Capitaes, que usam a posição do próprio convidado.")]
+    public PosicaoCapitaoDiscos posicaoCapitaoDiscos = PosicaoCapitaoDiscos.Defesa;
+
+    [Header("Elenco Completo")]
+    public List<JogadorDados> elenco = new List<JogadorDados>();
+
+    [Header("Jogador representante da partida")]
+    [Tooltip("Escolhe um único jogador aleatório do elenco para esta partida.")]
+    public bool sortearTitularesAleatorios = false;
+    [Tooltip("Usa o primeiro índice configurado abaixo quando o sorteio está desligado.")]
+    public bool usarSelecaoManual = false;
+
+    [Tooltip("Índice do representante no elenco: 0, 1, 2... Apenas o primeiro elemento é usado. O campo preserva as fichas antigas.")]
+    public int[] indicesTitulares = new int[1] { 0 };
+
+    public static float CalcularChanceLancamentoTimeA(
+        TeamData timeA,
+        TeamData timeB,
+        float vantagemPor20Pontos)
+    {
+        if (timeA == null || timeB == null)
+            return 0.5f;
+
+        int valorA = Mathf.Clamp(timeA.overall, 1, 100);
+        int valorB = Mathf.Clamp(timeB.overall, 1, 100);
+
+        float intensidade =
+            Mathf.Clamp(vantagemPor20Pontos, 0f, 0.25f);
+
+        float chance =
+            0.5f + (valorA - valorB) / 20f * intensidade;
+
+        return Mathf.Clamp(chance, 0.25f, 0.75f);
+    }
+
+    public static void EscolherCoresParaPartida(
+        TeamData timeA,
+        TeamData timeB,
+        float limiar,
+        out Color corA,
+        out Color corB)
+    {
+        corA = timeA != null ? timeA.corPrincipal : Color.blue;
+        corB = timeB != null ? timeB.corPrincipal : Color.red;
+
+        if (timeA == null || timeB == null) return;
+
+        limiar = Mathf.Max(0f, limiar);
+
+        float distanciaPrincipal = DistanciaEntreCores(corA, corB);
+
+        if (distanciaPrincipal >= limiar) return;
+
+        float distanciaAlternativaB = DistanciaEntreCores(
+            timeA.corPrincipal,
+            timeB.corSecundaria);
+
+        if (distanciaAlternativaB >= limiar)
+        {
+            corB = timeB.corSecundaria;
+            return;
+        }
+
+        float distanciaAlternativaA = DistanciaEntreCores(
+            timeA.corSecundaria,
+            timeB.corPrincipal);
+
+        if (distanciaAlternativaA >= limiar)
+        {
+            corA = timeA.corSecundaria;
+            return;
+        }
+
+        float distanciaAmbas = DistanciaEntreCores(
+            timeA.corSecundaria,
+            timeB.corSecundaria);
+
+        if (distanciaAmbas >= limiar)
+        {
+            corA = timeA.corSecundaria;
+            corB = timeB.corSecundaria;
+            return;
+        }
+
+        float melhor = distanciaPrincipal;
+
+        if (distanciaAlternativaB > melhor)
+        {
+            melhor = distanciaAlternativaB;
+            corB = timeB.corSecundaria;
+        }
+
+        if (distanciaAlternativaA > melhor)
+        {
+            melhor = distanciaAlternativaA;
+            corA = timeA.corSecundaria;
+            corB = timeB.corPrincipal;
+        }
+
+        if (distanciaAmbas > melhor)
+        {
+            corA = timeA.corSecundaria;
+            corB = timeB.corSecundaria;
+        }
+
+        Debug.LogWarning(
+            "As duas opções de cor dos times ainda são próximas. " +
+            "Foi escolhido o maior contraste disponível; " +
+            "cadastre uma alternativa mais distinta.");
+    }
+
+    public static float DistanciaEntreCores(Color a, Color b)
+    {
+        return Vector3.Distance(
+            ConverterParaLab(a),
+            ConverterParaLab(b));
+    }
+
+    private static Vector3 ConverterParaLab(Color cor)
+    {
+        float r = CanalLinear(cor.r);
+        float g = CanalLinear(cor.g);
+        float b = CanalLinear(cor.b);
+
+        float x = CurvaLab(
+            (0.4124564f * r +
+             0.3575761f * g +
+             0.1804375f * b) / 0.95047f);
+
+        float y = CurvaLab(
+            0.2126729f * r +
+            0.7151522f * g +
+            0.0721750f * b);
+
+        float z = CurvaLab(
+            (0.0193339f * r +
+             0.1191920f * g +
+             0.9503041f * b) / 1.08883f);
+
+        return new Vector3(
+            116f * y - 16f,
+            500f * (x - y),
+            200f * (y - z));
+    }
+
+    private static float CanalLinear(float canal)
+    {
+        canal = Mathf.Clamp01(canal);
+
+        return canal <= 0.04045f
+            ? canal / 12.92f
+            : Mathf.Pow((canal + 0.055f) / 1.055f, 2.4f);
+    }
+
+    private static float CurvaLab(float valor)
+    {
+        return valor > 0.008856f
+            ? Mathf.Pow(valor, 1f / 3f)
+            : 7.787037f * valor + 16f / 116f;
+    }
+
+    /// <summary>
+    /// Seleciona uma vez o representante usado pela interface e pelo lançador.
+    /// O elenco completo continua disponível para escolher outros jogadores.
+    /// </summary>
+    public List<JogadorDados> ObterTitularesDaPartida()
+    {
+        var titulares = new List<JogadorDados>(1);
+        List<JogadorDados> disponiveis = JogadoresValidosDiscos();
+        if (disponiveis.Count == 0) return titulares;
+        JogadorDados escolhido = disponiveis[0];
+        if (sortearTitularesAleatorios)
+        {
+            escolhido = disponiveis[Random.Range(0, disponiveis.Count)];
+        }
+        else if (usarSelecaoManual && indicesTitulares != null && indicesTitulares.Length > 0)
+        {
+            int indice = indicesTitulares[0];
+            if (elenco != null && indice >= 0 && indice < elenco.Count &&
+                elenco[indice] != null && !string.IsNullOrWhiteSpace(elenco[indice].nomeJogador))
+                escolhido = elenco[indice];
+        }
+        titulares.Add(escolhido);
+        return titulares;
+    }
+
+    /// <summary>Organiza os discos sem perder o vínculo da posição com o jogador selecionado.</summary>
+    public List<JogadorDados> MontarEscalacaoDiscos(JogadorDados capitao, int quantidade)
+    {
+        int total = Mathf.Max(0, quantidade);
+        var escalacao = new List<JogadorDados>(total);
+        if (total == 0) return escalacao;
+        List<JogadorDados> disponiveis = JogadoresValidosDiscos();
+        if (capitao == null || string.IsNullOrWhiteSpace(capitao.nomeJogador))
+            capitao = disponiveis.Count > 0 ? disponiveis[0] : null;
+        escalacao.Add(capitao);
+        foreach (JogadorDados jogador in disponiveis)
+        {
+            if (escalacao.Count == total) break;
+            if (!object.ReferenceEquals(jogador, capitao)) escalacao.Add(jogador);
+        }
+        while (escalacao.Count < total) escalacao.Add(null);
+        return escalacao;
+    }
+
+    private List<JogadorDados> JogadoresValidosDiscos()
+    {
+        var disponiveis = new List<JogadorDados>();
+        if (elenco != null)
+            foreach (JogadorDados jogador in elenco)
+                if (jogador != null && !string.IsNullOrWhiteSpace(jogador.nomeJogador) && !disponiveis.Contains(jogador))
+                    disponiveis.Add(jogador);
+        return disponiveis;
+    }
+
+    // Compatibilidade com chamadas externas das versões anteriores.
+    // A nova regra retorna somente o representante da partida.
+    public List<JogadorDados> ObterOsTresTitulares()
+    {
+        return ObterTitularesDaPartida();
+    }
+}

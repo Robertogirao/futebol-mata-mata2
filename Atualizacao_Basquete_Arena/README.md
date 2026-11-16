@@ -4,13 +4,23 @@ Atualização para **a cópia do projeto Unity enviada no BACKUP.part1–4.rar**
 
 ## Instalar na cópia destinada ao basquete
 
-1. Feche o Unity.
-2. Copie a pasta **Assets desta atualização** para a raiz da sua cópia do projeto (ao lado de Packages e ProjectSettings), aceitando substituir os arquivos correspondentes. Preserve os arquivos `.meta` fornecidos.
-3. Abra o projeto e aguarde a importação.
-4. Use **Tools → Basquete → Abrir Liga NBA** e entre em Play.
-5. Para editar o campeonato e a arena, abra **Tools → Basquete → Painel da arena**, fora do Play.
+1. Feche o Unity e extraia o ZIP **fora da pasta Assets**.
+2. No Windows, execute **INSTALAR_WINDOWS.cmd** e informe o caminho da sua pasta NBA (a que contém Assets, Packages e ProjectSettings).
+3. O instalador confere os hashes, guarda os arquivos que serão substituídos e move `Assets/BasqueteDiscos` para `Backup_Basquete_...`, na raiz do projeto, fora de Assets. Nada desse módulo antigo é apagado.
+4. Abra o projeto e aguarde a importação. Use **Tools → Basquete → Abrir Mata-mata NBA** ou **Abrir Liga NBA**, e entre em Play.
+5. Para editar, abra **Tools → Basquete → Painel da arena**, fora do Play.
 
-As quatro novas cenas estão em `Assets/Scenes/Basquete`. As cenas de futebol existentes continuam no caminho anterior. O pacote substitui oito scripts compartilhados e acrescenta o módulo de basquete; não copie somente a pasta BasqueteArena.
+**Não abra a cena antiga `MataMata_Discos` para testar esta arena.** As novas cenas estão em `Assets/Scenes/Basquete`.
+
+### Por que este pacote foi corrigido
+
+Os erros CS1061 e CS1501 relatados referem-se ao módulo antigo `BasqueteDiscos` e a versões modificadas de BolaDiscos, DiscoAtleta, HudFutebolDiscos e LayoutJogadorUnicoUI. Esses arquivos pedem APIs diferentes da arena publicada. Esta revisão inclui **os 38 scripts do backup em versões compatíveis, mais os cinco scripts da nova arena**, com seus `.meta`, inclusive os editores. O instalador faz backup das suas versões antes de substituí-las. Mudanças personalizadas nesses scripts ficam guardadas no backup para comparação posterior.
+
+### Instalação manual (alternativa)
+
+Com Unity fechado, copie os scripts atuais para um backup fora de Assets. Mova toda a pasta `Assets/BasqueteDiscos` e seu arquivo `BasqueteDiscos.meta` para fora de Assets. Depois copie **toda a pasta Assets deste pacote** sobre a do projeto, substituindo os arquivos correspondentes e preservando os `.meta` fornecidos. Copiar apenas BasqueteArena não resolve a incompatibilidade. Não coloque uma segunda cópia dos scripts dentro de Assets.
+
+As cenas, imagens, times e temporadas que já estavam no projeto não são apagados. O instalador substitui somente os arquivos fornecidos e guarda as versões anteriores. As cenas de futebol existentes continuam no caminho anterior.
 
 ## O jogo
 
