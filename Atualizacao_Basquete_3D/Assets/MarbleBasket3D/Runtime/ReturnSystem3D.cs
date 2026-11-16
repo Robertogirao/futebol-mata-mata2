@@ -36,7 +36,7 @@ namespace MarbleBasket3D
             // Physical exit side decides the route; neither team identity nor the score is consulted.
             if (match.Settings.enableSecondChance && !ball.Shot.Scored && ball.Body.position.x < dividerX)
             {
-                Vector3[] points = { ball.Body.position, new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f, .65f, -3.6f), new Vector3(1.1f, 2.7f, 1.7f), new Vector3(0, 2.45f, 1.65f) };
+                Vector3[] points = { ball.Body.position, new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f, .65f, -3.6f), new Vector3(1.1f, 2.7f, 1.7f), match.Launcher.QueueReturnPoint };
                 Begin(ball, points, match.Settings.secondChanceSeconds, true); SecondChances++;
                 match.Signals.SecondChance(ball); return true;
             }

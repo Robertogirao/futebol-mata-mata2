@@ -23,6 +23,15 @@ namespace MarbleBasket3D
         [Range(10, 120)] public float crossDegreesPerSecond = 105;
         [Range(2, 12)] public float crossReversalSeconds = 5;
         [Header("Lançador — mesmos controles para os dois times")]
+        public bool continuousLauncher = true;
+        [Range(30, 160)] public float launcherRpm = 90;
+        [Range(0, 20)] public float launcherRpmVariation = 6;
+        [Range(.8f, 1.3f)] public float launcherFeedOffset = 1.1f;
+        [Tooltip("Ajusta a velocidade uma vez, no impacto. O voo seguinte permanece físico.")]
+        public bool impactAssist = true;
+        [Tooltip("0,25 limita a correção a 25% da velocidade da pancada. Não é uma chance de cesta.")]
+        [Range(0, 1)] public float impactAssistStrength = .25f;
+        [Range(0, 1.5f)] public float impactTargetSpread = .70f;
         public bool compactLauncher = true;
         [Range(.5f, .8f)] public float launcherWheelRadius = .65f;
         public bool calibrateLaunchSpeed = true;
@@ -54,7 +63,7 @@ namespace MarbleBasket3D
         public AudioClip collisionSound, launchSound, basketSound, fallSound, finishSound;
         public void Validate()
         {
-            foreach (float value in new[] { matchSeconds, countdownSeconds, marbleRadius, marbleMass, marbleBounce, physicsStep, launchSpeed, launchAngle, angleVariation, speedVariation, powerCycleSeconds, preparationSeconds, launchInterval, returnSeconds, secondChanceSeconds, stuckSeconds, mechanismTimeout, shotTimeout, cameraFieldOfView, crossDegreesPerSecond, crossReversalSeconds, launchYawVariation, deckSlopeDegrees, duelRotorRadius, launcherWheelRadius })
+            foreach (float value in new[] { matchSeconds, countdownSeconds, marbleRadius, marbleMass, marbleBounce, physicsStep, launchSpeed, launchAngle, angleVariation, speedVariation, powerCycleSeconds, preparationSeconds, launchInterval, returnSeconds, secondChanceSeconds, stuckSeconds, mechanismTimeout, shotTimeout, cameraFieldOfView, crossDegreesPerSecond, crossReversalSeconds, launchYawVariation, deckSlopeDegrees, duelRotorRadius, launcherWheelRadius, launcherRpm, launcherRpmVariation, launcherFeedOffset, impactTargetSpread, impactAssistStrength })
                 if (!Finite(value)) throw new System.InvalidOperationException("Os controles da arena precisam de valores finitos.");
             if (marbleMass < .1f || marbleMass > 2 || marbleBounce < 0 || marbleBounce > 1 || angleVariation < 0 || angleVariation > 5 || speedVariation < 0 || speedVariation > 1) throw new System.InvalidOperationException("Confira massa, quique e variação do lançador.");
             if (!Finite(matchSeconds) || matchSeconds <= 0 || !Finite(countdownSeconds) || countdownSeconds < 0) throw new System.InvalidOperationException("Confira a duração e a contagem regressiva.");
@@ -62,6 +71,7 @@ namespace MarbleBasket3D
             if (!Finite(launchSpeed) || launchSpeed < 5 || launchSpeed > 14 || !Finite(launchAngle) || launchAngle < 40 || launchAngle > 75) throw new System.InvalidOperationException("Confira velocidade e ângulo de lançamento.");
             if (powerCycleSeconds < .5f || preparationSeconds < .12f || launchInterval < .1f || physicsStep < .005f || physicsStep > .03f) throw new System.InvalidOperationException("Confira os tempos do mecanismo e da física.");
             if (deckSlopeDegrees < 1 || deckSlopeDegrees > 8 || duelRotorRadius < .8f || duelRotorRadius > 1.1f || launcherWheelRadius < .5f || launcherWheelRadius > .8f) throw new System.InvalidOperationException("Confira a inclinação, os rotores e o tamanho do lançador.");
+            if (launcherRpm < 30 || launcherRpm > 160 || launcherRpmVariation < 0 || launcherRpmVariation > 20 || launcherFeedOffset < .8f || launcherFeedOffset > 1.3f || impactTargetSpread < 0 || impactTargetSpread > 1.5f || impactAssistStrength < 0 || impactAssistStrength > 1) throw new System.InvalidOperationException("Confira a rotação contínua, a queda e a assistência dos arremessos.");
             if (crossDegreesPerSecond < 10 || crossDegreesPerSecond > 120 || crossReversalSeconds < 2 || crossReversalSeconds > 12 || launchYawVariation < 0 || launchYawVariation > 6) throw new System.InvalidOperationException("Confira a rotação dos rotores e a oscilação do lançador.");
             if (returnSeconds < 1 || secondChanceSeconds < .5f || stuckSeconds < 3 || mechanismTimeout < 4 || shotTimeout < .5f) throw new System.InvalidOperationException("Confira os tempos de retorno e recuperação.");
         }

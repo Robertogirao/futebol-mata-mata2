@@ -43,7 +43,7 @@ namespace MarbleBasket3D
             Match.Configure(settings, launcher, returns, rotors, signals);
             launcher.Configure(Match); returns.Configure(Match); if (Application.isPlaying) signals.Configure(Match);
             Match.Finished += result => onResult.Invoke(result);
-            Court(); EntryAndContest(); BuildLauncher(launcher); Basket(); ReturnsVisuals(); LightingAndCamera();
+            Court(); BuildLauncher(launcher); EntryAndContest(launcher); Basket(); ReturnsVisuals(); LightingAndCamera();
             // Pairwise mirrored slots. Alternate which team is instantiated first in each pair.
             // Physics is released simultaneously; there is no per-team launch or scoring handicap.
             for (int i = 0; i < settings.marblesPerTeam; i++)
@@ -168,7 +168,7 @@ namespace MarbleBasket3D
             guard.transform.rotation=Quaternion.LookRotation(b-a);
             Rod(label+" top rail",new Vector3(a.x,DeckHeight(a.z)+.52f,a.z),new Vector3(b.x,DeckHeight(b.z)+.52f,b.z),.025f,steel);
         }
-        private void EntryAndContest()
+        private void EntryAndContest(Launcher3D launcher)
         {
             var deckMaterial=Mat("Flat competition deck",new Color(.075f,.10f,.14f),.28f,.38f);
             var deck=Box("Open duel deck",new Vector3(0,4.37f,1.4f),new Vector3(DeckHalfWidth*2,.16f,DeckBack-DeckFront),deckMaterial);
@@ -189,7 +189,32 @@ namespace MarbleBasket3D
                 Vector3 a=new Vector3(side*1.70f,0,3.25f),b=new Vector3(side*.45f,0,2.50f);
                 DeckGuard("Entry deflector",a,b);
             }
-            // Only a small funnel remains AFTER the front exit. No sloped cone encloses the duel area.
+            if (launcher.Continuous)
+            {
+                Vector3 queueStart = launcher.QueueReturnPoint - Vector3.up * .30f;
+                Vector3 drop = launcher.DropPoint;
+                Vector3 forward = Rim - Seat; forward.y = 0; forward.Normalize();
+                Vector3 axis = Vector3.Cross(Vector3.up,forward);
+                Vector3 lip = drop - axis*.36f;
+                float fraction = (queueStart.z + .70f) / (queueStart.z - lip.z);
+                Vector3 mouth = Vector3.Lerp(queueStart, lip, fraction); mouth.y = 0;
+                Funnel("Front exit funnel",mouth,.72f,.245f,DeckHeight(DeckFront)-.02f,3.95f,false,true);
+                Track("Open drop chute",queueStart,lip,.60f);
+                // Parallel to the wheel plane: these walls remove the chute's axial drift
+                // while leaving the rotating paddles and their radial exit unobstructed.
+                for (int side=-1;side<=1;side+=2)
+                {
+                    // The rear wall ends below the inlet. The floor stops before the front
+                    // wall, leaving more than a full marble diameter for the downward exit.
+                    float height = side<0 ? .90f : 1.30f;
+                    float centerY = side<0 ? -.51f : -.25f;
+                    var guide = Box("Drop guide side",drop + axis * side * .34f + Vector3.up*centerY,new Vector3(.06f,height,1.05f),glass);
+                    guide.transform.rotation = Quaternion.LookRotation(forward);
+                }
+                Zone("Queue sensor",ZoneKind3D.Queue,new Vector3(.15f,3.50f,.1f),new Vector3(1.1f,1.5f,3.8f));
+                return;
+            }
+            // Compatibility path for the V3 indexed wheel and the V2 lever.
             Funnel("Front exit funnel",new Vector3(0,0,-.70f),.72f,.245f,DeckHeight(DeckFront)-.02f,2.65f,false,true);
             Track("Single file queue",new Vector3(0,2.16f,1.65f),new Vector3(0,1.20f,-1.48f),.60f);
             // The feed tube opens at its bottom toward the existing queue, so it cannot become a gate.
@@ -203,11 +228,12 @@ namespace MarbleBasket3D
         private static Vector3 EntryEnd(int side)=>new Vector3(side*1.85f,4.9f,2.75f);
         private void BuildLauncher(Launcher3D launcher)
         {
-            bool compact=settings.compactLauncher;
+            bool compact=launcher.Compact;
             Box("Launcher plinth",new Vector3(-.25f,.32f,-1.5f),compact?new Vector3(1.35f,.5f,1.0f):new Vector3(1.7f,.5f,1.35f),dark);
             launcher.seat = Seat; launcher.target = Rim;
             var lever = Child(compact?"Compact cross launcher":"Open lever",world); var body = lever.AddComponent<Rigidbody>();
             body.isKinematic=true;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
+            body.interpolation=RigidbodyInterpolation.Interpolate;
             launcher.ConfigureLever(body);
             Vector3 pivot=body.position;
             float length=launcher.EffectiveArmLength;
@@ -227,6 +253,13 @@ namespace MarbleBasket3D
             Rod("Lever axle",pivot+Vector3.forward*.36f,pivot-Vector3.forward*.36f,.11f,gold);
             for(int side=-1;side<=1;side+=2)
                 Box("Lever support",new Vector3(pivot.x,pivot.y*.5f,pivot.z+side*.40f),new Vector3(.17f,pivot.y,.15f),dark,false);
+            if (launcher.Continuous)
+            {
+                Vector3 below = launcher.DropPoint; below.y = .75f;
+                Zone("Missed wheel return",ZoneKind3D.Fall,below,new Vector3(2.5f,.65f,1.5f));
+                Box("Wheel catch tray",below-Vector3.up*.40f,new Vector3(2.5f,.08f,1.5f),dark,false);
+                return;
+            }
             // The short open trough gathers the next ball while the lever cycles.
             Box("Open loading floor",new Vector3(0,1.15f,-1.44f),new Vector3(.64f,.10f,.66f),steel);
             for(int side=-1;side<=1;side+=2)
@@ -309,7 +342,7 @@ namespace MarbleBasket3D
                 }
                 Rod("Reservoir return connection", high, Home((side < 0 ? TeamId.Red : TeamId.Blue), 1), .27f, glass);
             }
-            Vector3[] chance = { new Vector3(5.4f, .25f, -2.3f), new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f,.65f,-3.6f), new Vector3(1.1f,2.7f,1.7f), new Vector3(0,2.45f,1.65f) };
+            Vector3[] chance = { new Vector3(5.4f, .25f, -2.3f), new Vector3(4.9f, .65f, -3.6f), new Vector3(1.1f,.65f,-3.6f), new Vector3(1.1f,2.7f,1.7f), Match.Launcher.QueueReturnPoint };
             for (int i = 1; i < chance.Length; i++) Rod("Second chance return tube", chance[i-1], chance[i], .24f, glass);
         }
         private void Zone(string label, ZoneKind3D kind, Vector3 center, Vector3 size)

@@ -42,7 +42,7 @@ namespace MarbleBasket3D.Tests
             match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
             Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
         }
-        [UnityTest] public IEnumerator V3BuildHasTwinRotorsCompactWheelAndEightMarbles()
+        [UnityTest] public IEnumerator V4BuildHasTwinRotorsContinuousWheelAndEightMarbles()
         {
             var diagnostics=match.GetComponent<ArenaDiagnostics3D>();
             Assert.That(diagnostics.CountLive(TeamId.Red),Is.EqualTo(4));Assert.That(diagnostics.CountLive(TeamId.Blue),Is.EqualTo(4));
@@ -54,9 +54,28 @@ namespace MarbleBasket3D.Tests
             int paddles=0;foreach(var child in match.Launcher.leverBody.GetComponentsInChildren<Transform>())
                 if(child.name.StartsWith("Catapult paddle"))paddles++;
             Assert.That(paddles,Is.EqualTo(4));Assert.That(settings.launcherWheelRadius,Is.LessThan(.81f));
+            Assert.That(match.Launcher.Continuous,Is.True);Assert.That(settings.impactAssistStrength,Is.EqualTo(.25f));
             foreach(var collider in root.GetComponentsInChildren<Collider>()) Assert.That(collider.gameObject.name,Does.Not.Contain("Queue gate"));
             Assert.That(settings.preparationSeconds,Is.LessThan(.4f));
             LogAssert.NoUnexpectedReceived();yield return null;
+        }
+        [UnityTest] public IEnumerator ContinuousWheelDoesNotWaitForAnOccupantAndPausesWithMatch()
+        {
+            match.StartMatch();while(!match.Active)yield return new WaitForFixedUpdate();
+            float before=match.Launcher.WheelAngle;
+            for(int i=0;i<20;i++)
+            {
+                yield return new WaitForFixedUpdate();
+                Assert.That(match.Launcher.Occupant,Is.Null);
+                foreach(var b in match.Marbles)Assert.That(b.State,Is.Not.EqualTo(MarbleState3D.Seated));
+            }
+            Assert.That(match.Launcher.WheelAngle,Is.Not.EqualTo(before));
+            Assert.That(match.Launcher.Phase,Is.EqualTo(LauncherPhase3D.Spinning));
+            match.TogglePause();before=match.Launcher.WheelAngle;
+            yield return new WaitForSecondsRealtime(.15f);
+            Assert.That(match.Launcher.WheelAngle,Is.EqualTo(before));match.TogglePause();
+            yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();
+            Assert.That(match.Launcher.WheelAngle,Is.Not.EqualTo(before));
         }
         [UnityTest] public IEnumerator PauseAndOutOfBoundsRecoveryPreserveIdentity()
         {

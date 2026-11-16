@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MarbleBasket3D
 {
-    public enum LauncherPhase3D { Open, Preparing, Cooling, Stopped }
+    public enum LauncherPhase3D { Open, Preparing, Cooling, Stopped, Spinning }
     [DefaultExecutionOrder(-100)]
     public sealed class Launcher3D : MonoBehaviour
     {
@@ -15,14 +15,22 @@ namespace MarbleBasket3D
         public float ReferenceSpeed { get; private set; }
         public float LastProgress { get; private set; }
         public int ShotsFired { get; private set; }
-        public bool Striking => (striking && Phase == LauncherPhase3D.Preparing)
+        public bool Continuous => match != null && match.Settings.continuousLauncher;
+        public bool Compact => Continuous || (match != null && match.Settings.compactLauncher);
+        public float CurrentRpm { get; private set; }
+        public float WheelAngle { get; private set; } = RestAngle;
+        public Vector3 QueueReturnPoint => Continuous ? new Vector3(0, 3.95f, 1.65f) : new Vector3(0, 2.45f, 1.65f);
+        public Vector3 DropPoint => pivot + horizontal * (EffectiveArmLength * match.Settings.launcherFeedOffset)
+            + Vector3.up * (EffectiveArmLength + .355f);
+        public bool Striking => (Continuous && match.Active && Phase == LauncherPhase3D.Spinning && CurrentRpm > 0)
+            || (striking && Phase == LauncherPhase3D.Preparing)
             || (Phase == LauncherPhase3D.Cooling && match != null
                 && (match.Settings.compactLauncher || match.SimulationTime - lastReleaseTime <= Time.fixedDeltaTime * 2));
         public Vector3 seat, muzzle, target;
         public Transform barrel;
         public Rigidbody leverBody;
         public const float ArmLength = 1.05f;
-        public float EffectiveArmLength => match != null && match.Settings.compactLauncher ? match.Settings.launcherWheelRadius : ArmLength;
+        public float EffectiveArmLength => Compact ? match.Settings.launcherWheelRadius : ArmLength;
         public int ActiveBladeIndex { get; private set; }
         public const float RestAngle = -74f;
         private const float DrawbackAngle = -86f;
@@ -45,7 +53,7 @@ namespace MarbleBasket3D
             leverBody.position = pivot;
             Vector3 release = TipAt(match.Settings.launchAngle - 90, 0);
             Vector3 distance = target - release; distance.y = 0;
-            ReferenceSpeed = match.Settings.calibrateLaunchSpeed
+            ReferenceSpeed = Continuous ? match.Settings.launcherRpm * Mathf.PI * 2 / 60 * EffectiveArmLength : match.Settings.calibrateLaunchSpeed
                 ? (float)LaunchMath3D.RequiredSpeed(distance.magnitude, target.y - release.y, match.Settings.launchAngle, -Physics.gravity.y)
                     + (match.Settings.launchSpeed - 8.65f)
                 : match.Settings.launchSpeed;
@@ -66,22 +74,32 @@ namespace MarbleBasket3D
         {
             if (leverBody != null) leverBody.MoveRotation(BodyRotation(armAngle, yaw));
         }
-        public void Enter(Marble3D ball) { if (ball != null) candidates.Add(ball); }
+        public void Enter(Marble3D ball) { if (!Continuous && ball != null) candidates.Add(ball); }
         public void Exit(Marble3D ball) { if (ball != null) candidates.Remove(ball); }
         public void ResetMechanism()
         {
             Occupant = null; candidates.Clear(); ShotsFired = 0; LastProgress = phaseStarted = 0; striking = false;
-            ActiveBladeIndex = 0; Phase = LauncherPhase3D.Open; lastReleaseTime = -100;
+            ActiveBladeIndex = 0; WheelAngle = RestAngle; CurrentRpm = 0;
+            Phase = Continuous ? LauncherPhase3D.Spinning : LauncherPhase3D.Open; lastReleaseTime = -100;
             if (leverBody != null) leverBody.rotation = BodyRotation(RestAngle, 0);
         }
-        public void StopMechanism() { Phase = LauncherPhase3D.Stopped; striking = false; }
-        public bool QueueIsHealthy(float now) => Phase != LauncherPhase3D.Stopped && now - LastProgress < match.Settings.mechanismTimeout;
+        public void StopMechanism() { Phase = LauncherPhase3D.Stopped; striking = false; CurrentRpm = 0; }
+        // A continuously rotating motor does not prove that balls are moving through the chute.
+        public bool QueueIsHealthy(float now) => !Continuous && Phase != LauncherPhase3D.Stopped && now - LastProgress < match.Settings.mechanismTimeout;
         private void FixedUpdate()
         {
-            if (match == null || !match.Active) return;
+            if (match == null || !match.Active || Phase == LauncherPhase3D.Stopped) return;
             var s = match.Settings; float now = match.SimulationTime;
             float cycle = now * Mathf.PI * 2 / s.powerCycleSeconds;
             CurrentAngle = s.launchAngle + Mathf.Sin(cycle) * s.angleVariation;
+            if (Continuous)
+            {
+                CurrentRpm = s.launcherRpm + Mathf.Sin(cycle) * s.launcherRpmVariation;
+                CurrentSpeed = CurrentRpm * Mathf.PI * 2 / 60 * EffectiveArmLength;
+                WheelAngle = (WheelAngle + CurrentRpm * 6 * Time.fixedDeltaTime) % 360;
+                Pose(WheelAngle, 0);
+                return; // No occupant, preparation, gate, seating or programmed release.
+            }
             CurrentSpeed = ReferenceSpeed + Mathf.Sin(cycle + 1.1f) * s.speedVariation;
             if (Phase == LauncherPhase3D.Open)
             {
@@ -160,12 +178,14 @@ namespace MarbleBasket3D
         }
         private void BeginCooling(float now) { Phase = LauncherPhase3D.Cooling; striking = false; phaseStarted = LastProgress = now; }
         private void RecordLaunch(Marble3D ball) { ShotsFired++; LastProgress = match.SimulationTime; match.Signals.Launch(ball); }
-        // Balls hit accidentally by the moving paddle keep their actual collision velocity.
-        // Their new attempt is eligible for scoring as well; no target correction is applied.
+        // One attempt per physical contact sequence. With assistance disabled the collision
+        // velocity is untouched; assistance, when enabled, is applied once at this impact.
         public void RegisterPhysicalHit(Marble3D ball)
         {
             if (match == null || !match.Active || !Striking || ball == null || ball.Match != match) return;
             if (ball.State != MarbleState3D.Contest && ball.State != MarbleState3D.Queued) return;
+            if (Continuous && match.Settings.impactAssist)
+                ball.Body.linearVelocity = ImpactAssist3D.Velocity(ball.Body.position, target, ball.Body.linearVelocity, match.Settings, match.SimulationTime);
             ball.MarkPhysicalLaunch(match.SimulationTime); candidates.Remove(ball); RecordLaunch(ball);
         }
     }

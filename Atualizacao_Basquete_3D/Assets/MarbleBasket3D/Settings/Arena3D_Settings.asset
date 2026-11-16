@@ -28,6 +28,13 @@ MonoBehaviour:
   duelRotorRadius: 1.05
   crossDegreesPerSecond: 105
   crossReversalSeconds: 5
+  continuousLauncher: 1
+  launcherRpm: 90
+  launcherRpmVariation: 6
+  launcherFeedOffset: 1.1
+  impactAssist: 1
+  impactAssistStrength: 0.25
+  impactTargetSpread: 0.70
   compactLauncher: 1
   launcherWheelRadius: 0.65
   calibrateLaunchSpeed: 1

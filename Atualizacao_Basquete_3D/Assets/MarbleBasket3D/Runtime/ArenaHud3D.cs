@@ -45,9 +45,14 @@ namespace MarbleBasket3D
             GUI.DrawTexture(R(440, 980, 1040, 55), panel); GUI.Label(R(450, 983, 1020, 48), phase, message);
             if (match.Active)
             {
+                if (match.Launcher.Continuous)
+                    GUI.Label(R(1500, 884, 340, 30), "CRUZ · " + Mathf.RoundToInt(match.Launcher.CurrentRpm) + " RPM", small);
+                else
+                {
                 float cyclePower = Mathf.Clamp01((match.Launcher.CurrentSpeed - match.Launcher.ReferenceSpeed + match.Settings.speedVariation) / Mathf.Max(.01f, match.Settings.speedVariation * 2));
                 GUI.DrawTexture(R(1540, 924, 250, 9), panel); GUI.DrawTexture(R(1540, 924, 250 * cyclePower, 9), accent);
                 GUI.Label(R(1530, 884, 270, 30), "CICLO DE POTÊNCIA", small);
+                }
             }
             if (!match.Settings.hideButtonsDuringPlay || match.Rules.Phase == MatchPhase.Ready || match.Rules.Phase == MatchPhase.Finished || match.Rules.Phase == MatchPhase.Paused)
             {
