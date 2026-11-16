@@ -4,7 +4,7 @@ import json, math, sys
 import numpy as np
 import mujoco
 
-prefixes=('Open duel deck','Front exit guard','Side front guard','Side rear guard','Rear deck guard','Front exit funnel','Open drop chute','Drop guide side','Entry deflector','Basket collection')
+prefixes=('Open duel deck','Front exit guard','Side front guard','Side rear guard','Rear deck guard','Front exit funnel','Open drop chute','Drop guide side','Entry deflector','Basket collection','Impact feed deflector')
 HERE=Path(__file__).resolve().parent
 def vec(values):return ' '.join(str(float(v)) for v in values)
 def run(snapshot,positions,radius=.18,seconds=12,exit_height=2.8,collector=False):
@@ -36,7 +36,7 @@ def run(snapshot,positions,radius=.18,seconds=12,exit_height=2.8,collector=False
     return dict(feed=sum(e['feed'] for e in exits.values()),outside=sum(not e['feed'] for e in exits.values()),remaining=[dict(ball=i,position=[round(float(v),3) for v in data.xpos[bid]]) for i,bid in enumerate(ids) if i not in exits],exits=exits)
 
 reports={}
-for version in ['v4','v5']:
+for version in ['v4','v5','v6']:
     snapshot=json.loads((HERE/f'flow-geometry-{version}.json').read_text())
     y=lambda z:4.45+math.tan(math.radians(snapshot['slope']))*(z-1.4)+.20
     cases={'left_corner':[[-2.85,y(.4),.4]],'right_corner':[[2.85,y(.4),.4]],'two_at_descent':[[.03,4.7,-.70],[.43,4.7,-.70]],'eight_front':[[x,y(z),z] for z in [.3,.8] for x in [-.75,-.25,.25,.75]]}
@@ -46,4 +46,4 @@ for version in ['v4','v5']:
     for name,result in reports[version].items():print(version,name,json.dumps(result))
 (HERE/'gravity-flow-results.json').write_text(json.dumps(reports,indent=2))
 if '--assert' in sys.argv:
-    for result in reports['v5'].values():assert not result['remaining'] and not result['outside'],result
+    for result in reports['v6'].values():assert not result['remaining'] and not result['outside'],result

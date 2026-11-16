@@ -13,7 +13,7 @@ namespace MarbleBasket3D
         private ArenaResources3D resources;
         private Transform world;
         private Material steel, dark, gold, glass, wood, woodAlt, white, red, blue;
-        private PhysicsMaterial tracks, ballPhysics;
+        private PhysicsMaterial tracks, ballPhysics, feedDamping;
         public const float DeckHalfWidth = 3.2f, DeckFront = -.65f, DeckBack = 3.45f;
         public const float SideGapStart = .10f, SideGapEnd = 2.75f;
         public const float FrontExitHalfWidth = 1.0f, ChuteExitWidth = 1.05f;
@@ -70,6 +70,7 @@ namespace MarbleBasket3D
             tracks = new PhysicsMaterial("Marble tracks") { dynamicFriction = .08f, staticFriction = .1f, bounciness = .15f, frictionCombine = PhysicsMaterialCombine.Minimum, bounceCombine = PhysicsMaterialCombine.Average };
             ballPhysics = new PhysicsMaterial("Marbles") { dynamicFriction = .08f, staticFriction = .1f, bounciness = settings.marbleBounce, frictionCombine = PhysicsMaterialCombine.Minimum, bounceCombine = PhysicsMaterialCombine.Average };
             resources.Own(tracks); resources.Own(ballPhysics);
+            feedDamping=new PhysicsMaterial("Damped inlet guide"){dynamicFriction=.08f,staticFriction=.1f,bounciness=0,frictionCombine=PhysicsMaterialCombine.Minimum,bounceCombine=PhysicsMaterialCombine.Minimum};resources.Own(feedDamping);
         }
         private Material Mat(string name, Color color, float metal, float smooth, bool transparent = false)
         {
@@ -217,19 +218,23 @@ namespace MarbleBasket3D
             if (launcher.Continuous)
             {
                 Vector3 drop = launcher.DropPoint;
-                Vector3 forward = Rim - Seat; forward.y = 0; forward.Normalize();
+                Vector3 forward = launcher.Heading;
                 Vector3 axis = Vector3.Cross(Vector3.up,forward);
-                Vector3 lip = drop - axis*.36f;
+                Vector3 lip = drop - axis*.58f;
                 OpenGravityChute(lip);
+                // A fixed, open-bottom deflector removes sideways inlet momentum above
+                // the wheel. Its lower edge leaves the intended upward shot unobstructed.
+                var deflector=Box("Impact feed deflector",drop+forward*.35f+Vector3.up*.25f,new Vector3(1.10f,1.0f,.06f),glass);
+                deflector.transform.rotation=Quaternion.LookRotation(forward);deflector.GetComponent<Collider>().sharedMaterial=feedDamping;
                 // Parallel to the wheel plane: these walls remove the chute's axial drift
                 // while leaving the rotating paddles and their radial exit unobstructed.
                 for (int side=-1;side<=1;side+=2)
                 {
                     // The rear wall ends below the inlet. The floor stops before the front
                     // wall, leaving more than a full marble diameter for the downward exit.
-                    float height = side<0 ? .90f : 1.30f;
-                    float centerY = side<0 ? -.51f : -.25f;
-                    var guide = Box("Drop guide side",drop + axis * side * .34f + Vector3.up*centerY,new Vector3(.06f,height,1.05f),glass);
+                    float height = side<0 ? 1.10f : 1.60f;
+                    float centerY = side<0 ? -.65f : -.40f;
+                    var guide = Box("Drop guide side",drop + axis * side * .50f + Vector3.up*centerY,new Vector3(.06f,height,1.40f),glass);
                     guide.transform.rotation = Quaternion.LookRotation(forward);
                 }
                 Zone("Queue sensor",ZoneKind3D.Queue,new Vector3(.15f,3.50f,-.9f),new Vector3(2.2f,1.9f,1.4f));
@@ -250,13 +255,13 @@ namespace MarbleBasket3D
         private void BuildLauncher(Launcher3D launcher)
         {
             bool compact=launcher.Compact;
-            Box("Launcher plinth",new Vector3(-.25f,.32f,-1.5f),compact?new Vector3(1.35f,.5f,1.0f):new Vector3(1.7f,.5f,1.35f),dark);
             launcher.seat = Seat; launcher.target = Rim;
             var lever = Child(compact?"Compact cross launcher":"Open lever",world); var body = lever.AddComponent<Rigidbody>();
             body.isKinematic=true;body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;
             body.interpolation=RigidbodyInterpolation.Interpolate;
             launcher.ConfigureLever(body);
             Vector3 pivot=body.position;
+            Box("Launcher plinth",launcher.Continuous?new Vector3(pivot.x,.32f,pivot.z):new Vector3(-.25f,.32f,-1.5f),compact?new Vector3(1.35f,.5f,1.0f):new Vector3(1.7f,.5f,1.35f),dark);
             float length=launcher.EffectiveArmLength;
             // Small compound paddles leave the ball visible. There is no opaque wheel or entry gate.
             for(int blade=0;blade<(compact?4:1);blade++)
@@ -265,15 +270,16 @@ namespace MarbleBasket3D
                 Vector3 direction=turn*Vector3.forward;
                 var arm=Box("Catapult arm "+blade,Vector3.zero,compact?new Vector3(.16f,.10f,length):new Vector3(.20f,.14f,length),steel,true,lever.transform);
                 arm.transform.localPosition=direction*(length*.5f);arm.transform.localRotation=turn;
-                var paddle=Box("Catapult paddle "+blade,Vector3.zero,compact?new Vector3(.38f,.10f,.27f):new Vector3(.55f,.10f,.44f),gold,true,lever.transform);
+                var paddle=Box("Catapult paddle "+blade,Vector3.zero,launcher.Continuous?new Vector3(.60f,.12f,.34f):compact?new Vector3(.38f,.10f,.27f):new Vector3(.55f,.10f,.44f),gold,true,lever.transform);
                 paddle.transform.localPosition=direction*length;paddle.transform.localRotation=turn;
             }
             var hub=Box("Launcher hub",Vector3.zero,new Vector3(.30f,.30f,.30f),gold,false,lever.transform);
             hub.transform.localPosition=Vector3.zero;hub.transform.localRotation=Quaternion.identity;
             var relay=lever.AddComponent<LeverContact3D>();relay.launcher=launcher;
-            Rod("Lever axle",pivot+Vector3.forward*.36f,pivot-Vector3.forward*.36f,.11f,gold);
+            Vector3 axle=launcher.Continuous?Vector3.Cross(Vector3.up,launcher.Heading):Vector3.forward;
+            Rod("Lever axle",pivot+axle*.48f,pivot-axle*.48f,.11f,gold);
             for(int side=-1;side<=1;side+=2)
-                Box("Lever support",new Vector3(pivot.x,pivot.y*.5f,pivot.z+side*.40f),new Vector3(.17f,pivot.y,.15f),dark,false);
+                Box("Lever support",new Vector3(pivot.x,pivot.y*.5f,pivot.z)+axle*(side*.55f),new Vector3(.17f,pivot.y,.15f),dark,false);
             if (launcher.Continuous)
             {
                 Vector3 below = launcher.DropPoint; below.y = .75f;

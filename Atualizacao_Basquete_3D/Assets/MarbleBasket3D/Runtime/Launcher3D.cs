@@ -20,8 +20,10 @@ namespace MarbleBasket3D
         public float CurrentRpm { get; private set; }
         public float WheelAngle { get; private set; } = RestAngle;
         public Vector3 QueueReturnPoint => Continuous ? new Vector3(0, 3.95f, 1.65f) : new Vector3(0, 2.45f, 1.65f);
-        public Vector3 DropPoint => pivot + horizontal * (EffectiveArmLength * match.Settings.launcherFeedOffset)
-            + Vector3.up * (EffectiveArmLength + .355f);
+        public Vector3 Heading => horizontal;
+        public Vector3 DropPoint => Continuous
+            ? pivot - horizontal * (EffectiveArmLength * match.Settings.launcherFeedOffset) + Vector3.up * (EffectiveArmLength + .95f)
+            : pivot + horizontal * (EffectiveArmLength * match.Settings.launcherFeedOffset) + Vector3.up * (EffectiveArmLength + .355f);
         public bool Striking => (Continuous && match.Active && Phase == LauncherPhase3D.Spinning && CurrentRpm > 0)
             || (striking && Phase == LauncherPhase3D.Preparing)
             || (Phase == LauncherPhase3D.Cooling && match != null
@@ -45,13 +47,14 @@ namespace MarbleBasket3D
         public void ConfigureLever(Rigidbody body)
         {
             leverBody = body; barrel = body.transform;
-            horizontal = target - seat; horizontal.y = 0; horizontal.Normalize();
+            horizontal = target - (Continuous ? match.Settings.launcherCenter : seat); horizontal.y = 0; horizontal.Normalize();
             float rest = RestAngle * Mathf.Deg2Rad, offset = match.Settings.marbleRadius + .07f;
             ActiveBladeIndex = 0;
-            pivot = seat - horizontal * (EffectiveArmLength * Mathf.Cos(rest) - Mathf.Sin(rest) * offset)
-                - Vector3.up * (EffectiveArmLength * Mathf.Sin(rest) + Mathf.Cos(rest) * offset);
+            pivot = Continuous ? match.Settings.launcherCenter
+                : seat - horizontal * (EffectiveArmLength * Mathf.Cos(rest) - Mathf.Sin(rest) * offset)
+                    - Vector3.up * (EffectiveArmLength * Mathf.Sin(rest) + Mathf.Cos(rest) * offset);
             leverBody.position = pivot;
-            Vector3 release = TipAt(match.Settings.launchAngle - 90, 0);
+            Vector3 release = TipAt(Continuous ? 90+match.Settings.launchAngle : match.Settings.launchAngle-90,0);
             Vector3 distance = target - release; distance.y = 0;
             ReferenceSpeed = Continuous ? match.Settings.launcherRpm * Mathf.PI * 2 / 60 * EffectiveArmLength : match.Settings.calibrateLaunchSpeed
                 ? (float)LaunchMath3D.RequiredSpeed(distance.magnitude, target.y - release.y, match.Settings.launchAngle, -Physics.gravity.y)
@@ -67,7 +70,7 @@ namespace MarbleBasket3D
         public Vector3 TipAt(float armAngle, float yaw)
         {
             Quaternion rotation = Rotation(armAngle, yaw);
-            return pivot + rotation * Vector3.forward * EffectiveArmLength + rotation * Vector3.up * (match.Settings.marbleRadius + .07f);
+            return pivot + rotation * Vector3.forward * EffectiveArmLength + rotation * Vector3.up * ((match.Settings.marbleRadius + .07f)*(Continuous?-1:1));
         }
         private Quaternion BodyRotation(float armAngle, float yaw) => Rotation(armAngle - ActiveBladeIndex * 90, yaw);
         private void Pose(float armAngle, float yaw)
@@ -96,7 +99,8 @@ namespace MarbleBasket3D
             {
                 CurrentRpm = s.launcherRpm + Mathf.Sin(cycle) * s.launcherRpmVariation;
                 CurrentSpeed = CurrentRpm * Mathf.PI * 2 / 60 * EffectiveArmLength;
-                WheelAngle = (WheelAngle + CurrentRpm * 6 * Time.fixedDeltaTime) % 360;
+                // Clockwise motion lifts balls arriving behind the centre toward the basket.
+                WheelAngle = (WheelAngle - CurrentRpm * 6 * Time.fixedDeltaTime) % 360;
                 Pose(WheelAngle, 0);
                 return; // No occupant, preparation, gate, seating or programmed release.
             }

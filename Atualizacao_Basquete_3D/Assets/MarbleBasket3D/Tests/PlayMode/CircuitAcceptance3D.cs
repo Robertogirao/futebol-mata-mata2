@@ -42,7 +42,7 @@ namespace MarbleBasket3D.Tests
             match.RestartMatch(); Assert.That(match.Rules.Result, Is.Null); Assert.That(match.Rules.Red + match.Rules.Blue, Is.Zero);
             Assert.That(match.Launcher.ShotsFired, Is.Zero); Assert.That(match.Returns.ReturningCount, Is.Zero);
         }
-        [UnityTest] public IEnumerator V5BuildHasTwinRotorsContinuousWheelAndEightMarbles()
+        [UnityTest] public IEnumerator V6BuildHasTwinRotorsContinuousWheelAndEightMarbles()
         {
             var diagnostics=match.GetComponent<ArenaDiagnostics3D>();
             Assert.That(diagnostics.CountLive(TeamId.Red),Is.EqualTo(4));Assert.That(diagnostics.CountLive(TeamId.Blue),Is.EqualTo(4));
@@ -53,11 +53,32 @@ namespace MarbleBasket3D.Tests
             Assert.That(rotors.oppositeBody.GetComponentsInChildren<BoxCollider>().Length,Is.EqualTo(3));
             int paddles=0;foreach(var child in match.Launcher.leverBody.GetComponentsInChildren<Transform>())
                 if(child.name.StartsWith("Catapult paddle"))paddles++;
-            Assert.That(paddles,Is.EqualTo(4));Assert.That(settings.launcherWheelRadius,Is.LessThan(.81f));
+            Assert.That(paddles,Is.EqualTo(4));Assert.That(settings.launcherWheelRadius,Is.LessThan(1.06f));
             Assert.That(match.Launcher.Continuous,Is.True);Assert.That(settings.impactAssistStrength,Is.EqualTo(.25f));
             foreach(var collider in root.GetComponentsInChildren<Collider>()) Assert.That(collider.gameObject.name,Does.Not.Contain("Queue gate"));
             Assert.That(settings.preparationSeconds,Is.LessThan(.4f));
             LogAssert.NoUnexpectedReceived();yield return null;
+        }
+        [UnityTest,Timeout(30000)] public IEnumerator RepeatedFreeDropsContactRisingWheelAcrossPhases()
+        {
+            int contacts=0,rising=0;
+            for(int trial=0;trial<8;trial++)
+            {
+                match.RestartMatch();while(!match.Active)yield return new WaitForFixedUpdate();
+                yield return new WaitForSeconds(trial*.025f);
+                var b=match.Marbles[0];b.Body.position=match.Launcher.DropPoint+Vector3.up*.25f;
+                b.Body.linearVelocity=Vector3.zero;b.Body.angularVelocity=Vector3.zero;
+                float deadline=Time.realtimeSinceStartup+1.3f;
+                while(b.Shot.Attempt==0&&Time.realtimeSinceStartup<deadline)yield return new WaitForFixedUpdate();
+                if(b.Shot.Attempt>0)
+                {
+                    contacts++;yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();
+                    Vector3 v=b.Body.linearVelocity;
+                    if(v.y>1&&Vector3.Dot(v,match.Launcher.Heading)>.5f)rising++;
+                }
+            }
+            Assert.That(contacts,Is.GreaterThanOrEqualTo(6),"A queda alinhada deve atingir a cruz na maioria das fases.");
+            Assert.That(rising,Is.GreaterThanOrEqualTo(4),"Os contatos devem produzir saídas ascendentes em direção à cesta.");
         }
         [UnityTest,Timeout(20000)] public IEnumerator FrontCornersAndTwoBallsAtDescentReachWheelArea()
         {

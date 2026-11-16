@@ -29,14 +29,15 @@ MonoBehaviour:
   crossDegreesPerSecond: 105
   crossReversalSeconds: 5
   continuousLauncher: 1
-  launcherRpm: 90
-  launcherRpmVariation: 6
-  launcherFeedOffset: 1.1
+  launcherCenter: {x: 1.05, y: 1.85, z: -1.80}
+  launcherRpm: 75
+  launcherRpmVariation: 5
+  launcherFeedOffset: 0.65
   impactAssist: 1
   impactAssistStrength: 0.25
   impactTargetSpread: 0.70
   compactLauncher: 1
-  launcherWheelRadius: 0.65
+  launcherWheelRadius: 0.85
   calibrateLaunchSpeed: 1
   launchYawVariation: 2.5
   launchSpeed: 8.65
